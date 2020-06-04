@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nbassetentry/page/login_page.dart';
+import 'package:nbassetentry/page/splash_page.dart';
 import 'common/config/config.dart';
 import 'common/global/global.dart';
 import 'common/local/local_storage.dart';
@@ -6,6 +8,7 @@ import 'common/redux/redux.dart';
 import 'common/redux/redux_state.dart';
 import 'common/style/string_set.dart';
 import 'common/style/style_set.dart';
+import 'widget/error_handle.dart';
 
 class App extends StatefulWidget {
   @override
@@ -46,6 +49,12 @@ class _AppState extends State<App> {
             navigatorKey: Global.navigatorState,
             debugShowCheckedModeBanner: false,
             theme: store.state.themeData,
+            routes:{
+              SplashPage.routeName:(context) =>
+                  ErrorHandle(child: SplashPage()),
+              LoginPage.routeName:(context) =>
+                  ErrorHandle(child: LoginPage()),
+            } ,
           );
         },
       ),
