@@ -23,6 +23,21 @@ class StringSet {
   static const String WRONG_USER_NAME_OR_PASSWORD = '用户名或密码错误';
   static const String WRONG_SECURITY_CODE = '安全码错误';
   static const String CAMERA_ACCESS_DENIED = '照相机权限不足';
+  static const String USER_NAME = '用户名';
+  static const String IS_NECESSARY = ' *';
+  static const String USER_NAME_HINT = '请输入用户名';
+  static const String PASSWORD = '密码';
+  static const String PASSWORD_HINT = '请输入密码';
+  static const String LOGIN = '登录';
+  static const String NETWORK_DEMO_NAME = '盛同云演示';
+  static const String NETWORK_DEMO_IP = '192.168.50.83';
+  static const String NETWORK_DEMO_PORT = '10004';
+  static const String HOME_TITLE = '小帮手';
+  static const String HOME_HINT = '一站式服务解决所有问题';
+  static const String LOGIN_OUT = '登出';
+  static const String CANCEL = '取消';
+  static const String CONFIRM = '确定';
+  static const String LOGIN_OUT_CONFIRM = '确定要退出登录吗?';
 
   /// theme_color
   static const String THEME_COLOR = '主题颜色';

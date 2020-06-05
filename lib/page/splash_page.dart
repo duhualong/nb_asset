@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nbassetentry/common/style/style_set.dart';
 import 'package:nbassetentry/common/util/screen_utils.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:nbassetentry/page/login_page.dart';
 
 class SplashPage extends StatefulWidget {
   static final String routeName = '/';
@@ -23,7 +24,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _init() {
-
+    SystemChrome.setEnabledSystemUIOverlays([]);
   }
 
   @override
@@ -83,7 +84,7 @@ class _SplashPageState extends State<SplashPage> {
                         ),
 
                       ],
-                    ))
+                    )),
               ],
             ),
             width: ScreenUtils.screenW(context),
@@ -107,7 +108,7 @@ class CountDownWidget extends StatefulWidget {
 }
 
 class _CountDownWidgetState extends State<CountDownWidget> {
-  var _seconds = 3;
+  var _seconds = 2;
   Timer _timer;
 
   @override
@@ -132,6 +133,7 @@ class _CountDownWidgetState extends State<CountDownWidget> {
       if (_seconds <= 1) {
         widget.onCountDownFinishCallBack(true);
 
+        Navigator.of(context).pushReplacementNamed(LoginPage.routeName);
         _cancelTimer();
         return;
       }

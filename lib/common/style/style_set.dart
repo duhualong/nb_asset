@@ -5,9 +5,13 @@ class AssetSet {
   static const String SPLASH_BG='assets/splash_bg.png';
   static const String SPLASH_COMPANY='assets/splash_company_name.png';
   static const String SPLASH_HELP='assets/splash_help.png';
+  static const String LOGIN_BG='assets/login_bg.png';
+  static const String HOME_BG='assets/home_bg.png';
+  static const String HOME_NB='assets/home_nb_button.png';
 }
 
 class ThemeDataSet {
+  static const Color tabColor=Color.fromRGBO(54, 120, 255, 1.0);
   static final List<ThemeData> THEME_DATAS = ACCENTS.map((accent) {
     int index = ACCENTS.indexOf(accent);
     return ThemeData(
