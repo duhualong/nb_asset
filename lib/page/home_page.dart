@@ -25,33 +25,34 @@ class HomeWidget extends StatefulWidget {
 class _HomeWidgetState extends State<HomeWidget> {
   YYDialog alertDialogWithDivider(BuildContext context) {
     return YYDialog().build(context)
-      ..width = 220
+      ..width = 240
       ..borderRadius = 4.0
       ..text(
-        padding: EdgeInsets.all(25.0),
+        padding: EdgeInsets.all(30.0),
         alignment: Alignment.center,
         text: StringSet.LOGIN_OUT_CONFIRM,
         color: Colors.black,
-        fontSize: 14.0,
+        fontSize: 18.0,
         fontWeight: FontWeight.w500,
       )
       ..divider()
       ..doubleButton(
-        padding: EdgeInsets.only(top: 10.0),
+        padding: EdgeInsets.only(top: 20.0),
         gravity: Gravity.center,
         withDivider: true,
         text1: StringSet.CANCEL,
         color1: Colors.black,
-        fontSize1: 14.0,
+        fontSize1: 16.0,
         onTap1: () {
           print("取消");
         },
         text2: StringSet.CONFIRM,
-        color2: Colors.blue,
-        fontSize2: 14.0,
+        color2: Colors.red,
+        fontSize2: 16.0,
         fontWeight2: FontWeight.bold,
         onTap2: () {
           print("确定");
+          Navigator.of(context).pop();
         },
       )
       ..show();

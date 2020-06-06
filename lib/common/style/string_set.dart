@@ -38,6 +38,21 @@ class StringSet {
   static const String CANCEL = '取消';
   static const String CONFIRM = '确定';
   static const String LOGIN_OUT_CONFIRM = '确定要退出登录吗?';
+  static const String NB_LAMP = 'NB 单灯';
+  static const String SAVE = '保存';
+  static const String NB_NAME = '名称/编号';
+  static const String NECESSARY = '*';
+  static const String NB_GROUP = '所属组';
+  static const String NB_OPERATOR = '运营商';
+  static const String NB_BARCODE = '条形码';
+  static const String NB_IMEI = 'imei';
+  static const String NB_IMSI = 'imsi';
+  static const String NB_LONGITUDE = '经度';
+  static const String NB_LATITUDE = '纬度';
+  static const String NB_USED = '投运';
+  static const String NB_ALARM = '主动告警';
+  static const String NB_REPLY='主报应答';
+  static const String NB_LOOP_COUNT='回路数量';
 
   /// theme_color
   static const String THEME_COLOR = '主题颜色';
