@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'base_page.dart';
+import 'gzx_dropdown_menu.dart';
 import 'nb_scan_page.dart';
 import 'package:flutter/services.dart';
 import '../common/event/error_event.dart';
@@ -145,8 +146,18 @@ class _HomeWidgetState extends State<HomeWidget> {
           margin: EdgeInsets.only(
               top: ScreenUtils.screenH(context) / 4 + 100, left: 24),
           child: GestureDetector(
-            onTap: () => _scan(context),
+//            onTap: () => _scan(context),
+            onTap: () =>   Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ErrorHandle(
+                  child: NbScanPage(result: ''),
+//                  child: GZXDropDownMenuTestPage(),
+                ),
+              ),
+            ),
             child: Image.asset(
+
               AssetSet.HOME_NB,
               width: ScreenUtils.screenW(context) / 2 - 20,
             ),

@@ -7,6 +7,7 @@ import 'common/redux/redux.dart';
 import 'common/redux/redux_state.dart';
 import 'common/style/string_set.dart';
 import 'common/style/style_set.dart';
+import 'page/gzx_dropdown_menu.dart';
 import 'page/home_page.dart';
 import 'page/login_page.dart';
 import 'page/nb_scan_page.dart';
@@ -59,6 +60,9 @@ class _AppState extends State<App> {
               HomePage.routeName: (context) => ErrorHandle(child: HomePage()),
               NbScanPage.routeName: (context) => ErrorHandle(
                     child: NbScanPage(),
+                  ),
+              GZXDropDownMenuTestPage.routeName: (context) => ErrorHandle(
+                    child: GZXDropDownMenuTestPage(),
                   ),
             },
           );

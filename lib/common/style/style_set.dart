@@ -8,14 +8,14 @@ class AssetSet {
   static const String LOGIN_BG = 'assets/login_bg.png';
   static const String HOME_BG = 'assets/home_bg.png';
   static const String HOME_NB = 'assets/home_nb_button.png';
-  static const String NB_DIMMING_DEFAULT = 'nb_dimming_default.png';
-  static const String NB_DIMMING_SELECT = 'nb_dimming_select.png';
-  static const String NB_ISSUED_DEFAULT = 'nb_issued_default.png';
-  static const String NB_ISSUED_SELECT = 'nb_issued_select.png';
-  static const String NB_RESET_DEFAULT = 'nb_reset_default.png';
-  static const String NB_RESET_SELECT = 'nb_reset_select.png';
-  static const String NB_SUMMON_DEFAULT = 'nb_summon_default.png';
-  static const String NB_SUMMON_SELECT = 'nb_summon_select.png';
+  static const String NB_DIMMING_DEFAULT = 'assets/nb_dimming_default.png';
+  static const String NB_DIMMING_SELECT = 'assets/nb_dimming_select.png';
+  static const String NB_ISSUED_DEFAULT = 'assets/nb_issued_default.png';
+  static const String NB_ISSUED_SELECT = 'assets/nb_issued_select.png';
+  static const String NB_RESET_DEFAULT = 'assets/nb_reset_default.png';
+  static const String NB_RESET_SELECT = 'assets/nb_reset_select.png';
+  static const String NB_SUMMON_DEFAULT = 'assets/nb_summon_default.png';
+  static const String NB_SUMMON_SELECT = 'assets/nb_summon_select.png';
 }
 class ThemeDataSet {
   static const Color tabColor = Color.fromRGBO(54, 120, 255, 1.0);

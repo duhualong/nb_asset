@@ -1,22 +1,21 @@
 import 'dart:async';
-
+import 'base_page.dart';
+import 'home_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-import 'package:nbassetentry/common/config/config.dart';
-import 'package:nbassetentry/common/dao/dao_result.dart';
-import 'package:nbassetentry/common/event/network_event.dart';
-import 'package:nbassetentry/common/http/http.dart';
-import 'package:nbassetentry/common/local/local_storage.dart';
-import 'package:nbassetentry/common/local/network_storage.dart';
-import 'package:nbassetentry/common/model/network.dart';
-import 'package:nbassetentry/common/style/string_set.dart';
-import 'package:nbassetentry/common/style/style_set.dart';
-import 'package:nbassetentry/common/util/screen_utils.dart';
-import 'package:nbassetentry/page/home_page.dart';
-import 'package:nbassetentry/page/text_field_widget.dart';
-import 'base_page.dart';
+import '../common/config/config.dart';
+import '../common/dao/dao_result.dart';
+import '../common/event/network_event.dart';
+import '../common/http/http.dart';
+import '../common/local/local_storage.dart';
+import '../common/local/network_storage.dart';
+import '../common/model/network.dart';
+import '../common/style/string_set.dart';
+import '../common/style/style_set.dart';
+import '../common/util/screen_utils.dart';
+
+import '../widget/text_field_widget.dart';
 
 class LoginPage extends StatelessWidget {
   static final String routeName = '/login';

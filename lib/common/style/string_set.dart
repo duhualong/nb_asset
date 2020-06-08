@@ -54,6 +54,7 @@ class StringSet {
   static const String NB_REPLY='主报应答';
   static const String NB_LOOP_COUNT='回路数量';
   static const String NB_PICTURE='图片';
+  static const String NB_HINT='请输入';
 
 
   /// theme_color

@@ -28,6 +28,8 @@ class BasePage extends StatefulWidget {
   /// 自动适应底部间距
   final bool resizeToAvoidBottomInset;
   final Color color;
+  final BottomNavigationBar bottomNavigationBar;
+
 
   BasePage({
     Key key,
@@ -40,6 +42,7 @@ class BasePage extends StatefulWidget {
     this.actions,
     this.color= Colors.white,
     this.resizeToAvoidBottomInset = true,
+    this.bottomNavigationBar,
   }) : super(key: key);
 
   @override
@@ -63,9 +66,11 @@ class _BasePageState extends State<BasePage> {
       widget.actions.add(SizedBox(width: 19));
     }
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
       backgroundColor: Colors.white,
       drawer: widget.drawer,
+      bottomNavigationBar:  widget.bottomNavigationBar,
       appBar: widget.hasAppBar
           ? AppBar(
         automaticallyImplyLeading: false,

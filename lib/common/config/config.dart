@@ -3,6 +3,7 @@ class Config {
   static const String USER_NAME_KEY = 'user_name';
   static const String NETWORKS_KEY = 'networks';
 
+  static const double CIRCLE_SIZE=50;
   /// 网络超时时间
   static const int NETWORK_TIMEOUT = 30;
   static const bool DEBUG = true;
