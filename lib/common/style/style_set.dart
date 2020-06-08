@@ -17,7 +17,6 @@ class AssetSet {
   static const String NB_SUMMON_DEFAULT = 'nb_summon_default.png';
   static const String NB_SUMMON_SELECT = 'nb_summon_select.png';
 }
-
 class ThemeDataSet {
   static const Color tabColor = Color.fromRGBO(54, 120, 255, 1.0);
   static final List<ThemeData> THEME_DATAS = ACCENTS.map((accent) {
