@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
-import 'package:nbassetentry/common/util/screen_utils.dart';
+import 'package:barcode_scan/barcode_scan.dart';
+import 'base_page.dart';
+import 'nb_scan_page.dart';
+import 'package:flutter/services.dart';
+import '../common/event/error_event.dart';
+import '../common/util/screen_utils.dart';
+import '../widget/error_handle.dart';
 import '../common/style/string_set.dart';
 import '../common/style/style_set.dart';
-import 'base_page.dart';
 
 class HomePage extends StatelessWidget {
   static final String routeName = '/home';
@@ -140,7 +145,7 @@ class _HomeWidgetState extends State<HomeWidget> {
           margin: EdgeInsets.only(
               top: ScreenUtils.screenH(context) / 4 + 100, left: 24),
           child: GestureDetector(
-            onTap: null,
+            onTap: () => _scan(context),
             child: Image.asset(
               AssetSet.HOME_NB,
               width: ScreenUtils.screenW(context) / 2 - 20,
@@ -149,5 +154,33 @@ class _HomeWidgetState extends State<HomeWidget> {
         )
       ],
     );
+  }
+
+  Future<void> _scan(BuildContext context) async {
+    try {
+      String result = await BarcodeScanner.scan();
+      print('result:$result');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ErrorHandle(
+            child: NbScanPage(result: result),
+          ),
+        ),
+      );
+    } on PlatformException catch (error) {
+      if (error.code == BarcodeScanner.CameraAccessDenied) {
+        ErrorEvent.errorMessageToast(
+            StringSet.CAMERA_ACCESS_DENIED + StringSet.PERIOD);
+      } else {
+        ErrorEvent.errorMessageToast(error.message);
+      }
+    } on FormatException {
+      /// 取消操作
+      ErrorEvent.errorMessageToast(
+          StringSet.OPERATION_CANCELLED + StringSet.PERIOD);
+    } catch (error) {
+      ErrorEvent.errorMessageToast(error.message);
+    }
   }
 }

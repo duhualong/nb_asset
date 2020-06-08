@@ -53,6 +53,8 @@ class StringSet {
   static const String NB_ALARM = '主动告警';
   static const String NB_REPLY='主报应答';
   static const String NB_LOOP_COUNT='回路数量';
+  static const String NB_PICTURE='图片';
+
 
   /// theme_color
   static const String THEME_COLOR = '主题颜色';

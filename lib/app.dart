@@ -9,6 +9,7 @@ import 'common/style/string_set.dart';
 import 'common/style/style_set.dart';
 import 'page/home_page.dart';
 import 'page/login_page.dart';
+import 'page/nb_scan_page.dart';
 import 'page/splash_page.dart';
 import 'widget/error_handle.dart';
 
@@ -55,9 +56,10 @@ class _AppState extends State<App> {
               SplashPage.routeName: (context) =>
                   ErrorHandle(child: SplashPage()),
               LoginPage.routeName: (context) => ErrorHandle(child: LoginPage()),
-              HomePage.routeName: (context) => ErrorHandle(
-                    child: HomePage(),
-                  )
+              HomePage.routeName: (context) => ErrorHandle(child: HomePage()),
+              NbScanPage.routeName: (context) => ErrorHandle(
+                    child: NbScanPage(),
+                  ),
             },
           );
         },

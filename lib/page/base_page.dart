@@ -27,6 +27,7 @@ class BasePage extends StatefulWidget {
 
   /// 自动适应底部间距
   final bool resizeToAvoidBottomInset;
+  final Color color;
 
   BasePage({
     Key key,
@@ -37,6 +38,7 @@ class BasePage extends StatefulWidget {
     this.hasAppBar = true,
     this.body,
     this.actions,
+    this.color= Colors.white,
     this.resizeToAvoidBottomInset = true,
   }) : super(key: key);
 
@@ -67,7 +69,7 @@ class _BasePageState extends State<BasePage> {
       appBar: widget.hasAppBar
           ? AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
+        backgroundColor:widget.color,
         brightness: Brightness.light,
         elevation: 0,
         centerTitle: false,
@@ -86,7 +88,7 @@ class _BasePageState extends State<BasePage> {
                         ? () => Scaffold.of(context).openDrawer()
                         : widget.leadingOnTap,
                     child: Container(
-                      color: Colors.white,
+//                      color: Colors.white,
                       height: double.infinity,
                       alignment: Alignment.centerLeft,
                       width: 50,
@@ -94,7 +96,7 @@ class _BasePageState extends State<BasePage> {
                         widget.drawer != null
                             ? Icons.menu
                             : widget.leadingIconData,
-                        color: Theme.of(context).primaryColorDark,
+                        color: Colors.white,
                       ),
                     ),
                   );
@@ -109,9 +111,8 @@ class _BasePageState extends State<BasePage> {
                     widget.title,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25,
+                      color: Colors.white,
+                      fontSize: 22,
                     ),
                   ),
                 ),
