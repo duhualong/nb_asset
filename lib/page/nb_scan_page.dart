@@ -1,15 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gzx_dropdown_menu/gzx_dropdown_menu.dart';
-import 'package:nbassetentry/common/model/option.dart';
-import 'package:nbassetentry/common/style/string_set.dart';
-import 'package:nbassetentry/common/style/style_set.dart';
-import 'package:nbassetentry/common/util/screen_utils.dart';
-import 'package:nbassetentry/page/base_page.dart';
-import 'package:nbassetentry/widget/custom_picker_cell.dart';
-import 'package:nbassetentry/widget/custom_picker_power_cell.dart';
-import 'package:nbassetentry/widget/text_field_nb_input.dart';
-import 'package:nbassetentry/widget/text_nb.dart';
+import '../common/model/option.dart';
+import '../common/style/string_set.dart';
+import '../common/style/style_set.dart';
+import '../page/base_page.dart';
+import '../widget/custom_picker_cell.dart';
+import '../widget/custom_picker_power_cell.dart';
+import '../widget/text_field_nb_input.dart';
+import '../widget/text_nb.dart';
 import '../common/config/config.dart';
 
 class NbScanPage extends StatefulWidget {

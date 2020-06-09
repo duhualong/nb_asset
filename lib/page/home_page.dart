@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'base_page.dart';
-import 'gzx_dropdown_menu.dart';
 import 'nb_scan_page.dart';
 import 'package:flutter/services.dart';
 import '../common/event/error_event.dart';
