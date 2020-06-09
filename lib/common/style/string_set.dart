@@ -1,3 +1,5 @@
+import 'package:nbassetentry/common/model/option.dart';
+
 class StringSet {
   static const String EMPTY = '';
   static const String COLON = '：';
@@ -51,11 +53,32 @@ class StringSet {
   static const String NB_LATITUDE = '纬度';
   static const String NB_USED = '投运';
   static const String NB_ALARM = '主动告警';
-  static const String NB_REPLY='主报应答';
-  static const String NB_LOOP_COUNT='回路数量';
-  static const String NB_PICTURE='图片';
-  static const String NB_HINT='请输入';
+  static const String NB_REPLY = '主报应答';
+  static const String NB_LOOP_COUNT = '回路数量';
+  static const String NB_OPEN_STATUS='上电开灯';
+  static const String NB_PICTURE = '图片';
+  static const String NB_HINT = '请输入';
+  static const String PLEASE_SELECT = '请选择';
+  static const String SPACE = ' ';
+  static const String SELECT_ALL = '全选';
+  static const String UNSELECT_ALL = '全不选';
 
+  static const NO_SETTING = '不设置';
+  static const TWENTY = '20W';
+  static const FIFTY = '50W';
+  static const SEVENTY_FIVE = '75W';
+  static const HUNDRED = '100W';
+  static const HUNDRED_TWENTY = '120W';
+  static const HUNDRED_FIFTY = '150W';
+  static const TWO_HUNDRED = '200W';
+  static const TWO_HUNDRED_FIFTY = '250W';
+  static const THREE_HUNDRED = '300W';
+  static const FOUR_HUNDRED = '400W';
+  static const SIX_HUNDRED = '600W';
+  static const EIGHT_HUNDRED = '800W';
+  static const THOUSAND = '1000W';
+  static const THOUSAND_FIVE_HUNDRED = '1500W';
+  static const TWO_THOUSAND = '2000W';
 
   /// theme_color
   static const String THEME_COLOR = '主题颜色';
@@ -75,4 +98,24 @@ class StringSet {
   static const String AMBER = '琥珀色';
   static const String ORANGE = '橙色';
   static const String DEEP_ORANGE = '深橙色';
+
+  static  List<Option> powerOptions = [
+    Option(id: 0, title: NO_SETTING, isChecked: false, value: 0),
+    Option(id: 1, title: TWENTY, isChecked: false, value: 20),
+    Option(id: 2, title: FIFTY, isChecked: false, value: 50),
+    Option(id: 3, title: SEVENTY_FIVE, isChecked: false, value: 75),
+    Option(id: 4, title: HUNDRED, isChecked: false, value: 100),
+    Option(id: 5, title: HUNDRED_TWENTY, isChecked: false, value: 120),
+    Option(id: 6, title: HUNDRED_FIFTY, isChecked: false, value: 150),
+    Option(id: 7, title: TWO_HUNDRED, isChecked: false, value: 200),
+    Option(id: 8, title: TWO_HUNDRED_FIFTY, isChecked: false, value: 250),
+    Option(id: 9, title: THREE_HUNDRED, isChecked: false, value: 300),
+    Option(id: 10, title: FOUR_HUNDRED, isChecked: false, value:400),
+    Option(id: 11, title: SIX_HUNDRED, isChecked: false, value:600),
+    Option(id: 12, title: SIX_HUNDRED, isChecked: false, value:600),
+    Option(id: 13, title: EIGHT_HUNDRED, isChecked: false, value:800),
+    Option(id: 14, title: THOUSAND, isChecked: false, value:1000),
+    Option(id: 15, title: THOUSAND_FIVE_HUNDRED, isChecked: false, value:1500),
+    Option(id: 16, title: TWO_THOUSAND, isChecked: false, value:2000),
+  ];
 }

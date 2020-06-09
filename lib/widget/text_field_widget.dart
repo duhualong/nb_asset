@@ -43,6 +43,7 @@ class TextFieldWidget extends StatefulWidget {
   final int maxLength;
 
   final int maxLines;
+  final TextAlign textAlign;
 
   TextFieldWidget({
     Key key,
@@ -66,6 +67,7 @@ class TextFieldWidget extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.keyboardAppearance = Brightness.light,
     this.maxLength,
+    this.textAlign=TextAlign.start,
     this.maxLines = 1,
   }) : super(key: key);
 
@@ -91,6 +93,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
     return Container(
       color: widget.backgroundColor,
       child: TextField(
+        textAlign:widget.textAlign ,
         maxLines: widget.maxLines,
         keyboardAppearance: widget.keyboardAppearance,
         keyboardType: widget.keyboardType,
@@ -110,6 +113,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
           icon: widget.iconData == null ? null : Icon(widget.iconData),
           prefixIcon:
               widget.prefixIcon == null ? null : Icon(widget.prefixIcon),
+
           suffixIcon: widget.suffixIconIsHidden
               ? null
               : Offstage(

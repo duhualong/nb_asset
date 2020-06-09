@@ -116,12 +116,13 @@ class _NbTextFieldWidgetState extends State<NbTextFieldWidget> {
           height: 42,
           width: ScreenUtils.screenW(context) - 40,
           decoration: new BoxDecoration(
-            color: Colors.white,
+            color: widget.backgroundColor,
             borderRadius: BorderRadius.all(Radius.circular(25.0)),
             border: new Border.all(color: Colors.grey, width: 1),
           ),
           child: Align(
             child: TextField(
+
               maxLines: widget.maxLines,
               keyboardAppearance: widget.keyboardAppearance,
               keyboardType: widget.keyboardType,
