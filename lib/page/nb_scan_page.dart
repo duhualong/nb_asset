@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nbassetentry/widget/custom_editable_image_cell.dart';
 import '../common/model/option.dart';
 import '../common/style/string_set.dart';
 import '../common/style/style_set.dart';
@@ -56,6 +57,8 @@ class _NbScanPageState extends State<NbScanPage> {
   int _powerPosition;
   String _powerName;
   List<Option> _nbLight = [];
+  List<String>_urls=[];
+  List<String> _paths=[];
 
   @override
   void initState() {
@@ -162,6 +165,8 @@ class _NbScanPageState extends State<NbScanPage> {
         GestureDetector(
           onTap: () {
             print('nameValue:${_nameController.text.trim()}');
+            print('path::$_paths');
+            print('url::$_urls');
           },
           child: Align(
             alignment: Alignment.center,
@@ -414,6 +419,12 @@ class _NbScanPageState extends State<NbScanPage> {
                           ],
                         );
                       })),
+              CustomEditableImageCell(
+                title:StringSet.NB_PICTURE,
+                attribute: 'image',
+                urls: _urls,
+                paths:_paths,
+              )
             ],
           ),
         ),
