@@ -57,8 +57,9 @@ class _NbScanPageState extends State<NbScanPage> {
   int _powerPosition;
   String _powerName;
   List<Option> _nbLight = [];
-  List<String>_urls=[];
-  List<String> _paths=[];
+  List<String> _urls = [];
+  List<String> _paths = [];
+  FocusNode blankNode = FocusNode();
 
   @override
   void initState() {
@@ -105,6 +106,52 @@ class _NbScanPageState extends State<NbScanPage> {
     _loopOptions.add(Option(id: 1, title: '2', isChecked: true, value: 2));
     _loopOptions.add(Option(id: 2, title: '3', isChecked: false, value: 3));
     _loopOptions.add(Option(id: 3, title: '4', isChecked: false, value: 4));
+  }
+
+  void _showMenu(BuildContext context) {
+    showModalBottomSheet(
+
+      backgroundColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+        ),
+      ),
+      context: context,
+      builder: (context) => Stack(
+        children: <Widget>[
+
+          Positioned(
+            top: 30,
+            width: MediaQuery.of(context).size.width ,
+            height: MediaQuery.of(context).size.height,
+            child: Container(
+              decoration: new BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: new BorderRadius.only(
+                      topLeft:  const  Radius.circular(20.0),
+                      topRight: const  Radius.circular(20.0))
+              ),
+              child:Text('sss'),
+            ),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Hero(
+                tag: AssetSet.NB_BOTTOM_SHEET_SUMMON,
+                child: Container(
+                  height: 60.0,
+                  width: 60.0,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: AssetImage(AssetSet.NB_BOTTOM_SHEET_SUMMON))),
+                )),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -158,6 +205,11 @@ class _NbScanPageState extends State<NbScanPage> {
             return;
           }
           _currentIndex = index;
+          switch (index) {
+            case 0:
+              _showMenu(context);
+              break;
+          }
           setState(() {});
         },
       ),
@@ -167,6 +219,12 @@ class _NbScanPageState extends State<NbScanPage> {
             print('nameValue:${_nameController.text.trim()}');
             print('path::$_paths');
             print('url::$_urls');
+            FocusScope.of(context).requestFocus(blankNode);
+            if (_nameController.text.trim() != StringSet.EMPTY) {
+              setState(() {
+                _isClick = true;
+              });
+            }
           },
           child: Align(
             alignment: Alignment.center,
@@ -178,6 +236,10 @@ class _NbScanPageState extends State<NbScanPage> {
         )
       ],
       body: SingleChildScrollView(
+          child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(blankNode);
+        },
         child: Container(
           color: Color.fromRGBO(239, 239, 244, 1),
           child: Column(
@@ -231,7 +293,7 @@ class _NbScanPageState extends State<NbScanPage> {
               Row(
                 children: <Widget>[
                   SizedBox(
-                    width: 10,
+                    width: 12,
                   ),
                   Expanded(
                     child: NbTextWidget(
@@ -250,7 +312,7 @@ class _NbScanPageState extends State<NbScanPage> {
                     flex: 1,
                   ),
                   SizedBox(
-                    width: 10,
+                    width: 12,
                   ),
                 ],
               ),
@@ -267,7 +329,7 @@ class _NbScanPageState extends State<NbScanPage> {
               Container(
                 color: Colors.white,
                 margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                padding: EdgeInsets.fromLTRB(24, 6, 10, 6),
+                padding: EdgeInsets.fromLTRB(20, 6, 10, 6),
                 child: Row(
                   children: <Widget>[
                     Text(
@@ -290,7 +352,7 @@ class _NbScanPageState extends State<NbScanPage> {
               Container(
                 color: Colors.white,
                 margin: EdgeInsets.symmetric(vertical: 1.0),
-                padding: EdgeInsets.fromLTRB(24, 6, 10, 6),
+                padding: EdgeInsets.fromLTRB(20, 6, 10, 6),
                 child: Row(
                   children: <Widget>[
                     Text(
@@ -312,7 +374,7 @@ class _NbScanPageState extends State<NbScanPage> {
               ),
               Container(
                 color: Colors.white,
-                padding: EdgeInsets.fromLTRB(24, 6, 10, 6),
+                padding: EdgeInsets.fromLTRB(20, 6, 10, 6),
                 child: Row(
                   children: <Widget>[
                     Text(
@@ -373,7 +435,7 @@ class _NbScanPageState extends State<NbScanPage> {
                             Container(
                               color: Colors.white,
                               margin: EdgeInsets.only(top: 10, bottom: 1),
-                              padding: EdgeInsets.fromLTRB(24, 2, 10, 2),
+                              padding: EdgeInsets.fromLTRB(20, 2, 10, 2),
                               child: Row(
                                 children: <Widget>[
                                   Text(
@@ -420,15 +482,15 @@ class _NbScanPageState extends State<NbScanPage> {
                         );
                       })),
               CustomEditableImageCell(
-                title:StringSet.NB_PICTURE,
+                title: StringSet.NB_PICTURE,
                 attribute: 'image',
                 urls: _urls,
-                paths:_paths,
+                paths: _paths,
               )
             ],
           ),
         ),
-      ),
+      )),
     );
   }
 }

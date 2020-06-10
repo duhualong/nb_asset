@@ -17,6 +17,7 @@ class AssetSet {
   static const String NB_RESET_SELECT = 'assets/nb_reset_select.png';
   static const String NB_SUMMON_DEFAULT = 'assets/nb_summon_default.png';
   static const String NB_SUMMON_SELECT = 'assets/nb_summon_select.png';
+  static const String NB_BOTTOM_SHEET_SUMMON='assets/bottom_sheet_summon.png';
 }
 class ThemeDataSet {
   static const Color tabColor = Color.fromRGBO(54, 120, 255, 1.0);

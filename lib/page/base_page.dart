@@ -30,7 +30,6 @@ class BasePage extends StatefulWidget {
   final Color color;
   final BottomNavigationBar bottomNavigationBar;
 
-
   BasePage({
     Key key,
     this.title,
@@ -40,7 +39,7 @@ class BasePage extends StatefulWidget {
     this.hasAppBar = true,
     this.body,
     this.actions,
-    this.color= Colors.white,
+    this.color = Colors.white,
     this.resizeToAvoidBottomInset = true,
     this.bottomNavigationBar,
   }) : super(key: key);
@@ -50,7 +49,6 @@ class BasePage extends StatefulWidget {
 }
 
 class _BasePageState extends State<BasePage> {
-
   @override
   void initState() {
     super.initState();
@@ -70,64 +68,67 @@ class _BasePageState extends State<BasePage> {
       resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
       backgroundColor: Colors.white,
       drawer: widget.drawer,
-      bottomNavigationBar:  widget.bottomNavigationBar,
+      bottomNavigationBar: widget.bottomNavigationBar,
       appBar: widget.hasAppBar
           ? AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor:widget.color,
-        brightness: Brightness.light,
-        elevation: 0,
-        centerTitle: false,
-        leading: null,
-        title: Container(
-          height: 50,
-          width: double.infinity,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Builder(
-                builder: (context) {
-                  return GestureDetector(
-                    onTap: widget.drawer != null
-                        ? () => Scaffold.of(context).openDrawer()
-                        : widget.leadingOnTap,
-                    child: Container(
+              automaticallyImplyLeading: false,
+              backgroundColor: widget.color,
+              brightness: Brightness.light,
+              elevation: 0,
+              centerTitle: false,
+              leading: null,
+              title: Container(
+                height: 50,
+                width: double.infinity,
+                child:
+                GestureDetector(
+                  onTap: widget.drawer != null
+                      ? () => Scaffold.of(context).openDrawer()
+                      : widget.leadingOnTap,
+                  child:   Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Builder(
+                      builder: (context) {
+                        return  Container(
 //                      color: Colors.white,
-                      height: double.infinity,
-                      alignment: Alignment.centerLeft,
-                      width: 50,
-                      child: Icon(
-                        widget.drawer != null
-                            ? Icons.menu
-                            : widget.leadingIconData,
-                        color: Colors.white,
+                            height: double.infinity,
+                            alignment: Alignment.centerLeft,
+                            child: Icon(
+                              widget.drawer != null
+                                  ? Icons.menu
+                                  : widget.leadingIconData,
+                              color: Colors.white,
+                            ),
+                          );
+
+                      },
+                    ),
+                    SizedBox(width: 10,),
+                    widget.title != null
+                        ? MediaQuery(
+                      data: MediaQuery.of(context)
+                          .copyWith(textScaleFactor: 1),
+                      child: Expanded(
+                        child: Text(
+                          widget.title,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                          ),
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    )
+                        : Container()
+                  ],
+                ),)
+
+
               ),
-              widget.title != null
-                  ? MediaQuery(
-                data: MediaQuery.of(context)
-                    .copyWith(textScaleFactor: 1),
-                child: Expanded(
-                  child: Text(
-                    widget.title,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                    ),
-                  ),
-                ),
-              )
-                  : Container()
-            ],
-          ),
-        ),
-        actions: widget.actions,
-      )
+              actions: widget.actions,
+            )
           : null,
       body: Builder(builder: (context) {
         return SafeArea(
