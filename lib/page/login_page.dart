@@ -215,7 +215,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
           ),
           SizedBox(height: 45),
           SizedBox(
-            width: ScreenUtils.screenW(context) - 80,
+            width: ScreenUtils.screenW(context) - 100,
             height: 40,
             child: FlatButton(
               color: Theme.of(context).primaryColor,

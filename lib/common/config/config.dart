@@ -7,4 +7,5 @@ class Config {
   /// 网络超时时间
   static const int NETWORK_TIMEOUT = 30;
   static const bool DEBUG = true;
+  static const double CLIP_RANGE=4.0;
 }

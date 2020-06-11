@@ -18,6 +18,9 @@ class AssetSet {
   static const String NB_SUMMON_DEFAULT = 'assets/nb_summon_default.png';
   static const String NB_SUMMON_SELECT = 'assets/nb_summon_select.png';
   static const String NB_BOTTOM_SHEET_SUMMON='assets/bottom_sheet_summon.png';
+  static const String NB_BOTTOM_SHEET_DIMMING='assets/bottom_sheet_dimming.png';
+  static const String NB_SMALL_DIMMING='assets/nb_small_dimming.png';
+  static const String NB_LARGE_DIMMING='assets/nb_large_dimming.png';
 }
 class ThemeDataSet {
   static const Color tabColor = Color.fromRGBO(54, 120, 255, 1.0);

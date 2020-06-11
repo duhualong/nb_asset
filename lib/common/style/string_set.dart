@@ -54,7 +54,7 @@ class StringSet {
   static const String NB_USED = '投运';
   static const String NB_ALARM = '主动告警';
   static const String NB_REPLY = '主报应答';
-  static const String NB_LOOP_COUNT = '回路数量';
+  static const String NB_LOOP_COUNT = '灯头数量';
   static const String NB_OPEN_STATUS = '上电开灯';
   static const String NB_PICTURE = '图片';
   static const String NB_HINT = '请输入';
@@ -65,6 +65,8 @@ class StringSet {
   static const String CAMERA = '相机';
   static const String GALLERY = '相册';
   static const NO_SETTING = '不设置';
+  static const YES='是';
+  static const NO='否';
 
   static const TWENTY = '20W';
   static const FIFTY = '50W';
@@ -101,6 +103,19 @@ class StringSet {
   static const String AMBER = '琥珀色';
   static const String ORANGE = '橙色';
   static const String DEEP_ORANGE = '深橙色';
+  static List<String>summonName=[
+    NB_NAME,
+    NB_OPERATOR,
+    NB_BARCODE,
+    NB_IMEI,
+    NB_IMSI,
+    NB_LONGITUDE,
+    NB_LATITUDE,
+    NB_USED,
+    NB_ALARM,
+    NB_REPLY,
+    NB_LOOP_COUNT,
+  ];
 
   static List<Option> powerOptions = [
     Option(id: 0, title: NO_SETTING, isChecked: false, value: 0),

@@ -1,5 +1,8 @@
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_xlider/flutter_xlider.dart';
+import 'package:nbassetentry/common/util/screen_utils.dart';
 import 'package:nbassetentry/widget/custom_editable_image_cell.dart';
 import '../common/model/option.dart';
 import '../common/style/string_set.dart';
@@ -33,6 +36,8 @@ class SortCondition {
 }
 
 class _NbScanPageState extends State<NbScanPage> {
+  final _bottomSheetKey = GlobalKey<ScaffoldState>();
+
   int _currentIndex = -1;
   bool _isClick = false;
   List<Option> _groupOptions = [];
@@ -60,6 +65,9 @@ class _NbScanPageState extends State<NbScanPage> {
   List<String> _urls = [];
   List<String> _paths = [];
   FocusNode blankNode = FocusNode();
+  List<String> _summonValue = [];
+  List<String> _summonTitle = [];
+  List<int> _buttonLightStatus = [2, 1, 0, 0];
 
   @override
   void initState() {
@@ -108,32 +116,282 @@ class _NbScanPageState extends State<NbScanPage> {
     _loopOptions.add(Option(id: 3, title: '4', isChecked: false, value: 4));
   }
 
-  void _showMenu(BuildContext context) {
+  void showDimming(BuildContext context) {
     showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (context) => StatefulBuilder(
+              builder: (context, state) {
+                return Stack(
+                  children: <Widget>[
+                    Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: EdgeInsets.only(top: 30),
+                        decoration: new BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: new BorderRadius.only(
+                                topLeft: const Radius.circular(20.0),
+                                topRight: const Radius.circular(20.0))),
+                        child: Column(children: <Widget>[
+                          GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Align(
+                                alignment: Alignment(1.0, 0.0),
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      right: 16.0, top: 6.0),
+                                  child: Icon(Icons.clear),
+                                ),
+                              )),
+                          Container(
+                            margin: EdgeInsets.only(top: 30, bottom: 20),
+                            height: 40,
+                            alignment: Alignment.center,
+                            width: ScreenUtils.screenW(context),
+                            child: ListView.separated(
+                                physics: NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                itemCount: 4,
+                                separatorBuilder: (context, index) {
+                                  return SizedBox(
+                                    width: 10,
+                                  );
+                                },
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      if (_buttonLightStatus[index] == 0) {
+                                        return;
+                                      }
 
+                                      _buttonLightStatus[index] =
+                                          (_buttonLightStatus[index] - 3).abs();
+                                      print('abs:${_buttonLightStatus[index]}');
+                                      print(
+                                          '_buttonLightStatus:${_buttonLightStatus.toString()}');
+                                      state(() {});
+                                    },
+                                    child: _buttonLightStatus[index] == 1
+                                        ? DottedBorder(
+                                            borderType: BorderType.RRect,
+                                            radius: Radius.circular(
+                                                Config.CLIP_RANGE),
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(
+                                                      Config.CLIP_RANGE)),
+                                              child: Container(
+                                                height: 40,
+                                                width: ScreenUtils.screenW(
+                                                            context) /
+                                                        4 -
+                                                    20,
+                                                color: Color.fromRGBO(
+                                                    239, 239, 244, 1),
+                                                child: Center(
+                                                  child: Text('灯头${index + 1}',
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14)),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        : ClipRRect(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(
+                                                    Config.CLIP_RANGE)),
+                                            child: Container(
+                                              height: 40,
+                                              width:
+                                                  ScreenUtils.screenW(context) /
+                                                          4 -
+                                                      20,
+                                              color:
+                                                  _buttonLightStatus[index] == 2
+                                                      ? ThemeDataSet.tabColor
+                                                      : Color.fromRGBO(
+                                                          239, 239, 244, 1),
+                                              child: Center(
+                                                child: Text(
+                                                  '灯头${index + 1}',
+                                                  style: TextStyle(
+                                                      color: _buttonLightStatus[
+                                                                  index] ==
+                                                              2
+                                                          ? Colors.white
+                                                          : Colors.grey,
+                                                      fontSize: 14),
+                                                ),
+                                              ),
+                                            )),
+                                  );
+                                }),
+                          ),
+
+
+                               FlutterSlider(
+                                 values: [10.0],
+                                 jump: false,
+                                 max: 100,
+                                 min: 0,
+                                 disabled: false,
+                                 handlerWidth: 20,
+                                 handlerHeight: 24,
+                                 trackBar: FlutterSliderTrackBar(
+                                   inactiveTrackBarHeight: 16,
+                                   activeTrackBarHeight: 16,
+                                   inactiveTrackBar: BoxDecoration(
+                                     borderRadius: BorderRadius.circular(20),
+                                     color: Color(0x10000000),
+                                   ),
+                                   activeTrackBar: BoxDecoration(
+                                       borderRadius: BorderRadius.circular(20),
+                                       color: ThemeDataSet.tabColor),
+                                   activeDisabledTrackBarColor:
+                                   Theme.of(context).disabledColor,
+                                 ),
+
+                                 handler: FlutterSliderHandler(
+                                   decoration: BoxDecoration(),
+                                   child: Container(
+                                     height:60,
+                                     width: 60,
+                                     decoration: BoxDecoration(
+                                       color: Colors.white,
+                                       boxShadow: [
+                                         BoxShadow(
+                                             color: Color(0x35000000),
+                                             offset: Offset(1.0, 1.0),
+                                             blurRadius:3.0,
+                                             spreadRadius: 1.0),
+                                         BoxShadow(
+                                             color: Color(0x35000000),
+                                             offset: Offset(1.0, 1.0)),
+                                         BoxShadow(color: Color(0x35000000))
+                                       ],
+                                       shape: BoxShape.circle,
+                                     ),
+                                   ),
+                                 ),
+                                 onDragCompleted:
+                                     (handlerIndex, lowerValue, upperValue) {
+                                   print('lowerValue:$lowerValue');
+                                 },
+                               ),
+
+                        ])),
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: Hero(
+                          tag: AssetSet.NB_BOTTOM_SHEET_SUMMON,
+                          child: Container(
+                            height: 60.0,
+                            width: 60.0,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: AssetImage(
+                                        AssetSet.NB_BOTTOM_SHEET_DIMMING))),
+                          )),
+                    ),
+                  ],
+                );
+              },
+            ));
+  }
+
+  void _showMenu(BuildContext context) {
+    _summonValue.clear();
+    _summonValue.add(_nameController.text.trim());
+    _summonValue.add(_carrierName);
+    _summonValue.add(_barCode);
+    _summonValue.add(_imei);
+    _summonValue.add(_imsi);
+    _summonValue.add(_longitude);
+    _summonValue.add(_latitude);
+    _summonValue.add(_switchUsed ? StringSet.YES : StringSet.NO);
+    _summonValue.add(_switchAlarm ? StringSet.YES : StringSet.NO);
+    _summonValue.add(_switchReply ? StringSet.YES : StringSet.NO);
+    _summonValue.add(_nbLight.length.toString());
+    _summonTitle.clear();
+    _summonTitle.addAll(StringSet.summonName);
+    _nbLight.forEach((light) {
+      _summonTitle.add('上电开灯${light.id + 1}');
+      _summonValue.add(light.isChecked ? StringSet.YES : StringSet.NO);
+      _summonTitle.add('回路${light.id + 1}额定功率');
+      _summonValue.add(light.title);
+    });
+
+    showModalBottomSheet(
       backgroundColor: Colors.transparent,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20.0),
-          topRight: Radius.circular(20.0),
-        ),
-      ),
+//        shape: RoundedRectangleBorder(
+//          borderRadius: BorderRadius.only(
+//            topLeft: Radius.circular(20.0),
+//            topRight: Radius.circular(20.0),
+//          ),
+//        ),
       context: context,
       builder: (context) => Stack(
         children: <Widget>[
-
-          Positioned(
-            top: 30,
-            width: MediaQuery.of(context).size.width ,
-            height: MediaQuery.of(context).size.height,
-            child: Container(
-              decoration: new BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: new BorderRadius.only(
-                      topLeft:  const  Radius.circular(20.0),
-                      topRight: const  Radius.circular(20.0))
-              ),
-              child:Text('sss'),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            margin: EdgeInsets.only(top: 30),
+            decoration: new BoxDecoration(
+                color: Colors.white,
+                borderRadius: new BorderRadius.only(
+                    topLeft: const Radius.circular(20.0),
+                    topRight: const Radius.circular(20.0))),
+            child: Column(
+              children: <Widget>[
+                GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Align(
+                      alignment: Alignment(1.0, 0.0),
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 16.0, top: 6.0),
+                        child: Icon(Icons.clear),
+                      ),
+                    )),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(
+                        left: 16, right: 16, bottom: 10, top: 10),
+                    child: ListView.builder(
+                        shrinkWrap: false,
+                        itemCount: _summonTitle.length,
+                        itemBuilder: (context, index) {
+                          return Row(
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(top: 5, bottom: 5),
+                                child: Text(
+                                  _summonTitle[index],
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(),
+                              ),
+                              Padding(
+                                  padding: EdgeInsets.only(top: 5, bottom: 5),
+                                  child: Text(
+                                    _summonValue[index],
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 16),
+                                  )),
+                            ],
+                          );
+                        }),
+                  ),
+                )
+              ],
             ),
           ),
           Align(
@@ -157,6 +415,7 @@ class _NbScanPageState extends State<NbScanPage> {
   @override
   Widget build(BuildContext context) {
     return BasePage(
+      key: _bottomSheetKey,
       hasAppBar: true,
       color: ThemeDataSet.tabColor,
       title: StringSet.NB_LAMP,
@@ -208,6 +467,9 @@ class _NbScanPageState extends State<NbScanPage> {
           switch (index) {
             case 0:
               _showMenu(context);
+              break;
+            case 1:
+              showDimming(context);
               break;
           }
           setState(() {});
