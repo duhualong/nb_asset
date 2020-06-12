@@ -28,13 +28,6 @@ class NbScanPage extends StatefulWidget {
   _NbScanPageState createState() => _NbScanPageState();
 }
 
-class SortCondition {
-  String name;
-  bool isSelected;
-
-  SortCondition({this.name, this.isSelected});
-}
-
 class _NbScanPageState extends State<NbScanPage> {
   final _bottomSheetKey = GlobalKey<ScaffoldState>();
 
@@ -67,7 +60,7 @@ class _NbScanPageState extends State<NbScanPage> {
   FocusNode blankNode = FocusNode();
   List<String> _summonValue = [];
   List<String> _summonTitle = [];
-  List<int> _buttonLightStatus = [2, 1, 0, 0];
+  double _dimmingValue = 0;
 
   @override
   void initState() {
@@ -117,6 +110,13 @@ class _NbScanPageState extends State<NbScanPage> {
   }
 
   void showDimming(BuildContext context) {
+    List<int> _buttonLightStatus = [
+      1,
+      _nbLight.length > 1 ? 1 : 0,
+      _nbLight.length > 2 ? 1 : 0,
+      _nbLight.length > 3 ? 1 : 0
+    ];
+    bool _isEnable = false;
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
@@ -142,7 +142,11 @@ class _NbScanPageState extends State<NbScanPage> {
                                 child: Container(
                                   margin: const EdgeInsets.only(
                                       right: 16.0, top: 6.0),
-                                  child: Icon(Icons.clear),
+                                  child: Icon(
+                                    Icons.clear,
+                                    size: 28,
+                                    color: Colors.black26,
+                                  ),
                                 ),
                               )),
                           Container(
@@ -157,7 +161,7 @@ class _NbScanPageState extends State<NbScanPage> {
                                 itemCount: 4,
                                 separatorBuilder: (context, index) {
                                   return SizedBox(
-                                    width: 10,
+                                    width: 15,
                                   );
                                 },
                                 itemBuilder: (context, index) {
@@ -169,9 +173,12 @@ class _NbScanPageState extends State<NbScanPage> {
 
                                       _buttonLightStatus[index] =
                                           (_buttonLightStatus[index] - 3).abs();
+
                                       print('abs:${_buttonLightStatus[index]}');
                                       print(
                                           '_buttonLightStatus:${_buttonLightStatus.toString()}');
+                                      _isEnable =
+                                          _buttonLightStatus.contains(2);
                                       state(() {});
                                     },
                                     child: _buttonLightStatus[index] == 1
@@ -231,58 +238,121 @@ class _NbScanPageState extends State<NbScanPage> {
                                   );
                                 }),
                           ),
-
-
-                               FlutterSlider(
-                                 values: [10.0],
-                                 jump: false,
-                                 max: 100,
-                                 min: 0,
-                                 disabled: false,
-                                 handlerWidth: 20,
-                                 handlerHeight: 24,
-                                 trackBar: FlutterSliderTrackBar(
-                                   inactiveTrackBarHeight: 16,
-                                   activeTrackBarHeight: 16,
-                                   inactiveTrackBar: BoxDecoration(
-                                     borderRadius: BorderRadius.circular(20),
-                                     color: Color(0x10000000),
-                                   ),
-                                   activeTrackBar: BoxDecoration(
-                                       borderRadius: BorderRadius.circular(20),
-                                       color: ThemeDataSet.tabColor),
-                                   activeDisabledTrackBarColor:
-                                   Theme.of(context).disabledColor,
-                                 ),
-
-                                 handler: FlutterSliderHandler(
-                                   decoration: BoxDecoration(),
-                                   child: Container(
-                                     height:60,
-                                     width: 60,
-                                     decoration: BoxDecoration(
-                                       color: Colors.white,
-                                       boxShadow: [
-                                         BoxShadow(
-                                             color: Color(0x35000000),
-                                             offset: Offset(1.0, 1.0),
-                                             blurRadius:3.0,
-                                             spreadRadius: 1.0),
-                                         BoxShadow(
-                                             color: Color(0x35000000),
-                                             offset: Offset(1.0, 1.0)),
-                                         BoxShadow(color: Color(0x35000000))
-                                       ],
-                                       shape: BoxShape.circle,
-                                     ),
-                                   ),
-                                 ),
-                                 onDragCompleted:
-                                     (handlerIndex, lowerValue, upperValue) {
-                                   print('lowerValue:$lowerValue');
-                                 },
-                               ),
-
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            padding: EdgeInsets.all(16),
+                            child: Text(
+                              '光照：${_dimmingValue.toInt()}%',
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 16),
+                            ),
+                          ),
+                          Container(
+                            width: ScreenUtils.screenW(context),
+                            height: 60,
+                            padding: EdgeInsets.all(16),
+                            alignment: Alignment.center,
+                            child: Row(
+                              children: <Widget>[
+                                Image.asset(
+                                  AssetSet.NB_SMALL_DIMMING,
+                                  height: 15,
+                                  width: 15,
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Expanded(
+                                  child: FlutterSlider(
+                                    values: [_dimmingValue],
+                                    jump: false,
+                                    max: 100,
+                                    min: 0,
+                                    disabled: false,
+                                    handlerWidth: 20,
+                                    handlerHeight: 24,
+                                    trackBar: FlutterSliderTrackBar(
+                                      inactiveTrackBarHeight: 16,
+                                      activeTrackBarHeight: 16,
+                                      inactiveTrackBar: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: Color(0x10000000),
+                                      ),
+                                      activeTrackBar: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: ThemeDataSet.tabColor),
+                                      activeDisabledTrackBarColor:
+                                          Theme.of(context).disabledColor,
+                                    ),
+                                    handler: FlutterSliderHandler(
+                                      decoration: BoxDecoration(),
+                                      child: Container(
+                                        height: 60,
+                                        width: 60,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: Color(0x35000000),
+                                                offset: Offset(1.0, 1.0),
+                                                blurRadius: 3.0,
+                                                spreadRadius: 1.0),
+                                            BoxShadow(
+                                                color: Color(0x35000000),
+                                                offset: Offset(1.0, 1.0)),
+                                            BoxShadow(color: Color(0x35000000))
+                                          ],
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                    ),
+                                    onDragCompleted:
+                                        (handlerIndex, lowerValue, upperValue) {
+                                      print('lowerValue:$lowerValue');
+                                      _dimmingValue = lowerValue;
+                                      state(() {});
+                                    },
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Image.asset(
+                                  AssetSet.NB_LARGE_DIMMING,
+                                  height: 24,
+                                  width: 24,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(),
+                          ),
+                          SizedBox(
+                            width: ScreenUtils.screenW(context) / 3,
+                            height: 40,
+                            child: FlatButton(
+                              color: ThemeDataSet.tabColor,
+                              highlightColor: Theme.of(context).highlightColor,
+                              disabledColor: Theme.of(context).disabledColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                              ),
+                              child: Text(
+                                StringSet.CONFIRM,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              onPressed: _isEnable ? () {} : null,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 40,
+                          ),
                         ])),
                     Align(
                       alignment: Alignment.topCenter,
@@ -354,9 +424,12 @@ class _NbScanPageState extends State<NbScanPage> {
                     child: Align(
                       alignment: Alignment(1.0, 0.0),
                       child: Container(
-                        margin: const EdgeInsets.only(right: 16.0, top: 6.0),
-                        child: Icon(Icons.clear),
-                      ),
+                          margin: const EdgeInsets.only(right: 16.0, top: 6.0),
+                          child: Icon(
+                            Icons.clear,
+                            size: 28,
+                            color: Colors.black26,
+                          )),
                     )),
                 Expanded(
                   child: Container(
@@ -470,6 +543,14 @@ class _NbScanPageState extends State<NbScanPage> {
               break;
             case 1:
               showDimming(context);
+              break;
+            case 2:
+              showCustomDialog(context,'复位成功');
+
+              break;
+            case 3:
+              showCustomDialog(context,'下发参数成功');
+
               break;
           }
           setState(() {});
@@ -754,5 +835,23 @@ class _NbScanPageState extends State<NbScanPage> {
         ),
       )),
     );
+  }
+  void showCustomDialog(BuildContext context,String title){
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Padding(child: Text(title),padding: EdgeInsets.all(10),),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text(StringSet.CONFIRM,style: TextStyle(
+                    color: Color.fromRGBO(26, 136, 255, 1.0),fontSize: 18,fontWeight: FontWeight.bold),),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
   }
 }

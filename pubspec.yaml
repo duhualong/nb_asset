@@ -19,7 +19,6 @@ dependencies:
   dotted_border: ^1.0.5
   event_bus: ^1.1.1
   flustars: ^0.3.2
-  flutter_custom_dialog: ^1.0.20
   flutter_native_image: ^0.0.4
   flutter_redux: ^0.5.3
   flutter_statusbarcolor: ^0.2.3

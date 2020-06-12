@@ -37,8 +37,8 @@ class StringSet {
   static const String HOME_TITLE = '小帮手';
   static const String HOME_HINT = '一站式服务解决所有问题';
   static const String LOGIN_OUT = '登出';
-  static const String CANCEL = '取消';
-  static const String CONFIRM = '确定';
+  static const String CANCEL = '取 消';
+  static const String CONFIRM = '确 定';
   static const String LOGIN_OUT_CONFIRM = '确定要退出登录吗?';
   static const String NB_LAMP = 'NB 单灯';
   static const String SAVE = '保存';

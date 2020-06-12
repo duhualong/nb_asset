@@ -1,5 +1,5 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_dialog/flutter_custom_dialog.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'base_page.dart';
 import 'nb_scan_page.dart';
@@ -27,42 +27,47 @@ class HomeWidget extends StatefulWidget {
   _HomeWidgetState createState() => _HomeWidgetState();
 }
 
-class _HomeWidgetState extends State<HomeWidget> {
-  YYDialog alertDialogWithDivider(BuildContext context) {
-    return YYDialog().build(context)
-      ..width = 240
-      ..borderRadius = 4.0
-      ..text(
-        padding: EdgeInsets.all(30.0),
-        alignment: Alignment.center,
-        text: StringSet.LOGIN_OUT_CONFIRM,
-        color: Colors.black,
-        fontSize: 18.0,
-        fontWeight: FontWeight.w500,
-      )
-      ..divider()
-      ..doubleButton(
-        padding: EdgeInsets.only(top: 20.0),
-        gravity: Gravity.center,
-        withDivider: true,
-        text1: StringSet.CANCEL,
-        color1: Colors.black,
-        fontSize1: 16.0,
-        onTap1: () {
-          print("取消");
-        },
-        text2: StringSet.CONFIRM,
-        color2: Colors.red,
-        fontSize2: 16.0,
-        fontWeight2: FontWeight.bold,
-        onTap2: () {
-          print("确定");
-          Navigator.of(context).pop();
-        },
-      )
-      ..show();
-  }
+showCustomDialog(BuildContext context, String title) {
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Padding(
+            child: Text(title),
+            padding: EdgeInsets.all(10),
+          ),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text(
+                StringSet.CONFIRM,
+                style: TextStyle(
+                  color: Color.fromRGBO(26, 136, 255, 1.0),
+                  fontSize: 18,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text(
+                StringSet.CANCEL,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      });
+}
 
+class _HomeWidgetState extends State<HomeWidget> {
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -83,7 +88,7 @@ class _HomeWidgetState extends State<HomeWidget> {
             alignment: Alignment.centerRight,
             child: GestureDetector(
               onTap: () {
-                alertDialogWithDivider(context);
+                showCustomDialog(context, StringSet.LOGIN_OUT_CONFIRM);
                 print('点击11111');
               },
               child: Padding(
@@ -146,7 +151,7 @@ class _HomeWidgetState extends State<HomeWidget> {
               top: ScreenUtils.screenH(context) / 4 + 100, left: 24),
           child: GestureDetector(
 //            onTap: () => _scan(context),
-            onTap: () =>   Navigator.push(
+            onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => ErrorHandle(
@@ -156,7 +161,6 @@ class _HomeWidgetState extends State<HomeWidget> {
               ),
             ),
             child: Image.asset(
-
               AssetSet.HOME_NB,
               width: ScreenUtils.screenW(context) / 2 - 20,
             ),
