@@ -1,4 +1,16 @@
 PODS:
+  - amap_core_fluttify (0.0.1):
+    - AMapFoundation (~> 1.6)
+    - Flutter
+    - foundation_fluttify
+  - amap_location_fluttify (0.0.1):
+    - amap_core_fluttify
+    - AMapLocation (~> 2.6.3)
+    - Flutter
+    - foundation_fluttify
+  - AMapFoundation (1.6.3)
+  - AMapLocation (2.6.5):
+    - AMapFoundation (~> 1.6.3)
   - barcode_scan (0.0.1):
     - Flutter
     - MTBBarcodeScanner
@@ -6,6 +18,8 @@ PODS:
     - Flutter
     - Reachability
   - connectivity_macos (0.0.1):
+    - Flutter
+  - core_location_fluttify (0.0.1):
     - Flutter
   - Flutter (1.0.0)
   - flutter_native_image (0.0.1):
@@ -16,6 +30,8 @@ PODS:
     - Flutter
   - fluttertoast (0.0.2):
     - Flutter
+  - foundation_fluttify (0.0.1):
+    - Flutter
   - image_picker (0.0.1):
     - Flutter
   - MTBBarcodeScanner (5.0.11)
@@ -24,6 +40,8 @@ PODS:
   - path_provider_linux (0.0.1):
     - Flutter
   - path_provider_macos (0.0.1):
+    - Flutter
+  - "permission_handler (4.4.0+hotfix.4)":
     - Flutter
   - Reachability (3.2)
   - shared_preferences (0.0.1):
@@ -34,34 +52,47 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - amap_core_fluttify (from `.symlinks/plugins/amap_core_fluttify/ios`)
+  - amap_location_fluttify (from `.symlinks/plugins/amap_location_fluttify/ios`)
   - barcode_scan (from `.symlinks/plugins/barcode_scan/ios`)
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - connectivity_macos (from `.symlinks/plugins/connectivity_macos/ios`)
+  - core_location_fluttify (from `.symlinks/plugins/core_location_fluttify/ios`)
   - Flutter (from `Flutter`)
   - flutter_native_image (from `.symlinks/plugins/flutter_native_image/ios`)
   - flutter_plugin_android_lifecycle (from `.symlinks/plugins/flutter_plugin_android_lifecycle/ios`)
   - flutter_statusbarcolor (from `.symlinks/plugins/flutter_statusbarcolor/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
+  - foundation_fluttify (from `.symlinks/plugins/foundation_fluttify/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - path_provider_linux (from `.symlinks/plugins/path_provider_linux/ios`)
   - path_provider_macos (from `.symlinks/plugins/path_provider_macos/ios`)
+  - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - shared_preferences_macos (from `.symlinks/plugins/shared_preferences_macos/ios`)
   - shared_preferences_web (from `.symlinks/plugins/shared_preferences_web/ios`)
 
 SPEC REPOS:
   trunk:
+    - AMapFoundation
+    - AMapLocation
     - MTBBarcodeScanner
     - Reachability
 
 EXTERNAL SOURCES:
+  amap_core_fluttify:
+    :path: ".symlinks/plugins/amap_core_fluttify/ios"
+  amap_location_fluttify:
+    :path: ".symlinks/plugins/amap_location_fluttify/ios"
   barcode_scan:
     :path: ".symlinks/plugins/barcode_scan/ios"
   connectivity:
     :path: ".symlinks/plugins/connectivity/ios"
   connectivity_macos:
     :path: ".symlinks/plugins/connectivity_macos/ios"
+  core_location_fluttify:
+    :path: ".symlinks/plugins/core_location_fluttify/ios"
   Flutter:
     :path: Flutter
   flutter_native_image:
@@ -72,6 +103,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_statusbarcolor/ios"
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
+  foundation_fluttify:
+    :path: ".symlinks/plugins/foundation_fluttify/ios"
   image_picker:
     :path: ".symlinks/plugins/image_picker/ios"
   path_provider:
@@ -80,6 +113,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/path_provider_linux/ios"
   path_provider_macos:
     :path: ".symlinks/plugins/path_provider_macos/ios"
+  permission_handler:
+    :path: ".symlinks/plugins/permission_handler/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
   shared_preferences_macos:
@@ -88,19 +123,26 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_web/ios"
 
 SPEC CHECKSUMS:
+  amap_core_fluttify: 3ecd5214273625acda9f810ef85bfc961c79537c
+  amap_location_fluttify: 487dc181dc7e5a33d50b662cf5a3f148fde42261
+  AMapFoundation: 9ed923193b357ebb30a073e9fe255d3c24054d5a
+  AMapLocation: c566d448285cd502c1e313063d9e2460bd4d7100
   barcode_scan: 33f586d02270046fc6559135038b34b5754eaa4f
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   connectivity_macos: e2e9731b6b22dda39eb1b128f6969d574460e191
+  core_location_fluttify: 24cc9dcd986ac7059916632d2cb3babb1568ff61
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_native_image: 9c0b7451838484458e5b0fae007b86a4c2d4bdfe
   flutter_plugin_android_lifecycle: dc0b544e129eebb77a6bfb1239d4d1c673a60a35
   flutter_statusbarcolor: 8afb1071ed8c58be929f1e32b36c629771fd2259
   fluttertoast: b644586ef3b16f67fae9a1f8754cef6b2d6b634b
+  foundation_fluttify: 0c45145e3fad1fb99188e4979daed5b24cd9b278
   image_picker: 66aa71bc96850a90590a35d4c4a2907b0d823109
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   path_provider_linux: 4d630dc393e1f20364f3e3b4a2ff41d9674a84e4
   path_provider_macos: f760a3c5b04357c380e2fddb6f9db6f3015897e0
+  permission_handler: 8278954f2382902f63f00dd8828769c0bd6d511b
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   shared_preferences_macos: f3f29b71ccbb56bf40c9dd6396c9acf15e214087
