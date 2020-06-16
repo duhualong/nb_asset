@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:amap_location_fluttify/amap_location_fluttify.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -25,13 +28,15 @@ void main() async {
       ),
     );
   };
+  if (Platform.isAndroid) {
+    SystemUiOverlayStyle systemUiOverlayStyle =
+    SystemUiOverlayStyle(statusBarColor: ThemeDataSet.tabColor);
+    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+  }
+  WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isIOS) {
+    await AmapCore.init(StringSet.IOS_AMAP_KEY);
+  }
   runApp(App());
-  SystemUiOverlayStyle systemUiOverlayStyle =
-  SystemUiOverlayStyle(statusBarColor:ThemeDataSet.tabColor);
-  SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
 
-
-//  if (Platform.isIOS) {
-//    await AMap.init(StringSet.IOS_AMAP_KEY);
-//  }
 }

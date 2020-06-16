@@ -29,6 +29,15 @@
         android:supportsRtl="true"
         android:label="nbassetentry"
         tools:replace="label">
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="a94958bcdd5264d6db5b910ccb3476e3" />
+
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
