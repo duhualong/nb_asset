@@ -68,22 +68,24 @@ class StringSet {
   static const YES='是';
   static const NO='否';
 
-  static const TWENTY = '20W';
-  static const FIFTY = '50W';
-  static const SEVENTY_FIVE = '75W';
-  static const HUNDRED = '100W';
-  static const HUNDRED_TWENTY = '120W';
-  static const HUNDRED_FIFTY = '150W';
-  static const TWO_HUNDRED = '200W';
-  static const TWO_HUNDRED_FIFTY = '250W';
-  static const THREE_HUNDRED = '300W';
-  static const FOUR_HUNDRED = '400W';
-  static const SIX_HUNDRED = '600W';
-  static const EIGHT_HUNDRED = '800W';
-  static const THOUSAND = '1000W';
-  static const THOUSAND_FIVE_HUNDRED = '1500W';
-  static const TWO_THOUSAND = '2000W';
+  static const  String TWENTY = '20W';
+  static const String FIFTY = '50W';
+  static const String SEVENTY_FIVE = '75W';
+  static const String HUNDRED = '100W';
+  static const  String HUNDRED_TWENTY = '120W';
+  static const String HUNDRED_FIFTY = '150W';
+  static const String TWO_HUNDRED = '200W';
+  static const String TWO_HUNDRED_FIFTY = '250W';
+  static const String THREE_HUNDRED = '300W';
+  static const String FOUR_HUNDRED = '400W';
+  static const String SIX_HUNDRED = '600W';
+  static const String EIGHT_HUNDRED = '800W';
+  static const String THOUSAND = '1000W';
+  static const String THOUSAND_FIVE_HUNDRED = '1500W';
+  static const String TWO_THOUSAND = '2000W';
   static const String IMAGE_GALLERY = '图像查看';
+  static const String IOS_AMAP_KEY='7be69f96c1a902abb6dc2287f21a021a';
+  static const String LOCATION_PERMISSION='请打开GPS定位权限';
 
   /// theme_color
   static const String THEME_COLOR = '主题颜色';

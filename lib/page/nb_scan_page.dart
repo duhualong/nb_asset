@@ -1,9 +1,12 @@
+import 'package:amap_location_fluttify/amap_location_fluttify.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nbassetentry/common/util/screen_utils.dart';
 import 'package:nbassetentry/widget/custom_editable_image_cell.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../common/model/option.dart';
 import '../common/style/string_set.dart';
 import '../common/style/style_set.dart';
@@ -30,7 +33,7 @@ class NbScanPage extends StatefulWidget {
 
 class _NbScanPageState extends State<NbScanPage> {
   final _bottomSheetKey = GlobalKey<ScaffoldState>();
-
+  Location _location;
   int _currentIndex = -1;
   bool _isClick = false;
   List<Option> _groupOptions = [];
@@ -44,8 +47,8 @@ class _NbScanPageState extends State<NbScanPage> {
   String _barCode;
   String _imei;
   String _imsi;
-  String _longitude;
-  String _latitude;
+  String _longitude=StringSet.EMPTY;
+  String _latitude=StringSet.EMPTY;
   bool _switchUsed;
   bool _switchAlarm;
   bool _switchReply;
@@ -62,10 +65,14 @@ class _NbScanPageState extends State<NbScanPage> {
   List<String> _summonTitle = [];
   double _dimmingValue = 0;
 
+
   @override
-  void initState() {
+    initState() {
     super.initState();
-    initData();
+
+
+      initData();
+
   }
 
   @override
@@ -74,12 +81,11 @@ class _NbScanPageState extends State<NbScanPage> {
     _nameController?.dispose();
   }
 
-  void initData() {
+  Future<void> initData() async {
     _switchUsed = false;
     _switchAlarm = false;
     _switchReply = false;
-    _longitude = '123.99911';
-    _latitude = '35.87766';
+
     _imei = '1523334555';
     _imsi = '222344556';
     _barCode = '112223444';
@@ -107,6 +113,14 @@ class _NbScanPageState extends State<NbScanPage> {
     _loopOptions.add(Option(id: 1, title: '2', isChecked: true, value: 2));
     _loopOptions.add(Option(id: 2, title: '3', isChecked: false, value: 3));
     _loopOptions.add(Option(id: 3, title: '4', isChecked: false, value: 4));
+    _location =await AmapLocation.fetchLocation();
+
+    if(mounted){
+      setState(() {
+        _longitude = _location.latLng.longitude.toString();
+        _latitude = _location.latLng.latitude.toString();
+      });
+    }
   }
 
   void showDimming(BuildContext context) {
@@ -545,11 +559,11 @@ class _NbScanPageState extends State<NbScanPage> {
               showDimming(context);
               break;
             case 2:
-              showCustomDialog(context,'复位成功');
+              showCustomDialog(context, '复位成功');
 
               break;
             case 3:
-              showCustomDialog(context,'下发参数成功');
+              showCustomDialog(context, '下发参数成功');
 
               break;
           }
@@ -836,16 +850,25 @@ class _NbScanPageState extends State<NbScanPage> {
       )),
     );
   }
-  void showCustomDialog(BuildContext context,String title){
+
+  void showCustomDialog(BuildContext context, String title) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
-            title: Padding(child: Text(title),padding: EdgeInsets.all(10),),
+            title: Padding(
+              child: Text(title),
+              padding: EdgeInsets.all(10),
+            ),
             actions: <Widget>[
               CupertinoDialogAction(
-                child: Text(StringSet.CONFIRM,style: TextStyle(
-                    color: Color.fromRGBO(26, 136, 255, 1.0),fontSize: 18,fontWeight: FontWeight.bold),),
+                child: Text(
+                  StringSet.CONFIRM,
+                  style: TextStyle(
+                      color: Color.fromRGBO(26, 136, 255, 1.0),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold),
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },

@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'base_page.dart';
 import 'nb_scan_page.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +27,18 @@ class HomePage extends StatelessWidget {
 class HomeWidget extends StatefulWidget {
   @override
   _HomeWidgetState createState() => _HomeWidgetState();
+}
+
+Future<bool> requestPermission() async {
+  final permissions =
+      await PermissionHandler().requestPermissions([PermissionGroup.location]);
+
+  if (permissions[PermissionGroup.location] == PermissionStatus.granted) {
+    return true;
+  } else {
+    Fluttertoast.showToast(msg: StringSet.LOCATION_PERMISSION);
+    return false;
+  }
 }
 
 showCustomDialog(BuildContext context, String title) {
@@ -89,7 +103,6 @@ class _HomeWidgetState extends State<HomeWidget> {
             child: GestureDetector(
               onTap: () {
                 showCustomDialog(context, StringSet.LOGIN_OUT_CONFIRM);
-                print('点击11111');
               },
               child: Padding(
                   padding: EdgeInsets.only(right: 10),
@@ -150,16 +163,11 @@ class _HomeWidgetState extends State<HomeWidget> {
           margin: EdgeInsets.only(
               top: ScreenUtils.screenH(context) / 4 + 100, left: 24),
           child: GestureDetector(
-//            onTap: () => _scan(context),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ErrorHandle(
-                  child: NbScanPage(result: ''),
-//                  child: GZXDropDownMenuTestPage(),
-                ),
-              ),
-            ),
+            onTap: () async {
+              if(await requestPermission()){
+               _scan(context);
+          }
+          },
             child: Image.asset(
               AssetSet.HOME_NB,
               width: ScreenUtils.screenW(context) / 2 - 20,
@@ -178,7 +186,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         context,
         MaterialPageRoute(
           builder: (context) => ErrorHandle(
-            child: NbScanPage(result: result),
+            child: NbScanPage(result: 'result'),
           ),
         ),
       );
