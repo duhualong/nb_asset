@@ -242,7 +242,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.fromLTRB(0, 20, 0, 6),
             child: Align(
               alignment: Alignment.centerRight,
               child:  GestureDetector(
@@ -253,7 +253,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
                   StringSet.NETWORK_SETTING,
                   style: TextStyle(
                     color: ThemeDataSet.tabColor,
-                    fontSize: 16,
+                    fontSize: 17,
                   ),
                 ),
               ),
