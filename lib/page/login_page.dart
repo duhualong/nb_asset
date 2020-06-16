@@ -16,6 +16,7 @@ import '../common/style/style_set.dart';
 import '../common/util/screen_utils.dart';
 
 import '../widget/text_field_widget.dart';
+import 'network_setting_page.dart';
 
 class LoginPage extends StatelessWidget {
   static final String routeName = '/login';
@@ -234,11 +235,30 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => HomePage()),
+
                 );
               },
 //              onPressed: _loginIsEnabled && widget.isCheck ? _login : null,
             ),
           ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, 20, 0, 6),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child:  GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamed(NetworkSettingPage.routeName);
+                },
+                child: Text(
+                  StringSet.NETWORK_SETTING,
+                  style: TextStyle(
+                    color: ThemeDataSet.tabColor,
+                    fontSize: 17,
+                  ),
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );

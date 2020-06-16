@@ -11,6 +11,8 @@ import 'page/home_page.dart';
 import 'page/image_gallery_page.dart';
 import 'page/login_page.dart';
 import 'page/nb_scan_page.dart';
+import 'page/network_edit_page.dart';
+import 'page/network_setting_page.dart';
 import 'page/splash_page.dart';
 import 'widget/error_handle.dart';
 
@@ -52,7 +54,10 @@ class _AppState extends State<App> {
           return MaterialApp(
             navigatorKey: Global.navigatorState,
             debugShowCheckedModeBanner: false,
-            theme: store.state.themeData,
+            theme:ThemeData(
+              primaryColor:  ThemeDataSet.tabColor,
+              scaffoldBackgroundColor: Colors.white,
+            ),
             routes: {
               SplashPage.routeName: (context) =>
                   ErrorHandle(child: SplashPage()),
@@ -61,8 +66,12 @@ class _AppState extends State<App> {
               NbScanPage.routeName: (context) => ErrorHandle(
                     child: NbScanPage(),
                   ),
-              ImageGalleryPage.routeName: (context) => ImageGalleryPage(),
 
+              ImageGalleryPage.routeName: (context) => ImageGalleryPage(),
+              NetworkSettingPage.routeName: (context) =>
+                  ErrorHandle(child: NetworkSettingPage()),
+              NetworkEditPage.routeName: (context) =>
+                  ErrorHandle(child: NetworkEditPage()),
             },
           );
         },

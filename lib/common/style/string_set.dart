@@ -86,6 +86,21 @@ class StringSet {
   static const String IMAGE_GALLERY = '图像查看';
   static const String IOS_AMAP_KEY='7be69f96c1a902abb6dc2287f21a021a';
   static const String LOCATION_PERMISSION='请打开GPS定位权限';
+  static const String NETWORK_SETTING='网络设置';
+  static const String ADD_NETWORK = '添加网络';
+  static const String ADD_NETWORK_SUCCESS = '添加成功';
+  static const String EDIT_NETWORK = '修改网络';
+  static const String EDIT_NETWORK_SUCCESS = '修改成功';
+  static const String CONNECT_NETWORK_SUCCESS = '连接成功';
+  static const String DELETE_NETWORK_SUCCESS = '删除成功';
+  static const String NO_NETWORKS = '点击右上角加号，添加网络配置';
+  static const String EDIT = '编辑';
+  static const String DELETE = '删除';
+  static const String NETWORK_NAME = '网络名称';
+  static const String IP_ADDRESS = 'IP 地址';
+  static const String PORT = '端口号';
+  static const String PLEASE_INPUT = '请输入';
+  static const String CONNECT = '连接';
 
   /// theme_color
   static const String THEME_COLOR = '主题颜色';

@@ -3,10 +3,8 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nbassetentry/common/util/screen_utils.dart';
 import 'package:nbassetentry/widget/custom_editable_image_cell.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../common/model/option.dart';
 import '../common/style/string_set.dart';
 import '../common/style/style_set.dart';
@@ -47,8 +45,8 @@ class _NbScanPageState extends State<NbScanPage> {
   String _barCode;
   String _imei;
   String _imsi;
-  String _longitude=StringSet.EMPTY;
-  String _latitude=StringSet.EMPTY;
+  String _longitude = StringSet.EMPTY;
+  String _latitude = StringSet.EMPTY;
   bool _switchUsed;
   bool _switchAlarm;
   bool _switchReply;
@@ -65,14 +63,10 @@ class _NbScanPageState extends State<NbScanPage> {
   List<String> _summonTitle = [];
   double _dimmingValue = 0;
 
-
   @override
-    initState() {
+  initState() {
     super.initState();
-
-
-      initData();
-
+    initData();
   }
 
   @override
@@ -113,9 +107,9 @@ class _NbScanPageState extends State<NbScanPage> {
     _loopOptions.add(Option(id: 1, title: '2', isChecked: true, value: 2));
     _loopOptions.add(Option(id: 2, title: '3', isChecked: false, value: 3));
     _loopOptions.add(Option(id: 3, title: '4', isChecked: false, value: 4));
-    _location =await AmapLocation.fetchLocation();
+    _location = await AmapLocation.fetchLocation();
 
-    if(mounted){
+    if (mounted) {
       setState(() {
         _longitude = _location.latLng.longitude.toString();
         _latitude = _location.latLng.latitude.toString();
@@ -184,13 +178,8 @@ class _NbScanPageState extends State<NbScanPage> {
                                       if (_buttonLightStatus[index] == 0) {
                                         return;
                                       }
-
                                       _buttonLightStatus[index] =
                                           (_buttonLightStatus[index] - 3).abs();
-
-                                      print('abs:${_buttonLightStatus[index]}');
-                                      print(
-                                          '_buttonLightStatus:${_buttonLightStatus.toString()}');
                                       _isEnable =
                                           _buttonLightStatus.contains(2);
                                       state(() {});
@@ -412,12 +401,6 @@ class _NbScanPageState extends State<NbScanPage> {
 
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
-//        shape: RoundedRectangleBorder(
-//          borderRadius: BorderRadius.only(
-//            topLeft: Radius.circular(20.0),
-//            topRight: Radius.circular(20.0),
-//          ),
-//        ),
       context: context,
       builder: (context) => Stack(
         children: <Widget>[
