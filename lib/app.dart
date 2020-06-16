@@ -52,7 +52,10 @@ class _AppState extends State<App> {
           return MaterialApp(
             navigatorKey: Global.navigatorState,
             debugShowCheckedModeBanner: false,
-            theme: store.state.themeData,
+            theme:ThemeData(
+              primaryColor:  ThemeDataSet.tabColor,
+              scaffoldBackgroundColor: Colors.white,
+            ),
             routes: {
               SplashPage.routeName: (context) =>
                   ErrorHandle(child: SplashPage()),
