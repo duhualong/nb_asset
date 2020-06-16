@@ -3,10 +3,8 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nbassetentry/common/util/screen_utils.dart';
 import 'package:nbassetentry/widget/custom_editable_image_cell.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../common/model/option.dart';
 import '../common/style/string_set.dart';
 import '../common/style/style_set.dart';
@@ -403,12 +401,6 @@ class _NbScanPageState extends State<NbScanPage> {
 
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
-//        shape: RoundedRectangleBorder(
-//          borderRadius: BorderRadius.only(
-//            topLeft: Radius.circular(20.0),
-//            topRight: Radius.circular(20.0),
-//          ),
-//        ),
       context: context,
       builder: (context) => Stack(
         children: <Widget>[
