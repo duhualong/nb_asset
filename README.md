@@ -58,3 +58,4 @@
 
 * 外部包 json_serializable 会持续监听并生成模板文件。
 `$ flutter packages pub run build_runner watch`
+
