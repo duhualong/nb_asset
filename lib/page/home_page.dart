@@ -2,8 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:nbassetentry/common/dao/dao_result.dart';
+import 'package:nbassetentry/common/dao/nb_dao.dart';
+import 'package:nbassetentry/common/global/global.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'base_page.dart';
+import 'login_page.dart';
 import 'nb_scan_page.dart';
 import 'package:flutter/services.dart';
 import '../common/event/error_event.dart';
@@ -41,6 +45,13 @@ Future<bool> requestPermission() async {
   }
 }
 
+Future<void> _loginOut(BuildContext context) async {
+  Navigator.of(context).pop();
+  await NbDao.loginOut();
+  Global.user.uuid=null;
+  Navigator.of(context).pushReplacementNamed(LoginPage.routeName);
+}
+
 showCustomDialog(BuildContext context, String title) {
   showDialog(
       context: context,
@@ -60,8 +71,7 @@ showCustomDialog(BuildContext context, String title) {
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                _loginOut(context);
               },
             ),
             CupertinoDialogAction(
@@ -164,10 +174,10 @@ class _HomeWidgetState extends State<HomeWidget> {
               top: ScreenUtils.screenH(context) / 4 + 100, left: 24),
           child: GestureDetector(
             onTap: () async {
-              if(await requestPermission()){
-               _scan(context);
-          }
-          },
+              if (await requestPermission()) {
+                _scan(context);
+              }
+            },
             child: Image.asset(
               AssetSet.HOME_NB,
               width: ScreenUtils.screenW(context) / 2 - 20,

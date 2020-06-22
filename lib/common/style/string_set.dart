@@ -32,8 +32,8 @@ class StringSet {
   static const String PASSWORD_HINT = '请输入密码';
   static const String LOGIN = '登录';
   static const String NETWORK_DEMO_NAME = '盛同云演示';
-  static const String NETWORK_DEMO_IP = '192.168.50.83';
-  static const String NETWORK_DEMO_PORT = '10004';
+  static const String NETWORK_DEMO_IP = '10.3.8.29';
+  static const String NETWORK_DEMO_PORT = '28644';
   static const String HOME_TITLE = '小帮手';
   static const String HOME_HINT = '一站式服务解决所有问题';
   static const String LOGIN_OUT = '登出';

@@ -1,4 +1,9 @@
 import 'dart:async';
+import 'package:common_utils/common_utils.dart';
+import 'package:dio/dio.dart';
+import 'package:nbassetentry/common/dao/nb_dao.dart';
+import 'package:nbassetentry/common/global/global.dart';
+
 import 'base_page.dart';
 import 'home_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -32,6 +37,8 @@ class LoginPage extends StatelessWidget {
 }
 
 class LoginWidget extends StatefulWidget {
+  static final String routeName = '/login';
+
   @override
   _LoginWidgetState createState() => _LoginWidgetState();
 }
@@ -42,7 +49,6 @@ class _LoginWidgetState extends State<LoginWidget> {
   @override
   void initState() {
     super.initState();
-//    FlutterStatusbarcolor.setStatusBarColor(Color.fromRGBO(54, 120, 255, 1.0));
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
   }
 
@@ -125,7 +131,8 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
   void _initialize() async {
     String userName =
         await LocalStorage.get(Config.USER_NAME_KEY) ?? StringSet.EMPTY;
-    String password = StringSet.EMPTY;
+    String password =
+        await LocalStorage.get(Config.USER_PWD) ?? StringSet.EMPTY;
     _userNameController.value =
         TextEditingValue(text: userName ?? StringSet.EMPTY);
     _passwordController.value =
@@ -157,19 +164,19 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
     if (mounted) {
       setState(() {});
     }
-//    DaoResult result = await UserDao.userLogin(
-//        _userNameController.text.trim(), _passwordController.text.trim());
-//
-//
-//    _isLoading = false;
-//    if (mounted) {
-//      setState(() {});
-//    }
-//    if (result == null || !result.isSuccess) {
-//      return;
-//    }
-//
-//    Navigator.of(context).pushReplacementNamed(HomePage.routeName);
+
+    DaoResult result = await NbDao.userLogin(
+        userName: _userNameController.text.trim(),
+        pwd: _passwordController.text.trim());
+
+    _isLoading = false;
+    if (mounted) {
+      setState(() {});
+    }
+    if (result == null || !result.isSuccess) {
+      return;
+    }
+    Navigator.of(context).pushReplacementNamed(HomePage.routeName);
   }
 
   @override
@@ -190,7 +197,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
               _userNameController.text = StringSet.EMPTY;
               _passwordController.clear();
               _passwordController.text = StringSet.EMPTY;
-              setState(() => _checkStates());
+              setState(()async  => _checkStates());
             },
             onChanged: (value) {
               setState(() => _checkStates());
@@ -232,20 +239,14 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
                   fontSize: 16,
                 ),
               ),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => HomePage()),
-
-                );
-              },
-//              onPressed: _loginIsEnabled && widget.isCheck ? _login : null,
+              onPressed: _loginIsEnabled && widget.isCheck ? _login : null,
             ),
           ),
           Padding(
             padding: EdgeInsets.fromLTRB(0, 20, 0, 6),
             child: Align(
               alignment: Alignment.centerRight,
-              child:  GestureDetector(
+              child: GestureDetector(
                 onTap: () {
                   Navigator.of(context).pushNamed(NetworkSettingPage.routeName);
                 },

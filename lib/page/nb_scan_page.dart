@@ -482,6 +482,7 @@ class _NbScanPageState extends State<NbScanPage> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return BasePage(
@@ -543,7 +544,6 @@ class _NbScanPageState extends State<NbScanPage> {
               break;
             case 2:
               showCustomDialog(context, '复位成功');
-
               break;
             case 3:
               showCustomDialog(context, '下发参数成功');

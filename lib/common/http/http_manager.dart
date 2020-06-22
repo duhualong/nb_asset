@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:dio/dio.dart';
 import 'dart:core';
 import 'dart:io';
 import 'http.dart';
@@ -32,9 +36,6 @@ class HttpManager {
       };
       // 增加加载动画
       _dio.interceptors.add(InterceptorsWrapper(onRequest: (requestOptions) {
-        if (requestOptions.uri.path == '/flow/getAsset') {
-          return requestOptions;
-        }
         HttpLoading.before(uri: requestOptions.uri);
         return requestOptions;
       }, onResponse: (response) {
@@ -72,11 +73,14 @@ class HttpManager {
     Options options = Options(
       method: method,
       responseType: ResponseType.plain,
-      connectTimeout: Config.NETWORK_TIMEOUT * 1000,
+      //contentType: Headers.formUrlEncodedContentType,
+      receiveTimeout: Config.NETWORK_TIMEOUT * 1000,
+      headers: {"Content-Type": "multipart/form-data"},
     );
-//    if (!isUploadFile && (Global.user.uuid ?? StringSet.EMPTY).isNotEmpty) {
-//      options.headers.addAll({'User-Token': Global.user.uuid});
-//    }
+
+    if (!isUploadFile && (Global.user.uuid ?? StringSet.EMPTY).isNotEmpty) {
+      options.headers.addAll({'User-Token': Global.user.uuid});
+    }
     Response response = Response();
     try {
       response = isUploadFile || isJson
@@ -125,12 +129,11 @@ class HttpManager {
               false,
               statusCode: error.response?.statusCode ?? 0);
         case DioErrorType.RESPONSE:
+          Map<String, dynamic> map =
+              json.decode(error.response.toString() ?? StringSet.EMPTY);
+          String detail = map['detail'] as String ?? StringSet.UNKNOWN_ERROR;
           return HttpResult(
-              ErrorEvent.errorMessageToast(StringSet.NETWORK_STATUS_CODE_ERROR +
-                  StringSet.COLON +
-                  error.response?.statusCode.toString() +
-                  StringSet.PERIOD),
-              false,
+              ErrorEvent.errorMessageToast(detail + StringSet.PERIOD), false,
               statusCode: error.response?.statusCode ?? 0);
         default:
           return HttpResult(
