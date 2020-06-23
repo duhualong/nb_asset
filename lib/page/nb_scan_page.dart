@@ -3,6 +3,9 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
+import 'package:nbassetentry/common/dao/dao_result.dart';
+import 'package:nbassetentry/common/dao/nb_dao.dart';
+import 'package:nbassetentry/common/model/scan.dart';
 import 'package:nbassetentry/common/util/screen_utils.dart';
 import 'package:nbassetentry/widget/custom_editable_image_cell.dart';
 import '../common/model/option.dart';
@@ -35,26 +38,20 @@ class _NbScanPageState extends State<NbScanPage> {
   int _currentIndex = -1;
   bool _isClick = false;
   List<Option> _groupOptions = [];
-  int _groupPosition;
   String _groupName;
   String _carrierName;
   List<Option> _carrierOptions = [];
   List<Option> _loopOptions = [];
-  int _carrierPosition;
   final TextEditingController _nameController = TextEditingController();
-  String _barCode;
-  String _imei;
-  String _imsi;
+  String _barCode = StringSet.EMPTY;
+  String _imei = StringSet.EMPTY;
+  String _imsi = StringSet.EMPTY;
   String _longitude = StringSet.EMPTY;
   String _latitude = StringSet.EMPTY;
-  bool _switchUsed;
-  bool _switchAlarm;
-  bool _switchReply;
-  int _loopPosition;
+  bool _switchUsed = false;
+  bool _switchAlarm = false;
+  bool _switchReply = false;
   String _loopName;
-  List<Option> _powerOptions = StringSet.powerOptions;
-  int _powerPosition;
-  String _powerName;
   List<Option> _nbLight = [];
   List<String> _urls = [];
   List<String> _paths = [];
@@ -62,11 +59,100 @@ class _NbScanPageState extends State<NbScanPage> {
   List<String> _summonValue = [];
   List<String> _summonTitle = [];
   double _dimmingValue = 0;
+  String assetId = '0';
+  int groupId;
+  int carrierId;
+  int loopId = 1;
 
   @override
   initState() {
     super.initState();
-    initData();
+    _initParseData();
+  }
+
+  Future<void> _initParseData() async {
+    _location = await AmapLocation.fetchLocation();
+
+    DaoResult result = await NbDao.scan(data: widget.result);
+    if (!result.isSuccess) {
+      return;
+    }
+    ScanResult scanResult = result.data;
+    if (scanResult != null) {
+      _nameController.value = TextEditingValue(
+          text: scanResult.deviceParam.lightPoleCode ?? StringSet.EMPTY);
+      assetId = scanResult.deviceParam.assetId;
+      if (assetId != '0') {
+        _isClick = true;
+      }
+      _imei = scanResult.deviceParam.imei;
+      _imsi = scanResult.deviceParam.imsi;
+      _carrierName = scanResult.deviceParam.carrierName;
+      carrierId = scanResult.deviceParam.carrierId;
+      _groupName = scanResult.deviceParam.groupName ?? StringSet.EMPTY;
+      groupId = scanResult.deviceParam.groupId;
+      _barCode = scanResult.deviceParam.barcodeId;
+      _switchReply = (scanResult.deviceParam.reportReply == 1);
+      _switchAlarm = (scanResult.deviceParam.autoAlarm == 1);
+      _switchUsed = (scanResult.deviceParam.ctrlState == 1);
+      scanResult.candidateItems.carrierList.forEach((carrier) =>
+          _carrierOptions.add(Option(
+              id: carrier.carrierId,
+              title: carrier.carrierName,
+              isChecked: carrierId == carrier.carrierId)));
+      scanResult.candidateItems.groupList.forEach((group) => _groupOptions.add(
+          Option(
+              id: group.groupId,
+              title: group.groupName,
+              isChecked: groupId == group.groupId)));
+      if (_groupName == StringSet.EMPTY) {
+        _groupOptions[0].isChecked = true;
+        groupId = _groupOptions[0].id;
+        _groupName = _groupOptions[0].title;
+      }
+      for (int i = 1; i <= 4; i++) {
+        _loopOptions.add(Option(
+            id: i,
+            title: i.toString(),
+            isChecked: (i == scanResult.deviceParam.lampCount)));
+      }
+      if (scanResult.deviceParam.lampCount == 0 ||
+          scanResult.deviceParam.lampCount > 4) {
+        _loopOptions[1].isChecked = true;
+        _loopName = '2';
+        loopId = 1;
+        for (int i = 0; i <= loopId; i++) {
+          _nbLight.add(
+              Option(id: 0, title: StringSet.NO_SETTING, isChecked: false));
+        }
+      } else {
+        loopId = scanResult.deviceParam.lampCount - 1;
+        _loopName = scanResult.deviceParam.lampCount.toString();
+
+        if (scanResult.deviceParam.lampStatus.length > 0) {
+          for (int i = 0; i <= loopId; i++) {
+            _nbLight.add(Option(
+                id: i,
+                title: scanResult.deviceParam.lampStatus[i].powerRate == 0
+                    ? StringSet.NO_SETTING
+                    : (scanResult.deviceParam.lampStatus[i].powerRate
+                            .toString() + 'W'),
+                isChecked:
+                    scanResult.deviceParam.lampStatus[i].autoLight == 1));
+          }
+        }
+      }
+
+      _longitude = scanResult.deviceParam.longitude > 10
+          ? scanResult.deviceParam.longitude.toString()
+          : _location.latLng.longitude.toString();
+      _latitude = scanResult.deviceParam.latitude > 10
+          ? scanResult.deviceParam.latitude.toString()
+          : _location.latLng.latitude.toString();
+      if (mounted) {
+        setState(() {});
+      }
+    }
   }
 
   @override
@@ -75,47 +161,7 @@ class _NbScanPageState extends State<NbScanPage> {
     _nameController?.dispose();
   }
 
-  Future<void> initData() async {
-    _switchUsed = false;
-    _switchAlarm = false;
-    _switchReply = false;
 
-    _imei = '1523334555';
-    _imsi = '222344556';
-    _barCode = '112223444';
-    _groupPosition = 0;
-    _carrierPosition = 0;
-    _loopPosition = 1;
-    _loopName = '2';
-    _carrierName = '移动';
-    _groupName = '组1';
-    _powerName = StringSet.NO_SETTING;
-    _powerPosition = 0;
-    _powerOptions
-        .forEach((power) => power.isChecked == (power.id == _powerPosition));
-    for (int i = 0; i <= _loopPosition; i++) {
-      _nbLight.add(Option(
-          id: i, title: StringSet.NO_SETTING, isChecked: false, value: 0));
-    }
-    _groupOptions.add(Option(id: 0, title: '组1', isChecked: true, value: 1));
-    _groupOptions.add(Option(id: 1, title: '组2', isChecked: false, value: 2));
-    _groupOptions.add(Option(id: 2, title: '组3', isChecked: false, value: 3));
-    _carrierOptions.add(Option(id: 0, title: '移动', isChecked: true, value: 1));
-    _carrierOptions.add(Option(id: 1, title: '电信', isChecked: false, value: 2));
-    _carrierOptions.add(Option(id: 2, title: '联通', isChecked: false, value: 3));
-    _loopOptions.add(Option(id: 0, title: '1', isChecked: false, value: 1));
-    _loopOptions.add(Option(id: 1, title: '2', isChecked: true, value: 2));
-    _loopOptions.add(Option(id: 2, title: '3', isChecked: false, value: 3));
-    _loopOptions.add(Option(id: 3, title: '4', isChecked: false, value: 4));
-    _location = await AmapLocation.fetchLocation();
-
-    if (mounted) {
-      setState(() {
-        _longitude = _location.latLng.longitude.toString();
-        _latitude = _location.latLng.latitude.toString();
-      });
-    }
-  }
 
   void showDimming(BuildContext context) {
     List<int> _buttonLightStatus = [
@@ -482,7 +528,6 @@ class _NbScanPageState extends State<NbScanPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return BasePage(
@@ -597,13 +642,16 @@ class _NbScanPageState extends State<NbScanPage> {
                 isMultiple: false,
                 okButtonCanDisabled: true,
                 onConfirm: (options) {
-                  _groupPosition =
+                  int position =
                       options.indexWhere((option) => option.isChecked);
-                  _groupOptions.forEach((group) {
-                    group.isChecked = (group.id == _groupPosition);
-                  });
+                  for (int index = 0; index < _groupOptions.length; index++) {
+                    _groupOptions[index].isChecked = (position == index);
+                    if (_groupOptions[index].isChecked) {
+                      _groupName = _groupOptions[index].title;
+                      groupId = _groupOptions[index].id;
+                    }
+                  }
 
-                  _groupName = _groupOptions[_groupPosition].title;
                   setState(() {});
                 },
               ),
@@ -615,13 +663,16 @@ class _NbScanPageState extends State<NbScanPage> {
                 isMultiple: false,
                 okButtonCanDisabled: true,
                 onConfirm: (options) {
-                  _carrierPosition =
+                  int position =
                       options.indexWhere((option) => option.isChecked);
-                  _carrierOptions.forEach((carrier) {
-                    carrier.isChecked = (carrier.id == _carrierPosition);
-                  });
+                  for (int index = 0; index < _carrierOptions.length; index++) {
+                    _carrierOptions[index].isChecked = (position == index);
+                    if (_carrierOptions[index].isChecked) {
+                      _carrierName = _carrierOptions[index].title;
+                      carrierId = _carrierOptions[index].id;
+                    }
+                  }
 
-                  _carrierName = _carrierOptions[_carrierPosition].title;
                   setState(() {});
                 },
               ),
@@ -742,25 +793,21 @@ class _NbScanPageState extends State<NbScanPage> {
                 isMultiple: false,
                 okButtonCanDisabled: true,
                 onConfirm: (options) {
-                  _loopPosition =
-                      options.indexWhere((option) => option.isChecked);
+                  loopId = options.indexWhere((option) => option.isChecked);
                   _loopOptions.forEach((loop) {
-                    loop.isChecked = (loop.id == _loopPosition);
+                    loop.isChecked = (loop.id == (loopId + 1));
                   });
 
-                  _loopName = _loopOptions[_loopPosition].title;
+                  _loopName = _loopOptions[loopId].title;
                   _nbLight.clear();
-                  print('_loopPosition:$_loopPosition');
-
                   setState(() {
-                    for (int i = 0; i <= _loopPosition; i++) {
+                    for (int i = 0; i <= loopId; i++) {
                       _nbLight.add(Option(
-                          id: i,
-                          title: StringSet.NO_SETTING,
-                          isChecked: false,
-                          value: 0));
+                        id: i,
+                        title: StringSet.NO_SETTING,
+                        isChecked: false,
+                      ));
                     }
-                    print('_nbLight:${_nbLight.length}');
                   });
                 },
               ),

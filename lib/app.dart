@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-import 'common/config/config.dart';
 import 'common/global/global.dart';
-import 'common/local/local_storage.dart';
 import 'common/redux/redux.dart';
 import 'common/redux/redux_state.dart';
-import 'common/style/string_set.dart';
 import 'common/style/style_set.dart';
 import 'page/home_page.dart';
 import 'page/image_gallery_page.dart';
@@ -25,16 +23,12 @@ class _AppState extends State<App> {
   final store = Store<ReduxState>(
     appReducer,
     initialState: ReduxState(
-      themeData: ThemeDataSet.THEME_DATAS[0],
+      themeData: ThemeDataSet.themeData,
     ),
   );
 
   void _setupThemeData() async {
-    int index = int.tryParse(
-            await LocalStorage.get(Config.THEME_COLOR_INDEX_KEY) ??
-                StringSet.EMPTY) ??
-        0;
-    ThemeData themeData = ThemeDataSet.THEME_DATAS[index];
+    ThemeData themeData = ThemeDataSet.themeData;
     store.dispatch(RefreshThemeDataAction(themeData));
     setState(() {});
   }
@@ -47,6 +41,8 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
+
+
     return StoreProvider(
       store: store,
       child: StoreBuilder<ReduxState>(
@@ -55,6 +51,7 @@ class _AppState extends State<App> {
             navigatorKey: Global.navigatorState,
             debugShowCheckedModeBanner: false,
             theme:ThemeData(
+              backgroundColor: Colors.white,
               primaryColor:  ThemeDataSet.tabColor,
               scaffoldBackgroundColor: Colors.white,
             ),

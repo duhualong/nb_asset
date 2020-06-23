@@ -59,7 +59,7 @@ class _NbTextWidgetState extends State<NbTextWidget> {
             alignment: Alignment.centerLeft,
             child: Text(
               widget.value,
-              style: TextStyle(color: widget.textColor, fontSize: 16),
+              style: TextStyle(color: widget.textColor, fontSize: 14),
             ),
           ),
         )

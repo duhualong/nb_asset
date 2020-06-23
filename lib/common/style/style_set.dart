@@ -24,18 +24,16 @@ class AssetSet {
 }
 class ThemeDataSet {
   static const Color tabColor = Color.fromRGBO(54, 120, 255, 1.0);
-  static final List<ThemeData> THEME_DATAS = ACCENTS.map((accent) {
-    int index = ACCENTS.indexOf(accent);
-    return ThemeData(
-      primaryColor: PRIMARIES[index],
-      primaryColorDark: Colors.black,
-      highlightColor: ACCENTS[index],
-      disabledColor: Colors.black38,
-      backgroundColor: Color.fromRGBO(247, 247, 247, 1),
-      dividerColor: Color.fromRGBO(242, 242, 242, 1),
+  static final themeData=ThemeData(
+      primaryColor:tabColor,
+      primaryColorDark: tabColor,
+      highlightColor: tabColor,
+      disabledColor: tabColor,
+      backgroundColor:tabColor,
+      dividerColor: tabColor,
       platform: TargetPlatform.android,
     );
-  }).toList();
+
 
   static const List<Color> PRIMARIES = [
     Colors.blue,

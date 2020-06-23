@@ -14,21 +14,16 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-
   bool showAd = true;
 
   @override
   void initState() {
     super.initState();
-    _init();
-  }
-
-  void _init() {
-    SystemChrome.setEnabledSystemUIOverlays([]);
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Stack(
       children: <Widget>[
         Offstage(
@@ -46,45 +41,48 @@ class _SplashPageState extends State<SplashPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Image.asset(AssetSet.SPLASH_HELP, height: 70,),
+                      Image.asset(
+                        AssetSet.SPLASH_HELP,
+                        height: 70,
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(top: 10.0),
-                        child: Image.asset(AssetSet.SPLASH_COMPANY,
+                        child: Image.asset(
+                          AssetSet.SPLASH_COMPANY,
                           width: ScreenUtils.screenW(context) - 220,
-                          height: 16,),
+                          height: 16,
+                        ),
                       )
                     ],
                   ),
                 ),
                 SafeArea(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Align(
-                          alignment: Alignment(1.0, 0.0),
-                          child: Container(
-                            margin: const EdgeInsets.only(
-                                right: 30.0, top: 20.0),
-                            padding: const EdgeInsets.only(
-                                left: 10.0, right: 10.0, top: 2.0, bottom: 2.0),
-                            child: CountDownWidget(
-                              onCountDownFinishCallBack: (bool value) {
-                                if (value) {
-                                  setState(() {
-                                    showAd = false;
-                                  });
-                                }
-                              },
-                            ),
-                            decoration: BoxDecoration(
-                                color: Color(0xffEDEDED),
-                                borderRadius:
-                                const BorderRadius.all(Radius.circular(10.0))),
-                          ),
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment(1.0, 0.0),
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 30.0, top: 20.0),
+                        padding: const EdgeInsets.only(
+                            left: 10.0, right: 10.0, top: 2.0, bottom: 2.0),
+                        child: CountDownWidget(
+                          onCountDownFinishCallBack: (bool value) {
+                            if (value) {
+                              setState(() {
+                                showAd = false;
+                              });
+                            }
+                          },
                         ),
-
-                      ],
-                    )),
+                        decoration: BoxDecoration(
+                            color: Color(0xffEDEDED),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(10.0))),
+                      ),
+                    ),
+                  ],
+                )),
               ],
             ),
             width: ScreenUtils.screenW(context),
@@ -132,7 +130,6 @@ class _CountDownWidgetState extends State<CountDownWidget> {
       setState(() {});
       if (_seconds <= 1) {
         widget.onCountDownFinishCallBack(true);
-
         Navigator.of(context).pushReplacementNamed(LoginPage.routeName);
         _cancelTimer();
         return;

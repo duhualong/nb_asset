@@ -1,8 +1,5 @@
 import 'dart:async';
-import 'package:common_utils/common_utils.dart';
-import 'package:dio/dio.dart';
 import 'package:nbassetentry/common/dao/nb_dao.dart';
-import 'package:nbassetentry/common/global/global.dart';
 
 import 'base_page.dart';
 import 'home_page.dart';
@@ -49,11 +46,12 @@ class _LoginWidgetState extends State<LoginWidget> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
   }
+
 
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
       child: Stack(
@@ -112,6 +110,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   StreamSubscription _stream;
+  FocusNode _commentFocus = FocusNode();
 
   @override
   void initState() {
@@ -137,6 +136,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
         TextEditingValue(text: userName ?? StringSet.EMPTY);
     _passwordController.value =
         TextEditingValue(text: password ?? StringSet.EMPTY);
+    FocusScope.of(context).requestFocus(_commentFocus);
     _checkStates();
     _stream = NetworkEvent.eventBus.on<String>().listen((data) {
       if (data != NetworkEvent.ON_UPDATED) {
@@ -176,6 +176,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
     if (result == null || !result.isSuccess) {
       return;
     }
+
     Navigator.of(context).pushReplacementNamed(HomePage.routeName);
   }
 
@@ -197,7 +198,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
               _userNameController.text = StringSet.EMPTY;
               _passwordController.clear();
               _passwordController.text = StringSet.EMPTY;
-              setState(()async  => _checkStates());
+              setState(() async => _checkStates());
             },
             onChanged: (value) {
               setState(() => _checkStates());
@@ -225,7 +226,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
           SizedBox(
             width: ScreenUtils.screenW(context) - 100,
             height: 40,
-            child: FlatButton(
+            child: RaisedButton(
               color: Theme.of(context).primaryColor,
               highlightColor: Theme.of(context).highlightColor,
               disabledColor: Theme.of(context).disabledColor,

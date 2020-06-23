@@ -12,9 +12,16 @@ class HttpAddress {
 
   /// 网址验证
   static String connect(String address) => 'https://$address/';
+
   ///用户登录
-static Future<String> userLogin()async=>
-    '${await baseUrl()}login';
-///退出登录
-static Future<String> loginOut()async=>'${await baseUrl()}logout';
+  static Future<String> userLogin() async => '${await baseUrl()}login';
+
+  ///退出登录
+  static Future<String> loginOut() async => '${await baseUrl()}logout';
+
+  ///扫码
+  static Future<String> scan() async => '${await baseUrl()}qrscan';
+
+  ///NB资产信息更新
+  static Future<String> updateNbAsset() async => '${await baseUrl()}update';
 }

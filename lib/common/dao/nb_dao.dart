@@ -8,6 +8,7 @@ import 'package:nbassetentry/common/global/global.dart';
 import 'package:nbassetentry/common/http/http.dart';
 import 'package:nbassetentry/common/http/http_address.dart';
 import 'package:nbassetentry/common/local/local_storage.dart';
+import 'package:nbassetentry/common/model/scan.dart';
 import 'package:nbassetentry/common/style/string_set.dart';
 
 import 'dao_result.dart';
@@ -46,5 +47,25 @@ class NbDao {
       return DaoResult(result?.data ?? StringSet.EMPTY, false);
     }
     return DaoResult(true, true);
+  }
+  static Future<DaoResult>scan({String data})async{
+    FormData formData = FormData.fromMap({
+      "data": data,
+    });
+    HttpResult result =
+    await HttpManager.fetch(await HttpAddress.scan(),formData);
+    if (result == null || !result.isSuccess) {
+      return DaoResult(result?.data ?? StringSet.EMPTY, false);
+    }
+    Map<String, dynamic> map =
+    json.decode(result.data as String ?? StringSet.EMPTY);
+    ScanResult scanResult=ScanResult.fromJson(map);
+    bool success = scanResult.status == 1;
+    String detail =scanResult.detail ?? StringSet.UNKNOWN_ERROR;
+    if (!success) {
+      return DaoResult(
+          ErrorEvent.errorMessageToast(detail + StringSet.PERIOD), false);
+    }
+    return DaoResult(scanResult, true);
   }
 }

@@ -196,7 +196,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         context,
         MaterialPageRoute(
           builder: (context) => ErrorHandle(
-            child: NbScanPage(result: 'result'),
+            child: NbScanPage(result: result),
           ),
         ),
       );
