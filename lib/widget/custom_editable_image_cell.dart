@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:nbassetentry/common/config/config.dart';
 import 'dart:io';
 import '../common/model/image_gallery_item.dart';
 import '../common/style/string_set.dart';
@@ -19,7 +20,7 @@ class CustomEditableImageCell extends StatefulWidget {
     @required this.attribute,
     this.urls = const [],
     this.paths = const [],
-    this.source ='0',
+    this.source = '0',
   }) : super(key: key);
 
   @override
@@ -33,7 +34,6 @@ class _CustomEditableImageCellState extends State<CustomEditableImageCell> {
     return Container(
       color: Colors.white,
       child: Column(
-
         children: <Widget>[
           ConstrainedBox(
             constraints: BoxConstraints(minHeight: 50.0),
@@ -75,67 +75,74 @@ class _CustomEditableImageCellState extends State<CustomEditableImageCell> {
                       }
                     },
                   ),
-                  SizedBox(width: 10,),
+                  SizedBox(
+                    width: 10,
+                  ),
                 ],
               ),
             ),
           ),
-          Divider(height: 2,color: Colors.grey,),
-          SizedBox(height: 10,),
+          Divider(
+            height: 2,
+            color: Colors.grey,
+          ),
+          SizedBox(
+            height: 10,
+          ),
           Offstage(
             offstage: widget.urls.isEmpty && widget.paths.isEmpty,
             child: Container(
               height: 100,
               child: !(widget.urls.isEmpty && widget.paths.isEmpty)
                   ? GridView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                scrollDirection: Axis.horizontal,
-                itemCount: widget.urls.length + widget.paths.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 1,
-                  crossAxisSpacing: 0,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 3 / 4,
-                ),
-                itemBuilder: (context, index) {
-                  return Stack(
-                    children: <Widget>[
-                      SizedBox.expand(
-                        child: GestureDetector(
-                          onTap: () => _openImageGallery(context, index),
-                          child: index < widget.paths.length
-                              ? Image.file(
-                            File(widget.paths[index]),
-                            fit: BoxFit.cover,
-                          )
-                              : Image.network(
-                            widget
-                                .urls[index - widget.paths.length],
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: widget.urls.length + widget.paths.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 1,
+                        crossAxisSpacing: 0,
+                        mainAxisSpacing: 10,
+                        childAspectRatio: 3 / 4,
                       ),
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: GestureDetector(
-                          child: Icon(
-                            Icons.remove_circle,
-                            color: Colors.red,
-                          ),
-                          onTap: () {
-                            index < widget.paths.length
-                                ? widget.paths.removeAt(index)
-                                : widget.urls.removeAt(
-                                index - widget.paths.length);
-                            setState(() {});
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              )
+                      itemBuilder: (context, index) {
+                        return Stack(
+                          children: <Widget>[
+                            SizedBox.expand(
+                              child: GestureDetector(
+                                onTap: () => _openImageGallery(context, index),
+                                child: index < widget.paths.length
+                                    ? Image.file(
+                                        File(widget.paths[index]),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.network(
+                                        widget
+                                            .urls[index - widget.paths.length],
+                                        fit: BoxFit.cover,
+                                      ),
+                              ),
+                            ),
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: GestureDetector(
+                                child: Icon(
+                                  Icons.remove_circle,
+                                  color: Colors.red,
+                                ),
+                                onTap: () {
+                                  index < widget.paths.length
+                                      ? widget.paths.removeAt(index)
+                                      : widget.urls.removeAt(
+                                          index - widget.paths.length);
+                                  setState(() {});
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    )
                   : null,
             ),
           ),
@@ -190,11 +197,21 @@ class _CustomEditableImageCellState extends State<CustomEditableImageCell> {
     );
   }
 
+  ///图片压缩
   Future<void> _pickImage({ImageSource source}) async {
     File file = await ImagePicker.pickImage(source: source);
+    ImageProperties properties =
+        await FlutterNativeImage.getImageProperties(file.path);
     if (file != null) {
       File compressedFile = await FlutterNativeImage.compressImage(file.path,
-          quality: 20, percentage: 100);
+          quality: Config.IMG_QUALITY,
+          percentage: Config.IMG_PERCENTAGE,
+          targetWidth: properties.width > Config.IMG_TARGET_WIDTH
+              ? Config.IMG_TARGET_WIDTH
+              : properties.width,
+          targetHeight: properties.height > Config.IMG_TARGET_HEIGHT
+              ? Config.IMG_TARGET_HEIGHT
+              : properties.height);
       widget.paths.insert(0, compressedFile.path);
     }
     setState(() {});
@@ -204,16 +221,16 @@ class _CustomEditableImageCellState extends State<CustomEditableImageCell> {
     List<ImageGalleryItem> urlImageItems = widget.urls
         .map((url) => NetworkImage(url))
         .map((imageProvider) => ImageGalleryItem(
-      id: '${widget.attribute}-$index',
-      imageProvider: imageProvider,
-    ))
+              id: '${widget.attribute}-$index',
+              imageProvider: imageProvider,
+            ))
         .toList();
     List<ImageGalleryItem> fileImageItems = widget.paths
         .map((path) => FileImage(File(path)))
         .map((imageProvider) => ImageGalleryItem(
-      id: '${widget.attribute}-$index',
-      imageProvider: imageProvider,
-    ))
+              id: '${widget.attribute}-$index',
+              imageProvider: imageProvider,
+            ))
         .toList();
     List<ImageGalleryItem> imageItems = fileImageItems + urlImageItems;
 

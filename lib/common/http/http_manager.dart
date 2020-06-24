@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:nbassetentry/page/login_page.dart';
 import 'dart:core';
-import 'dart:io';
 import 'http.dart';
 import '../config/config.dart';
 import '../event/error_event.dart';
@@ -17,6 +17,7 @@ class HttpManager {
   static const String CONTENT_TYPE_JSON = 'application/json';
   static const String CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
   static const String CONTENT_TYPE_FORM_DATA = 'multipart/form-data';
+  static dynamic context;
 
   static Dio _getDio() {
     if (_dio == null) {
@@ -132,6 +133,10 @@ class HttpManager {
           Map<String, dynamic> map =
               json.decode(error.response.toString() ?? StringSet.EMPTY);
           String detail = map['detail'] as String ?? StringSet.UNKNOWN_ERROR;
+          if(detail.contains('User-Token 无效')){
+            Navigator.of(context).pushReplacementNamed(LoginPage.routeName);
+
+          }
           return HttpResult(
               ErrorEvent.errorMessageToast(detail + StringSet.PERIOD), false,
               statusCode: error.response?.statusCode ?? 0);
@@ -154,7 +159,6 @@ class HttpManager {
         print('响应参数：${response.toString()}');
       }
     }
-    print('HttpResult: ${response.data}');
     return HttpResult(response.data, true, statusCode: response.statusCode);
   }
 }

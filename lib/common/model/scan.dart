@@ -167,8 +167,8 @@ class DeviceParam {
   String iccid;
   String imei;
   String imsi;
-  int longitude;
-  int latitude;
+  String longitude;
+  String latitude;
   int dateCreate;
   int ctrlState;
   int autoAlarm;
@@ -221,8 +221,8 @@ class DeviceParam {
     iccid = json["iccid"]?.toString();
     imei = json["imei"]?.toString();
     imsi = json["imsi"]?.toString();
-    longitude = json["longitude"]?.toInt();
-    latitude = json["latitude"]?.toInt();
+    longitude = json["longitude"]?.toString() ;
+    latitude = json["latitude"]?.toString() ;
     dateCreate = json["date_create"]?.toInt();
     ctrlState = json["ctrl_state"]?.toInt();
     autoAlarm = json["auto_alarm"]?.toInt();

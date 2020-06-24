@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:nbassetentry/common/util/screen_utils.dart';
 import 'text_field_widget.dart';
 import 'custom_cell_with_divider.dart';
 import '../common/model/option.dart';

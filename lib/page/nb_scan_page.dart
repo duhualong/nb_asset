@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:amap_location_fluttify/amap_location_fluttify.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
@@ -136,17 +138,18 @@ class _NbScanPageState extends State<NbScanPage> {
                 title: scanResult.deviceParam.lampStatus[i].powerRate == 0
                     ? StringSet.NO_SETTING
                     : (scanResult.deviceParam.lampStatus[i].powerRate
-                            .toString() + 'W'),
+                            .toString() +
+                        'W'),
                 isChecked:
                     scanResult.deviceParam.lampStatus[i].autoLight == 1));
           }
         }
       }
 
-      _longitude = scanResult.deviceParam.longitude > 10
+      _longitude = scanResult.deviceParam.longitude=='0'
           ? scanResult.deviceParam.longitude.toString()
           : _location.latLng.longitude.toString();
-      _latitude = scanResult.deviceParam.latitude > 10
+      _latitude = scanResult.deviceParam.latitude=='0'
           ? scanResult.deviceParam.latitude.toString()
           : _location.latLng.latitude.toString();
       if (mounted) {
@@ -160,8 +163,6 @@ class _NbScanPageState extends State<NbScanPage> {
     super.dispose();
     _nameController?.dispose();
   }
-
-
 
   void showDimming(BuildContext context) {
     List<int> _buttonLightStatus = [
@@ -528,6 +529,74 @@ class _NbScanPageState extends State<NbScanPage> {
     );
   }
 
+  Future<void> _updateAsset() async {
+
+    DaoResult result = await NbDao.updateAssetInfo(
+      assetId: assetId,
+      lightPoleCode: _nameController.text.trim(),
+      groupId: groupId,
+      carrierId: carrierId,
+      barCode: _barCode,
+      imei: _imei,
+      imsi: _imsi,
+      lat: double.parse(_latitude),
+      lng: double.parse(_longitude),
+      ctrlState: _switchUsed ? 1 : 0,
+      autoAlarm: _switchAlarm ? 1 : 0,
+      lampCount: loopId + 1,
+      autoLightOne: StringSet.powerOptions
+              .where((option) => option.title == _nbLight[0].title)
+              .toList()[0]
+              .isChecked
+          ? 1
+          : 0,
+      powerRateOne: StringSet.powerOptions
+          .where((option) => option.title == _nbLight[0].title)
+          .toList()[0]
+          .id,
+        autoLightTwo: (loopId>=1)?( StringSet.powerOptions
+            .where((option) => option.title == _nbLight[1].title)
+            .toList()[0]
+            .isChecked
+            ? 1
+            : 0):0,
+      powerRateTwo:  (loopId>=1)?( StringSet.powerOptions
+          .where((option) => option.title == _nbLight[1].title)
+          .toList()[0]
+          .id):0,
+      autoLightThree:  (loopId>=2)?( StringSet.powerOptions
+          .where((option) => option.title == _nbLight[2].title)
+          .toList()[0]
+          .isChecked
+          ? 1
+          : 0):0,
+      powerRateThree:  (loopId>=2)?( StringSet.powerOptions
+          .where((option) => option.title == _nbLight[2].title)
+          .toList()[0]
+          .id):0,
+      autoLightFour:  (loopId>=3)?( StringSet.powerOptions
+          .where((option) => option.title == _nbLight[3].title)
+          .toList()[0]
+          .isChecked
+          ? 1
+          : 0):0,
+      powerRateFour:   (loopId>=3)?( StringSet.powerOptions
+          .where((option) => option.title == _nbLight[3].title)
+          .toList()[0]
+          .id):0,
+      reportReply: _switchReply?1:0,
+      paths: _paths,
+
+    );
+
+    if(!result.isSuccess){
+      return;
+    }
+    setState(() {
+      _isClick = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BasePage(
@@ -603,12 +672,10 @@ class _NbScanPageState extends State<NbScanPage> {
           onTap: () {
             print('nameValue:${_nameController.text.trim()}');
             print('path::$_paths');
-            print('url::$_urls');
+
             FocusScope.of(context).requestFocus(blankNode);
             if (_nameController.text.trim() != StringSet.EMPTY) {
-              setState(() {
-                _isClick = true;
-              });
+              _updateAsset();
             }
           },
           child: Align(
