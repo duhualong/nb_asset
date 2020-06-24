@@ -37,7 +37,6 @@ class NbScanPage extends StatefulWidget {
 class _NbScanPageState extends State<NbScanPage> {
   final _bottomSheetKey = GlobalKey<ScaffoldState>();
   Location _location;
-  int _currentIndex = -1;
   bool _isClick = false;
   List<Option> _groupOptions = [];
   String _groupName;
@@ -60,11 +59,11 @@ class _NbScanPageState extends State<NbScanPage> {
   FocusNode blankNode = FocusNode();
   List<String> _summonValue = [];
   List<String> _summonTitle = [];
-  double _dimmingValue = 0;
-  String assetId = '0';
+  double _dimmingValue = Config.ZERO_DOUBLE;
+  String assetId = StringSet.ZERO;
   int groupId;
   int carrierId;
-  int loopId = 1;
+  int loopId = Config.LOOP_COUNT;
 
   @override
   initState() {
@@ -84,7 +83,7 @@ class _NbScanPageState extends State<NbScanPage> {
       _nameController.value = TextEditingValue(
           text: scanResult.deviceParam.lightPoleCode ?? StringSet.EMPTY);
       assetId = scanResult.deviceParam.assetId;
-      if (assetId != '0') {
+      if (assetId != StringSet.ZERO) {
         _isClick = true;
       }
       _imei = scanResult.deviceParam.imei;
@@ -146,10 +145,10 @@ class _NbScanPageState extends State<NbScanPage> {
         }
       }
 
-      _longitude = scanResult.deviceParam.longitude=='0'
+      _longitude = scanResult.deviceParam.longitude == StringSet.ZERO
           ? scanResult.deviceParam.longitude.toString()
           : _location.latLng.longitude.toString();
-      _latitude = scanResult.deviceParam.latitude=='0'
+      _latitude = scanResult.deviceParam.latitude == StringSet.ZERO
           ? scanResult.deviceParam.latitude.toString()
           : _location.latLng.latitude.toString();
       if (mounted) {
@@ -316,8 +315,8 @@ class _NbScanPageState extends State<NbScanPage> {
                                   child: FlutterSlider(
                                     values: [_dimmingValue],
                                     jump: false,
-                                    max: 100,
-                                    min: 0,
+                                    max: Config.MAX_DIMMING,
+                                    min: Config.MIN_DIMMING,
                                     disabled: false,
                                     handlerWidth: 20,
                                     handlerHeight: 24,
@@ -359,7 +358,6 @@ class _NbScanPageState extends State<NbScanPage> {
                                     ),
                                     onDragCompleted:
                                         (handlerIndex, lowerValue, upperValue) {
-                                      print('lowerValue:$lowerValue');
                                       _dimmingValue = lowerValue;
                                       state(() {});
                                     },
@@ -529,8 +527,7 @@ class _NbScanPageState extends State<NbScanPage> {
     );
   }
 
-  Future<void> _updateAsset() async {
-
+  Future<void> _updateAsset(BuildContext buildContext) async {
     DaoResult result = await NbDao.updateAssetInfo(
       assetId: assetId,
       lightPoleCode: _nameController.text.trim(),
@@ -554,47 +551,64 @@ class _NbScanPageState extends State<NbScanPage> {
           .where((option) => option.title == _nbLight[0].title)
           .toList()[0]
           .id,
-        autoLightTwo: (loopId>=1)?( StringSet.powerOptions
-            .where((option) => option.title == _nbLight[1].title)
-            .toList()[0]
-            .isChecked
-            ? 1
-            : 0):0,
-      powerRateTwo:  (loopId>=1)?( StringSet.powerOptions
-          .where((option) => option.title == _nbLight[1].title)
-          .toList()[0]
-          .id):0,
-      autoLightThree:  (loopId>=2)?( StringSet.powerOptions
-          .where((option) => option.title == _nbLight[2].title)
-          .toList()[0]
-          .isChecked
-          ? 1
-          : 0):0,
-      powerRateThree:  (loopId>=2)?( StringSet.powerOptions
-          .where((option) => option.title == _nbLight[2].title)
-          .toList()[0]
-          .id):0,
-      autoLightFour:  (loopId>=3)?( StringSet.powerOptions
-          .where((option) => option.title == _nbLight[3].title)
-          .toList()[0]
-          .isChecked
-          ? 1
-          : 0):0,
-      powerRateFour:   (loopId>=3)?( StringSet.powerOptions
-          .where((option) => option.title == _nbLight[3].title)
-          .toList()[0]
-          .id):0,
-      reportReply: _switchReply?1:0,
+      autoLightTwo: (loopId >= 1)
+          ? (StringSet.powerOptions
+                  .where((option) => option.title == _nbLight[1].title)
+                  .toList()[0]
+                  .isChecked
+              ? 1
+              : 0)
+          : 0,
+      powerRateTwo: (loopId >= 1)
+          ? (StringSet.powerOptions
+              .where((option) => option.title == _nbLight[1].title)
+              .toList()[0]
+              .id)
+          : 0,
+      autoLightThree: (loopId >= 2)
+          ? (StringSet.powerOptions
+                  .where((option) => option.title == _nbLight[2].title)
+                  .toList()[0]
+                  .isChecked
+              ? 1
+              : 0)
+          : 0,
+      powerRateThree: (loopId >= 2)
+          ? (StringSet.powerOptions
+              .where((option) => option.title == _nbLight[2].title)
+              .toList()[0]
+              .id)
+          : 0,
+      autoLightFour: (loopId >= 3)
+          ? (StringSet.powerOptions
+                  .where((option) => option.title == _nbLight[3].title)
+                  .toList()[0]
+                  .isChecked
+              ? 1
+              : 0)
+          : 0,
+      powerRateFour: (loopId >= 3)
+          ? (StringSet.powerOptions
+              .where((option) => option.title == _nbLight[3].title)
+              .toList()[0]
+              .id)
+          : 0,
+      reportReply: _switchReply ? 1 : 0,
       paths: _paths,
-
     );
 
-    if(!result.isSuccess){
+    if (!result.isSuccess) {
       return;
     }
-    setState(() {
-      _isClick = true;
-    });
+    assetId = result.data;
+
+    _isClick = true;
+    setState(() {});
+    showCustomDialog(
+        buildContext,
+        assetId == StringSet.ZERO
+            ? StringSet.NB_REPORT_SUCCESS
+            : StringSet.NB_UPDATE_SUCCESS);
   }
 
   @override
@@ -648,7 +662,6 @@ class _NbScanPageState extends State<NbScanPage> {
           if (!_isClick) {
             return;
           }
-          _currentIndex = index;
           switch (index) {
             case 0:
               _showMenu(context);
@@ -657,10 +670,10 @@ class _NbScanPageState extends State<NbScanPage> {
               showDimming(context);
               break;
             case 2:
-              showCustomDialog(context, '复位成功');
+              showCustomDialog(context, StringSet.NB_RESET_SUCCESS);
               break;
             case 3:
-              showCustomDialog(context, '下发参数成功');
+              showCustomDialog(context, StringSet.NB_ISSUED_SUCCESS);
 
               break;
           }
@@ -670,12 +683,9 @@ class _NbScanPageState extends State<NbScanPage> {
       actions: <Widget>[
         GestureDetector(
           onTap: () {
-            print('nameValue:${_nameController.text.trim()}');
-            print('path::$_paths');
-
             FocusScope.of(context).requestFocus(blankNode);
             if (_nameController.text.trim() != StringSet.EMPTY) {
-              _updateAsset();
+              _updateAsset(context);
             }
           },
           child: Align(

@@ -101,6 +101,11 @@ class StringSet {
   static const String PORT = '端口号';
   static const String PLEASE_INPUT = '请输入';
   static const String CONNECT = '连接';
+  static const String NB_RESET_SUCCESS='复位成功';
+  static const String NB_REPORT_SUCCESS='资产录入成功';
+  static const String NB_UPDATE_SUCCESS='资产更新成功';
+  static const String NB_ISSUED_SUCCESS='下发参数成功';
+  static const String ZERO='0';
 
   /// theme_color
   static const String THEME_COLOR = '主题颜色';

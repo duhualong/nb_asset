@@ -5,6 +5,8 @@ class Config {
   static const String NETWORKS_KEY = 'networks';
 
   static const double CIRCLE_SIZE = 50;
+  static const int ZERO = 0;
+  static const double ZERO_DOUBLE = 0;
 
   /// 网络超时时间
   static const int NETWORK_TIMEOUT = 30;
@@ -16,4 +18,9 @@ class Config {
   static const int IMG_PERCENTAGE = 100;
   static const int IMG_TARGET_WIDTH = 720;
   static const int IMG_TARGET_HEIGHT = 1200;
+
+  ///灯头回路配置
+  static const int LOOP_COUNT = 1;
+  static const double MAX_DIMMING=100;
+  static const double MIN_DIMMING=0;
 }

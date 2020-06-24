@@ -150,7 +150,6 @@ class NbDao {
       return DaoResult(
           ErrorEvent.errorMessageToast(detail + StringSet.PERIOD), false);
     }
-    print('map:${map.toString()}');
-    return DaoResult(true, true);
+    return DaoResult(map['asset_id'] as String ??StringSet.ZERO, true);
   }
 }

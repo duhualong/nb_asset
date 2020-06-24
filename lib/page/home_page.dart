@@ -48,7 +48,7 @@ Future<bool> requestPermission() async {
 Future<void> _loginOut(BuildContext context) async {
   Navigator.of(context).pop();
   await NbDao.loginOut();
-  Global.user.uuid=null;
+  Global.user.uuid = null;
   Navigator.of(context).pushReplacementNamed(LoginPage.routeName);
 }
 
@@ -191,7 +191,9 @@ class _HomeWidgetState extends State<HomeWidget> {
   Future<void> _scan(BuildContext context) async {
     try {
       String result = await BarcodeScanner.scan();
-      print('result:$result');
+      if (result.isEmpty || result == null||result.trim()=='{}') {
+        return;
+      }
       Navigator.push(
         context,
         MaterialPageRoute(
