@@ -28,7 +28,7 @@
 | [permission_handler](https://github.com/Baseflow/flutter-permission-handler) | 权限申请 |
 | [image_picker](https://github.com/flutter/plugins/tree/master/packages/image_picker) | 本地图片 |
 | [json_annotation](https://github.com/dart-lang/json_serializable) | JSON 模板 |
-| [jpush_flutter](https://github.com/jpush/jpush-flutter-plugin) | JSON 模板 |
+| [jpush_flutter](https://github.com/jpush/jpush-flutter-plugin) | 极光推送 |
 | [package_info](https://github.com/flutter/plugins/tree/master/packages/package_info) | 包名信息 |
 | [path_provider](https://github.com/flutter/plugins/tree/master/packages/path_provider) | 本地路径 |
 | [photo_view](https://github.com/renancaraujo/photo_view) | 图片预览 |
