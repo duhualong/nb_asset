@@ -150,6 +150,97 @@ class NbDao {
       return DaoResult(
           ErrorEvent.errorMessageToast(detail + StringSet.PERIOD), false);
     }
-    return DaoResult(map['asset_id'] as String ??StringSet.ZERO, true);
+    return DaoResult(map['asset_id'] as String ?? StringSet.ZERO, true);
+  }
+
+  static Future<DaoResult> readNb({String assetId, String jpushId}) async {
+    FormData formData = FormData.fromMap({
+      'asset_id': assetId,
+      'jpush_id': jpushId,
+    });
+    HttpResult result =
+        await HttpManager.fetch(await HttpAddress.readNb(), formData);
+    if (result == null || !result.isSuccess) {
+      return DaoResult(result?.data ?? StringSet.EMPTY, false);
+    }
+
+    Map<String, dynamic> map =
+        json.decode(result.data as String ?? StringSet.EMPTY);
+    bool success = map['status'] as int == 1;
+    String detail = map['detail'] as String ?? StringSet.UNKNOWN_ERROR;
+    if (!success) {
+      return DaoResult(
+          ErrorEvent.errorMessageToast(detail + StringSet.PERIOD), false);
+    }
+    return DaoResult(true, true);
+  }
+
+  static Future<DaoResult> dimmingNb(
+      {String assetId, String jpushId, List<int> lampId, int op}) async {
+    FormData formData = FormData.fromMap({
+      'asset_id': assetId,
+      'lamp_id': lampId,
+      'op': op,
+      'jpush_id': jpushId,
+    });
+    HttpResult result =
+        await HttpManager.fetch(await HttpAddress.dimmingNb(), formData);
+    if (result == null || !result.isSuccess) {
+      return DaoResult(result?.data ?? StringSet.EMPTY, false);
+    }
+
+    Map<String, dynamic> map =
+        json.decode(result.data as String ?? StringSet.EMPTY);
+    bool success = map['status'] as int == 1;
+    String detail = map['detail'] as String ?? StringSet.UNKNOWN_ERROR;
+    if (!success) {
+      return DaoResult(
+          ErrorEvent.errorMessageToast(detail + StringSet.PERIOD), false);
+    }
+    return DaoResult(true, true);
+  }
+
+  static Future<DaoResult> resetNb({String assetId, String jpushId}) async {
+    FormData formData = FormData.fromMap({
+      'asset_id': assetId,
+      'jpush_id': jpushId,
+    });
+    HttpResult result =
+        await HttpManager.fetch(await HttpAddress.resetNb(), formData);
+    if (result == null || !result.isSuccess) {
+      return DaoResult(result?.data ?? StringSet.EMPTY, false);
+    }
+
+    Map<String, dynamic> map =
+        json.decode(result.data as String ?? StringSet.EMPTY);
+    bool success = map['status'] as int == 1;
+    String detail = map['detail'] as String ?? StringSet.UNKNOWN_ERROR;
+    if (!success) {
+      return DaoResult(
+          ErrorEvent.errorMessageToast(detail + StringSet.PERIOD), false);
+    }
+    return DaoResult(true, true);
+  }
+
+  static Future<DaoResult> sendNb({String assetId, String jpushId}) async {
+    FormData formData = FormData.fromMap({
+      'asset_id': assetId,
+      'jpush_id': jpushId,
+    });
+    HttpResult result =
+        await HttpManager.fetch(await HttpAddress.sendNb(), formData);
+    if (result == null || !result.isSuccess) {
+      return DaoResult(result?.data ?? StringSet.EMPTY, false);
+    }
+
+    Map<String, dynamic> map =
+        json.decode(result.data as String ?? StringSet.EMPTY);
+    bool success = map['status'] as int == 1;
+    String detail = map['detail'] as String ?? StringSet.UNKNOWN_ERROR;
+    if (!success) {
+      return DaoResult(
+          ErrorEvent.errorMessageToast(detail + StringSet.PERIOD), false);
+    }
+    return DaoResult(true, true);
   }
 }

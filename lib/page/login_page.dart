@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:nbassetentry/common/dao/nb_dao.dart';
+import 'package:nbassetentry/common/event/jpush_event.dart';
 
 import 'base_page.dart';
 import 'home_page.dart';
@@ -111,11 +113,13 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
   final TextEditingController _passwordController = TextEditingController();
   StreamSubscription _stream;
   FocusNode _commentFocus = FocusNode();
+  JPush _jPush = JPush();
 
   @override
   void initState() {
     super.initState();
     _initialize();
+    _initJpush();
   }
 
   @override
@@ -264,5 +268,35 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
         ],
       ),
     );
+  }
+
+  Future<void>_initJpush()async {
+    try {
+      _jPush.addEventHandler(
+        onReceiveNotification: (Map<String, dynamic> message) async {
+          print("flutter onOpenNotification: $message");
+
+          JpushEvent.eventBus.fire(message['alert']);
+
+        },
+        onOpenNotification: (Map<String, dynamic> message) async {
+          print("flutter onOpenNotification: $message");
+        },
+        onReceiveMessage: (Map<String, dynamic> message) async {},
+      );
+    } on PlatformException {}
+
+    _jPush.setup(
+      appKey: StringSet.JPUSH_KEY,
+      channel: 'defaultChannel',
+      production: true,
+      debug: false,
+    );
+
+    _jPush.applyPushAuthority(NotificationSettingsIOS(
+      sound: true,
+      alert: true,
+      badge: true,
+    ));
   }
 }

@@ -44,6 +44,16 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters "armeabi", "armeabi-v7a","arm64-v8a", "x86"
+        }
+        manifestPlaceholders = [
+                JPUSH_PKGNAME: "wlst.nbassetentry",
+                JPUSH_APPKEY : "46d90f1665a2adc1a31f6a62", // NOTE: JPush 上注册的包名对应的 Appkey.
+                JPUSH_CHANNEL: "developer-default", //暂时填写默认值即可.
+
+        ]
     }
 
     buildTypes {

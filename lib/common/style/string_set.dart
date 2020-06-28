@@ -106,6 +106,7 @@ class StringSet {
   static const String NB_UPDATE_SUCCESS='资产更新成功';
   static const String NB_ISSUED_SUCCESS='下发参数成功';
   static const String ZERO='0';
+  static const String JPUSH_KEY = '46d90f1665a2adc1a31f6a62';
 
   /// theme_color
   static const String THEME_COLOR = '主题颜色';

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:amap_location_fluttify/amap_location_fluttify.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
 import 'package:nbassetentry/common/dao/dao_result.dart';
 import 'package:nbassetentry/common/dao/nb_dao.dart';
+import 'package:nbassetentry/common/event/jpush_event.dart';
 import 'package:nbassetentry/common/model/scan.dart';
 import 'package:nbassetentry/common/util/screen_utils.dart';
 import 'package:nbassetentry/widget/custom_editable_image_cell.dart';
@@ -64,11 +66,21 @@ class _NbScanPageState extends State<NbScanPage> {
   int groupId;
   int carrierId;
   int loopId = Config.LOOP_COUNT;
+  StreamSubscription _stream;
 
   @override
   initState() {
     super.initState();
     _initParseData();
+    _initStream();
+  }
+
+  ///接收极光推送信息
+  Future<void> _initStream() async {
+    _stream = JpushEvent.eventBus.on<dynamic>().listen((object) {
+
+
+    });
   }
 
   Future<void> _initParseData() async {
@@ -161,6 +173,8 @@ class _NbScanPageState extends State<NbScanPage> {
   void dispose() {
     super.dispose();
     _nameController?.dispose();
+    _stream?.cancel();
+    _stream = null;
   }
 
   void showDimming(BuildContext context) {

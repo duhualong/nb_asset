@@ -24,4 +24,16 @@ class HttpAddress {
 
   ///NB资产信息更新
   static Future<String> updateNbAsset() async => '${await baseUrl()}update';
+
+  ///召测参数
+  static Future<String> readNb() async => '${await baseUrl()}read';
+
+  ///调光 （op：0-关灯 100-开灯 1~99-调光值）
+  static Future<String> dimmingNb() async => '${await baseUrl()}dimming';
+
+  ///复位
+  static Future<String> resetNb() async => '${await baseUrl()}reset';
+
+  ///下发参数
+  static Future<String> sendNb() async => '${await baseUrl()}send';
 }
