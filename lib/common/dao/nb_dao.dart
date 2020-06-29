@@ -95,6 +95,7 @@ class NbDao {
     int powerRateFour,
     int reportReply,
     List<String> paths,
+    String iccid,
   }) async {
     FormData formData = FormData.fromMap({
       "asset_id": assetId,
@@ -103,7 +104,7 @@ class NbDao {
       "carrier_id": carrierId,
       "barcode_id": barCode,
       "provider": StringSet.EMPTY,
-      "iccid": StringSet.EMPTY,
+      "iccid": iccid,
       "imei": imei,
       "imsi": imsi,
       "longitude": lng,
@@ -183,6 +184,7 @@ class NbDao {
       'op': op,
       'jpush_id': jpushId,
     });
+    print('data:${formData.toString()}');
     HttpResult result =
         await HttpManager.fetch(await HttpAddress.dimmingNb(), formData);
     if (result == null || !result.isSuccess) {

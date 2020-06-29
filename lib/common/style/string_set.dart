@@ -33,6 +33,7 @@ class StringSet {
   static const String LOGIN = '登录';
   static const String NETWORK_DEMO_NAME = '盛同云演示';
   static const String NETWORK_DEMO_IP = '10.3.8.29';
+//  static const String NETWORK_DEMO_IP = '10.3.8.52';
   static const String NETWORK_DEMO_PORT = '28644';
   static const String HOME_TITLE = '小帮手';
   static const String HOME_HINT = '一站式服务解决所有问题';
@@ -51,6 +52,7 @@ class StringSet {
   static const String NB_IMSI = 'imsi';
   static const String NB_LONGITUDE = '经度';
   static const String NB_LATITUDE = '纬度';
+  static const String NB_ICCID='iccid';
   static const String NB_USED = '投运';
   static const String NB_ALARM = '主动告警';
   static const String NB_REPLY = '主报应答';
@@ -65,8 +67,12 @@ class StringSet {
   static const String CAMERA = '相机';
   static const String GALLERY = '相册';
   static const NO_SETTING = '不设置';
-  static const YES='是';
-  static const NO='否';
+  static const String YES='是';
+  static const String NO='否';
+  static const String OPEN='(开灯)';
+  static const String CLOSE='(关灯)';
+  static const String LOOP='回路';
+  static const String RATED_POWER='额定功率';
 
   static const  String TWENTY = '20W';
   static const String FIFTY = '50W';
@@ -134,6 +140,7 @@ class StringSet {
     NB_IMSI,
     NB_LONGITUDE,
     NB_LATITUDE,
+    NB_ICCID,
     NB_USED,
     NB_ALARM,
     NB_REPLY,

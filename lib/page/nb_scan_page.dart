@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:amap_location_fluttify/amap_location_fluttify.dart';
@@ -6,12 +7,15 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:nbassetentry/common/dao/dao_result.dart';
 import 'package:nbassetentry/common/dao/nb_dao.dart';
 import 'package:nbassetentry/common/event/jpush_event.dart';
 import 'package:nbassetentry/common/model/scan.dart';
 import 'package:nbassetentry/common/util/screen_utils.dart';
 import 'package:nbassetentry/widget/custom_editable_image_cell.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import '../common/model/option.dart';
 import '../common/style/string_set.dart';
 import '../common/style/style_set.dart';
@@ -67,10 +71,17 @@ class _NbScanPageState extends State<NbScanPage> {
   int carrierId;
   int loopId = Config.LOOP_COUNT;
   StreamSubscription _stream;
+  String icccid = StringSet.EMPTY;
+  BuildContext _context;
+  JPush _jPush = new JPush();
+  String jpushId = StringSet.EMPTY;
+  ProgressDialog pr;
+  String op = StringSet.EMPTY;
 
   @override
   initState() {
     super.initState();
+
     _initParseData();
     _initStream();
   }
@@ -78,12 +89,55 @@ class _NbScanPageState extends State<NbScanPage> {
   ///接收极光推送信息
   Future<void> _initStream() async {
     _stream = JpushEvent.eventBus.on<dynamic>().listen((object) {
+      if (!object.toString().contains('status')) {
+        return;
+      }
+      Map<String, dynamic> map =
+      json.decode(object as String ?? StringSet.EMPTY);
+      bool isSuccess = map['status'] as int == 1;
+      if (!isSuccess) {
+        return;
+      }
+      if (map.containsKey('longitude')) {
+        pr.hide();
+        _showMenu();
+      } else {
+        showCustomDialog(op + "成功");
+      }
+      setState(() {});
+    });
+  }
 
+  Future<void> _dimmingNb(List<int> loop) async {
+    List<int> _loop = [];
+    for (int i = 0; i < loop.length; i++) {
+      if (loop[i] == 2) {
+        _loop.add(i + 1);
+      }
+    }
 
+    DaoResult result = await NbDao.dimmingNb(
+      assetId: assetId,
+      jpushId: jpushId,
+      lampId: _loop,
+      op: _dimmingValue.toInt(),
+    );
+    if (!result.isSuccess) {
+      return;
+    }
+
+    pr.show();
+    Future.delayed(Duration(seconds: 10)).then((onValue) {
+      if (pr.isShowing())
+        pr.hide().then((isHidden) {
+          Fluttertoast.showToast(msg: '调光操作，设备响应超时！');
+          setState(() {});
+        });
     });
   }
 
   Future<void> _initParseData() async {
+    jpushId = await _jPush.getRegistrationID();
     _location = await AmapLocation.fetchLocation();
 
     DaoResult result = await NbDao.scan(data: widget.result);
@@ -108,16 +162,18 @@ class _NbScanPageState extends State<NbScanPage> {
       _switchReply = (scanResult.deviceParam.reportReply == 1);
       _switchAlarm = (scanResult.deviceParam.autoAlarm == 1);
       _switchUsed = (scanResult.deviceParam.ctrlState == 1);
+      icccid = scanResult.deviceParam.iccid ?? StringSet.EMPTY;
       scanResult.candidateItems.carrierList.forEach((carrier) =>
           _carrierOptions.add(Option(
               id: carrier.carrierId,
               title: carrier.carrierName,
               isChecked: carrierId == carrier.carrierId)));
-      scanResult.candidateItems.groupList.forEach((group) => _groupOptions.add(
-          Option(
-              id: group.groupId,
-              title: group.groupName,
-              isChecked: groupId == group.groupId)));
+      scanResult.candidateItems.groupList.forEach((group) =>
+          _groupOptions.add(
+              Option(
+                  id: group.groupId,
+                  title: group.groupName,
+                  isChecked: groupId == group.groupId)));
       if (_groupName == StringSet.EMPTY) {
         _groupOptions[0].isChecked = true;
         groupId = _groupOptions[0].id;
@@ -149,18 +205,18 @@ class _NbScanPageState extends State<NbScanPage> {
                 title: scanResult.deviceParam.lampStatus[i].powerRate == 0
                     ? StringSet.NO_SETTING
                     : (scanResult.deviceParam.lampStatus[i].powerRate
-                            .toString() +
-                        'W'),
+                    .toString() +
+                    'W'),
                 isChecked:
-                    scanResult.deviceParam.lampStatus[i].autoLight == 1));
+                scanResult.deviceParam.lampStatus[i].autoLight == 1));
           }
         }
       }
 
-      _longitude = scanResult.deviceParam.longitude == StringSet.ZERO
+      _longitude = scanResult.deviceParam.longitude != StringSet.ZERO
           ? scanResult.deviceParam.longitude.toString()
           : _location.latLng.longitude.toString();
-      _latitude = scanResult.deviceParam.latitude == StringSet.ZERO
+      _latitude = scanResult.deviceParam.latitude != StringSet.ZERO
           ? scanResult.deviceParam.latitude.toString()
           : _location.latLng.latitude.toString();
       if (mounted) {
@@ -177,7 +233,7 @@ class _NbScanPageState extends State<NbScanPage> {
     _stream = null;
   }
 
-  void showDimming(BuildContext context) {
+  void showDimming() {
     List<int> _buttonLightStatus = [
       1,
       _nbLight.length > 1 ? 1 : 0,
@@ -187,13 +243,17 @@ class _NbScanPageState extends State<NbScanPage> {
     bool _isEnable = false;
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
-        context: context,
-        builder: (context) => StatefulBuilder(
+        context: _context,
+        builder: (context) =>
+            StatefulBuilder(
               builder: (context, state) {
                 return Stack(
                   children: <Widget>[
                     Container(
-                        width: MediaQuery.of(context).size.width,
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width,
                         margin: EdgeInsets.only(top: 30),
                         decoration: new BoxDecoration(
                             color: Colors.white,
@@ -246,58 +306,58 @@ class _NbScanPageState extends State<NbScanPage> {
                                     },
                                     child: _buttonLightStatus[index] == 1
                                         ? DottedBorder(
-                                            borderType: BorderType.RRect,
-                                            radius: Radius.circular(
-                                                Config.CLIP_RANGE),
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(
-                                                      Config.CLIP_RANGE)),
-                                              child: Container(
-                                                height: 40,
-                                                width: ScreenUtils.screenW(
-                                                            context) /
-                                                        4 -
-                                                    20,
-                                                color: Color.fromRGBO(
-                                                    239, 239, 244, 1),
-                                                child: Center(
-                                                  child: Text('灯头${index + 1}',
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 14)),
-                                                ),
-                                              ),
-                                            ),
-                                          )
+                                      borderType: BorderType.RRect,
+                                      radius: Radius.circular(
+                                          Config.CLIP_RANGE),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(
+                                                Config.CLIP_RANGE)),
+                                        child: Container(
+                                          height: 40,
+                                          width: ScreenUtils.screenW(
+                                              context) /
+                                              4 -
+                                              20,
+                                          color: Color.fromRGBO(
+                                              239, 239, 244, 1),
+                                          child: Center(
+                                            child: Text('灯头${index + 1}',
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 14)),
+                                          ),
+                                        ),
+                                      ),
+                                    )
                                         : ClipRRect(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(
-                                                    Config.CLIP_RANGE)),
-                                            child: Container(
-                                              height: 40,
-                                              width:
-                                                  ScreenUtils.screenW(context) /
-                                                          4 -
-                                                      20,
-                                              color:
-                                                  _buttonLightStatus[index] == 2
-                                                      ? ThemeDataSet.tabColor
-                                                      : Color.fromRGBO(
-                                                          239, 239, 244, 1),
-                                              child: Center(
-                                                child: Text(
-                                                  '灯头${index + 1}',
-                                                  style: TextStyle(
-                                                      color: _buttonLightStatus[
-                                                                  index] ==
-                                                              2
-                                                          ? Colors.white
-                                                          : Colors.grey,
-                                                      fontSize: 14),
-                                                ),
-                                              ),
-                                            )),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(
+                                                Config.CLIP_RANGE)),
+                                        child: Container(
+                                          height: 40,
+                                          width:
+                                          ScreenUtils.screenW(context) /
+                                              4 -
+                                              20,
+                                          color:
+                                          _buttonLightStatus[index] == 2
+                                              ? ThemeDataSet.tabColor
+                                              : Color.fromRGBO(
+                                              239, 239, 244, 1),
+                                          child: Center(
+                                            child: Text(
+                                              '灯头${index + 1}',
+                                              style: TextStyle(
+                                                  color: _buttonLightStatus[
+                                                  index] ==
+                                                      2
+                                                      ? Colors.white
+                                                      : Colors.grey,
+                                                  fontSize: 14),
+                                            ),
+                                          ),
+                                        )),
                                   );
                                 }),
                           ),
@@ -305,9 +365,14 @@ class _NbScanPageState extends State<NbScanPage> {
                             alignment: Alignment.centerLeft,
                             padding: EdgeInsets.all(16),
                             child: Text(
-                              '光照：${_dimmingValue.toInt()}%',
+                              '光照：${_dimmingValue.toInt()}% ' +
+                                  '${_dimmingValue == 0
+                                      ? StringSet.CLOSE
+                                      : (_dimmingValue == 100
+                                      ? StringSet.OPEN
+                                      : StringSet.EMPTY)}',
                               style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
+                              TextStyle(color: Colors.black, fontSize: 16),
                             ),
                           ),
                           Container(
@@ -343,10 +408,12 @@ class _NbScanPageState extends State<NbScanPage> {
                                       ),
                                       activeTrackBar: BoxDecoration(
                                           borderRadius:
-                                              BorderRadius.circular(20),
+                                          BorderRadius.circular(20),
                                           color: ThemeDataSet.tabColor),
                                       activeDisabledTrackBarColor:
-                                          Theme.of(context).disabledColor,
+                                      Theme
+                                          .of(context)
+                                          .disabledColor,
                                     ),
                                     handler: FlutterSliderHandler(
                                       decoration: BoxDecoration(),
@@ -396,11 +463,15 @@ class _NbScanPageState extends State<NbScanPage> {
                             height: 40,
                             child: FlatButton(
                               color: ThemeDataSet.tabColor,
-                              highlightColor: Theme.of(context).highlightColor,
-                              disabledColor: Theme.of(context).disabledColor,
+                              highlightColor: Theme
+                                  .of(context)
+                                  .highlightColor,
+                              disabledColor: Theme
+                                  .of(context)
+                                  .disabledColor,
                               shape: RoundedRectangleBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(20)),
+                                BorderRadius.all(Radius.circular(20)),
                               ),
                               child: Text(
                                 StringSet.CONFIRM,
@@ -409,7 +480,13 @@ class _NbScanPageState extends State<NbScanPage> {
                                   fontSize: 16,
                                 ),
                               ),
-                              onPressed: _isEnable ? () {} : null,
+                              onPressed: _isEnable
+                                  ? () {
+                                Navigator.pop(context);
+
+                                _dimmingNb(_buttonLightStatus);
+                              }
+                                  : null,
                             ),
                           ),
                           SizedBox(
@@ -436,7 +513,7 @@ class _NbScanPageState extends State<NbScanPage> {
             ));
   }
 
-  void _showMenu(BuildContext context) {
+  void _showMenu() {
     _summonValue.clear();
     _summonValue.add(_nameController.text.trim());
     _summonValue.add(_carrierName);
@@ -445,6 +522,7 @@ class _NbScanPageState extends State<NbScanPage> {
     _summonValue.add(_imsi);
     _summonValue.add(_longitude);
     _summonValue.add(_latitude);
+    _summonValue.add(icccid);
     _summonValue.add(_switchUsed ? StringSet.YES : StringSet.NO);
     _summonValue.add(_switchAlarm ? StringSet.YES : StringSet.NO);
     _summonValue.add(_switchReply ? StringSet.YES : StringSet.NO);
@@ -454,90 +532,98 @@ class _NbScanPageState extends State<NbScanPage> {
     _nbLight.forEach((light) {
       _summonTitle.add('上电开灯${light.id + 1}');
       _summonValue.add(light.isChecked ? StringSet.YES : StringSet.NO);
-      _summonTitle.add('回路${light.id + 1}额定功率');
+      _summonTitle
+          .add(StringSet.LOOP + '${light.id + 1}' + StringSet.RATED_POWER);
       _summonValue.add(light.title);
     });
 
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
-      context: context,
-      builder: (context) => Stack(
-        children: <Widget>[
-          Container(
-            width: MediaQuery.of(context).size.width,
-            margin: EdgeInsets.only(top: 30),
-            decoration: new BoxDecoration(
-                color: Colors.white,
-                borderRadius: new BorderRadius.only(
-                    topLeft: const Radius.circular(20.0),
-                    topRight: const Radius.circular(20.0))),
-            child: Column(
-              children: <Widget>[
-                GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Align(
-                      alignment: Alignment(1.0, 0.0),
+      context: _context,
+      builder: (context) =>
+          Stack(
+            children: <Widget>[
+              Container(
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                margin: EdgeInsets.only(top: 30),
+                decoration: new BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: new BorderRadius.only(
+                        topLeft: const Radius.circular(20.0),
+                        topRight: const Radius.circular(20.0))),
+                child: Column(
+                  children: <Widget>[
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Align(
+                          alignment: Alignment(1.0, 0.0),
+                          child: Container(
+                              margin: const EdgeInsets.only(
+                                  right: 16.0, top: 6.0),
+                              child: Icon(
+                                Icons.clear,
+                                size: 28,
+                                color: Colors.black26,
+                              )),
+                        )),
+                    Expanded(
                       child: Container(
-                          margin: const EdgeInsets.only(right: 16.0, top: 6.0),
-                          child: Icon(
-                            Icons.clear,
-                            size: 28,
-                            color: Colors.black26,
-                          )),
+                        padding: EdgeInsets.only(
+                            left: 16, right: 16, bottom: 10, top: 10),
+                        child: ListView.builder(
+                            shrinkWrap: false,
+                            itemCount: _summonTitle.length,
+                            itemBuilder: (context, index) {
+                              return Row(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 5, bottom: 5),
+                                    child: Text(
+                                      _summonTitle[index],
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 16),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Container(),
+                                  ),
+                                  Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 5, bottom: 5),
+                                      child: Text(
+                                        _summonValue[index],
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 16),
+                                      )),
+                                ],
+                              );
+                            }),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Align(
+                alignment: Alignment.topCenter,
+                child: Hero(
+                    tag: AssetSet.NB_BOTTOM_SHEET_SUMMON,
+                    child: Container(
+                      height: 60.0,
+                      width: 60.0,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage(
+                                  AssetSet.NB_BOTTOM_SHEET_SUMMON))),
                     )),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.only(
-                        left: 16, right: 16, bottom: 10, top: 10),
-                    child: ListView.builder(
-                        shrinkWrap: false,
-                        itemCount: _summonTitle.length,
-                        itemBuilder: (context, index) {
-                          return Row(
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(top: 5, bottom: 5),
-                                child: Text(
-                                  _summonTitle[index],
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 16),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(),
-                              ),
-                              Padding(
-                                  padding: EdgeInsets.only(top: 5, bottom: 5),
-                                  child: Text(
-                                    _summonValue[index],
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 16),
-                                  )),
-                            ],
-                          );
-                        }),
-                  ),
-                )
-              ],
-            ),
+              ),
+            ],
           ),
-          Align(
-            alignment: Alignment.topCenter,
-            child: Hero(
-                tag: AssetSet.NB_BOTTOM_SHEET_SUMMON,
-                child: Container(
-                  height: 60.0,
-                  width: 60.0,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: AssetImage(AssetSet.NB_BOTTOM_SHEET_SUMMON))),
-                )),
-          ),
-        ],
-      ),
     );
   }
 
@@ -556,9 +642,9 @@ class _NbScanPageState extends State<NbScanPage> {
       autoAlarm: _switchAlarm ? 1 : 0,
       lampCount: loopId + 1,
       autoLightOne: StringSet.powerOptions
-              .where((option) => option.title == _nbLight[0].title)
-              .toList()[0]
-              .isChecked
+          .where((option) => option.title == _nbLight[0].title)
+          .toList()[0]
+          .isChecked
           ? 1
           : 0,
       powerRateOne: StringSet.powerOptions
@@ -567,48 +653,49 @@ class _NbScanPageState extends State<NbScanPage> {
           .id,
       autoLightTwo: (loopId >= 1)
           ? (StringSet.powerOptions
-                  .where((option) => option.title == _nbLight[1].title)
-                  .toList()[0]
-                  .isChecked
-              ? 1
-              : 0)
+          .where((option) => option.title == _nbLight[1].title)
+          .toList()[0]
+          .isChecked
+          ? 1
+          : 0)
           : 0,
       powerRateTwo: (loopId >= 1)
           ? (StringSet.powerOptions
-              .where((option) => option.title == _nbLight[1].title)
-              .toList()[0]
-              .id)
+          .where((option) => option.title == _nbLight[1].title)
+          .toList()[0]
+          .id)
           : 0,
       autoLightThree: (loopId >= 2)
           ? (StringSet.powerOptions
-                  .where((option) => option.title == _nbLight[2].title)
-                  .toList()[0]
-                  .isChecked
-              ? 1
-              : 0)
+          .where((option) => option.title == _nbLight[2].title)
+          .toList()[0]
+          .isChecked
+          ? 1
+          : 0)
           : 0,
       powerRateThree: (loopId >= 2)
           ? (StringSet.powerOptions
-              .where((option) => option.title == _nbLight[2].title)
-              .toList()[0]
-              .id)
+          .where((option) => option.title == _nbLight[2].title)
+          .toList()[0]
+          .id)
           : 0,
       autoLightFour: (loopId >= 3)
           ? (StringSet.powerOptions
-                  .where((option) => option.title == _nbLight[3].title)
-                  .toList()[0]
-                  .isChecked
-              ? 1
-              : 0)
+          .where((option) => option.title == _nbLight[3].title)
+          .toList()[0]
+          .isChecked
+          ? 1
+          : 0)
           : 0,
       powerRateFour: (loopId >= 3)
           ? (StringSet.powerOptions
-              .where((option) => option.title == _nbLight[3].title)
-              .toList()[0]
-              .id)
+          .where((option) => option.title == _nbLight[3].title)
+          .toList()[0]
+          .id)
           : 0,
       reportReply: _switchReply ? 1 : 0,
       paths: _paths,
+      iccid: icccid,
     );
 
     if (!result.isSuccess) {
@@ -618,15 +705,74 @@ class _NbScanPageState extends State<NbScanPage> {
 
     _isClick = true;
     setState(() {});
-    showCustomDialog(
-        buildContext,
-        assetId == StringSet.ZERO
-            ? StringSet.NB_REPORT_SUCCESS
-            : StringSet.NB_UPDATE_SUCCESS);
+    showCustomDialog(assetId == StringSet.ZERO
+        ? StringSet.NB_REPORT_SUCCESS
+        : StringSet.NB_UPDATE_SUCCESS);
+  }
+
+  Future<void> _showProgress(BuildContext context) async {
+    pr = ProgressDialog(
+      context,
+      type: ProgressDialogType.Normal,
+      isDismissible: true,
+    );
+    pr.style(message: '请求加载中...');
+  }
+
+  Future<void> _sendNb() async {
+    DaoResult daoResult =
+    await NbDao.sendNb(assetId: assetId, jpushId: jpushId);
+    if (!daoResult.isSuccess) {
+      return;
+    }
+    pr.show();
+    Future.delayed(Duration(seconds: 10)).then((onValue) {
+      if (pr.isShowing())
+        pr.hide().then((isHidden) {
+          Fluttertoast.showToast(msg: '下发参数操作，设备响应超时！');
+          setState(() {});
+        });
+    });
+  }
+
+  Future<void> _resetNb() async {
+    DaoResult daoResult =
+    await NbDao.resetNb(assetId: assetId, jpushId: jpushId);
+    if (!daoResult.isSuccess) {
+      return;
+    }
+    pr.show();
+    Future.delayed(Duration(seconds: 10)).then((onValue) {
+      if (pr.isShowing())
+        pr.hide().then((isHidden) {
+          Fluttertoast.showToast(msg: '复位操作，设备响应超时！');
+
+          setState(() {});
+        });
+    });
+  }
+
+  Future<void> _readNb() async {
+    DaoResult daoResult =
+    await NbDao.readNb(assetId: assetId, jpushId: jpushId);
+    if (!daoResult.isSuccess) {
+      return;
+    }
+    pr.show();
+    Future.delayed(Duration(seconds: 10)).then((onValue) {
+      if (pr.isShowing())
+        pr.hide().then((isHidden) {
+          Fluttertoast.showToast(msg: '召测参数操作，设备响应超时！');
+
+          setState(() {});
+        });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
+    _showProgress(_context);
     return BasePage(
       key: _bottomSheetKey,
       hasAppBar: true,
@@ -678,19 +824,29 @@ class _NbScanPageState extends State<NbScanPage> {
           }
           switch (index) {
             case 0:
-              _showMenu(context);
+              _readNb();
               break;
             case 1:
-              showDimming(context);
+              op = '调光';
+              showDimming();
               break;
             case 2:
-              showCustomDialog(context, StringSet.NB_RESET_SUCCESS);
+              op = '复位';
+
+              _resetNb();
+
+              ///    showCustomDialog(StringSet.NB_RESET_SUCCESS);
               break;
             case 3:
-              showCustomDialog(context, StringSet.NB_ISSUED_SUCCESS);
+              op = '下发参数';
+
+              _sendNb();
+
+              ///   showCustomDialog(StringSet.NB_ISSUED_SUCCESS);
 
               break;
           }
+
           setState(() {});
         },
       ),
@@ -713,268 +869,281 @@ class _NbScanPageState extends State<NbScanPage> {
       ],
       body: SingleChildScrollView(
           child: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(blankNode);
-        },
-        child: Container(
-          color: Color.fromRGBO(239, 239, 244, 1),
-          child: Column(
-            children: <Widget>[
-              NbTextFieldWidget(
-                labelText: StringSet.NB_NAME,
-                required: true,
-                controller: _nameController,
-              ),
-              CustomPickerCell(
-                title: StringSet.NB_GROUP,
-                isNecessary: true,
-                content: _groupName,
-                options: _groupOptions,
-                isMultiple: false,
-                okButtonCanDisabled: true,
-                onConfirm: (options) {
-                  int position =
-                      options.indexWhere((option) => option.isChecked);
-                  for (int index = 0; index < _groupOptions.length; index++) {
-                    _groupOptions[index].isChecked = (position == index);
-                    if (_groupOptions[index].isChecked) {
-                      _groupName = _groupOptions[index].title;
-                      groupId = _groupOptions[index].id;
-                    }
-                  }
-
-                  setState(() {});
-                },
-              ),
-              CustomPickerCell(
-                title: StringSet.NB_OPERATOR,
-                isNecessary: true,
-                content: _carrierName,
-                options: _carrierOptions,
-                isMultiple: false,
-                okButtonCanDisabled: true,
-                onConfirm: (options) {
-                  int position =
-                      options.indexWhere((option) => option.isChecked);
-                  for (int index = 0; index < _carrierOptions.length; index++) {
-                    _carrierOptions[index].isChecked = (position == index);
-                    if (_carrierOptions[index].isChecked) {
-                      _carrierName = _carrierOptions[index].title;
-                      carrierId = _carrierOptions[index].id;
-                    }
-                  }
-
-                  setState(() {});
-                },
-              ),
-              NbTextWidget(
-                labelText: StringSet.NB_BARCODE,
-                backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
-                value: _barCode,
-              ),
-              Row(
+            onTap: () {
+              FocusScope.of(context).requestFocus(blankNode);
+            },
+            child: Container(
+              color: Color.fromRGBO(239, 239, 244, 1),
+              child: Column(
                 children: <Widget>[
-                  SizedBox(
-                    width: 12,
+                  NbTextFieldWidget(
+                    labelText: StringSet.NB_NAME,
+                    required: true,
+                    controller: _nameController,
                   ),
-                  Expanded(
-                    child: NbTextWidget(
-                      labelText: StringSet.NB_IMEI,
-                      backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
-                      value: _imei,
-                    ),
-                    flex: 1,
-                  ),
-                  Expanded(
-                    child: NbTextWidget(
-                      labelText: StringSet.NB_IMSI,
-                      backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
-                      value: _imsi,
-                    ),
-                    flex: 1,
-                  ),
-                  SizedBox(
-                    width: 12,
-                  ),
-                ],
-              ),
-              NbTextWidget(
-                labelText: StringSet.NB_LONGITUDE,
-                backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
-                value: _longitude,
-              ),
-              NbTextWidget(
-                labelText: StringSet.NB_LATITUDE,
-                backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
-                value: _latitude,
-              ),
-              Container(
-                color: Colors.white,
-                margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                padding: EdgeInsets.fromLTRB(20, 6, 10, 6),
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      StringSet.NB_USED,
-                      style: TextStyle(color: Colors.black, fontSize: 16),
-                    ),
-                    Expanded(
-                      child: Container(),
-                    ),
-                    CupertinoSwitch(
-                      value: _switchUsed,
-                      onChanged: (bool value) {
-                        _switchUsed = value;
-                        setState(() {});
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                color: Colors.white,
-                margin: EdgeInsets.symmetric(vertical: 1.0),
-                padding: EdgeInsets.fromLTRB(20, 6, 10, 6),
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      StringSet.NB_ALARM,
-                      style: TextStyle(color: Colors.black, fontSize: 16),
-                    ),
-                    Expanded(
-                      child: Container(),
-                    ),
-                    CupertinoSwitch(
-                      value: _switchAlarm,
-                      onChanged: (bool value) {
-                        _switchAlarm = value;
-                        setState(() {});
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                color: Colors.white,
-                padding: EdgeInsets.fromLTRB(20, 6, 10, 6),
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      StringSet.NB_REPLY,
-                      style: TextStyle(color: Colors.black, fontSize: 16),
-                    ),
-                    Expanded(
-                      child: Container(),
-                    ),
-                    CupertinoSwitch(
-                      value: _switchReply,
-                      onChanged: (bool value) {
-                        _switchReply = value;
-                        setState(() {});
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              CustomPickerCell(
-                title: StringSet.NB_LOOP_COUNT,
-                isNecessary: true,
-                content: _loopName,
-                options: _loopOptions,
-                isMultiple: false,
-                okButtonCanDisabled: true,
-                onConfirm: (options) {
-                  loopId = options.indexWhere((option) => option.isChecked);
-                  _loopOptions.forEach((loop) {
-                    loop.isChecked = (loop.id == (loopId + 1));
-                  });
+                  CustomPickerCell(
+                    title: StringSet.NB_GROUP,
+                    isNecessary: true,
+                    content: _groupName,
+                    options: _groupOptions,
+                    isMultiple: false,
+                    okButtonCanDisabled: true,
+                    onConfirm: (options) {
+                      int position =
+                      options.indexWhere((option) => option.isChecked);
+                      for (int index = 0; index <
+                          _groupOptions.length; index++) {
+                        _groupOptions[index].isChecked = (position == index);
+                        if (_groupOptions[index].isChecked) {
+                          _groupName = _groupOptions[index].title;
+                          groupId = _groupOptions[index].id;
+                        }
+                      }
 
-                  _loopName = _loopOptions[loopId].title;
-                  _nbLight.clear();
-                  setState(() {
-                    for (int i = 0; i <= loopId; i++) {
-                      _nbLight.add(Option(
-                        id: i,
-                        title: StringSet.NO_SETTING,
-                        isChecked: false,
-                      ));
-                    }
-                  });
-                },
-              ),
-              Container(
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: new NeverScrollableScrollPhysics(),
-                      itemCount: _nbLight.length,
-                      itemBuilder: (context, index) {
-                        return Column(
-                          children: <Widget>[
-                            Container(
-                              color: Colors.white,
-                              margin: EdgeInsets.only(top: 10, bottom: 1),
-                              padding: EdgeInsets.fromLTRB(20, 2, 10, 2),
-                              child: Row(
-                                children: <Widget>[
-                                  Text(
-                                    StringSet.NB_OPEN_STATUS + '${index + 1}',
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 16),
+                      setState(() {});
+                    },
+                  ),
+                  CustomPickerCell(
+                    title: StringSet.NB_OPERATOR,
+                    isNecessary: true,
+                    content: _carrierName,
+                    options: _carrierOptions,
+                    isMultiple: false,
+                    okButtonCanDisabled: true,
+                    onConfirm: (options) {
+                      int position =
+                      options.indexWhere((option) => option.isChecked);
+                      for (int index = 0; index <
+                          _carrierOptions.length; index++) {
+                        _carrierOptions[index].isChecked = (position == index);
+                        if (_carrierOptions[index].isChecked) {
+                          _carrierName = _carrierOptions[index].title;
+                          carrierId = _carrierOptions[index].id;
+                        }
+                      }
+
+                      setState(() {});
+                    },
+                  ),
+                  NbTextWidget(
+                    labelText: StringSet.NB_BARCODE,
+                    backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
+                    value: _barCode,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: 12,
+                      ),
+                      Expanded(
+                        child: NbTextWidget(
+                          labelText: StringSet.NB_IMEI,
+                          backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
+                          value: _imei,
+                        ),
+                        flex: 1,
+                      ),
+                      Expanded(
+                        child: NbTextWidget(
+                          labelText: StringSet.NB_IMSI,
+                          backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
+                          value: _imsi,
+                        ),
+                        flex: 1,
+                      ),
+                      SizedBox(
+                        width: 12,
+                      ),
+                    ],
+                  ),
+                  NbTextWidget(
+                    labelText: StringSet.NB_LONGITUDE,
+                    backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
+                    value: _longitude.length > 10
+                        ? _longitude.substring(0, 9)
+                        : _longitude,
+                  ),
+                  NbTextWidget(
+                    labelText: StringSet.NB_LATITUDE,
+                    backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
+                    value: _latitude.length > 9
+                        ? _latitude.substring(0, 8)
+                        : _latitude,
+                  ),
+                  NbTextWidget(
+                    labelText: StringSet.NB_ICCID,
+                    backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
+                    value: icccid,
+                  ),
+                  Container(
+                    color: Colors.white,
+                    margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                    padding: EdgeInsets.fromLTRB(20, 6, 10, 6),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          StringSet.NB_USED,
+                          style: TextStyle(color: Colors.black, fontSize: 16),
+                        ),
+                        Expanded(
+                          child: Container(),
+                        ),
+                        CupertinoSwitch(
+                          value: _switchUsed,
+                          onChanged: (bool value) {
+                            _switchUsed = value;
+                            setState(() {});
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    color: Colors.white,
+                    margin: EdgeInsets.symmetric(vertical: 1.0),
+                    padding: EdgeInsets.fromLTRB(20, 6, 10, 6),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          StringSet.NB_ALARM,
+                          style: TextStyle(color: Colors.black, fontSize: 16),
+                        ),
+                        Expanded(
+                          child: Container(),
+                        ),
+                        CupertinoSwitch(
+                          value: _switchAlarm,
+                          onChanged: (bool value) {
+                            _switchAlarm = value;
+                            setState(() {});
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    color: Colors.white,
+                    padding: EdgeInsets.fromLTRB(20, 6, 10, 6),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          StringSet.NB_REPLY,
+                          style: TextStyle(color: Colors.black, fontSize: 16),
+                        ),
+                        Expanded(
+                          child: Container(),
+                        ),
+                        CupertinoSwitch(
+                          value: _switchReply,
+                          onChanged: (bool value) {
+                            _switchReply = value;
+                            setState(() {});
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  CustomPickerCell(
+                    title: StringSet.NB_LOOP_COUNT,
+                    isNecessary: true,
+                    content: _loopName,
+                    options: _loopOptions,
+                    isMultiple: false,
+                    okButtonCanDisabled: true,
+                    onConfirm: (options) {
+                      loopId = options.indexWhere((option) => option.isChecked);
+                      _loopOptions.forEach((loop) {
+                        loop.isChecked = (loop.id == (loopId + 1));
+                      });
+
+                      _loopName = _loopOptions[loopId].title;
+                      _nbLight.clear();
+                      setState(() {
+                        for (int i = 0; i <= loopId; i++) {
+                          _nbLight.add(Option(
+                            id: i,
+                            title: StringSet.NO_SETTING,
+                            isChecked: false,
+                          ));
+                        }
+                      });
+                    },
+                  ),
+                  Container(
+                      child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: new NeverScrollableScrollPhysics(),
+                          itemCount: _nbLight.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              children: <Widget>[
+                                Container(
+                                  color: Colors.white,
+                                  margin: EdgeInsets.only(top: 10, bottom: 1),
+                                  padding: EdgeInsets.fromLTRB(20, 2, 10, 2),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Text(
+                                        StringSet.NB_OPEN_STATUS +
+                                            '${index + 1}',
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 16),
+                                      ),
+                                      Expanded(
+                                        child: Container(),
+                                      ),
+                                      CupertinoSwitch(
+                                        value: _nbLight[index].isChecked,
+                                        onChanged: (bool value) {
+                                          _nbLight[index].isChecked = value;
+                                          setState(() {});
+                                        },
+                                      ),
+                                    ],
                                   ),
-                                  Expanded(
-                                    child: Container(),
-                                  ),
-                                  CupertinoSwitch(
-                                    value: _nbLight[index].isChecked,
-                                    onChanged: (bool value) {
-                                      _nbLight[index].isChecked = value;
-                                      setState(() {});
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            CustomPickerPowerCell(
-                              title: '回路${index + 1}额定功率',
-                              isNecessary: true,
-                              content: _nbLight[index].title,
-                              options: StringSet.powerOptions
-                                  .map((power) => Option(
+                                ),
+                                CustomPickerPowerCell(
+                                  title: '回路${index + 1}额定功率',
+                                  isNecessary: true,
+                                  content: _nbLight[index].title,
+                                  options: StringSet.powerOptions
+                                      .map((power) =>
+                                      Option(
                                         id: power.id,
                                         title: power.title,
                                         isChecked: _nbLight[index].title ==
                                             power.title,
                                       ))
-                                  .toList(),
-                              isMultiple: false,
-                              okButtonCanDisabled: true,
-                              onConfirm: (options) {
-                                _nbLight[index].title = StringSet
-                                    .powerOptions[options.indexWhere(
-                                        (option) => option.isChecked)]
-                                    .title;
-                                setState(() {});
-                              },
-                            ),
-                          ],
-                        );
-                      })),
-              CustomEditableImageCell(
-                title: StringSet.NB_PICTURE,
-                attribute: 'image',
-                urls: _urls,
-                paths: _paths,
-              )
-            ],
-          ),
-        ),
-      )),
+                                      .toList(),
+                                  isMultiple: false,
+                                  okButtonCanDisabled: true,
+                                  onConfirm: (options) {
+                                    _nbLight[index].title = StringSet
+                                        .powerOptions[options.indexWhere(
+                                            (option) => option.isChecked)]
+                                        .title;
+                                    setState(() {});
+                                  },
+                                ),
+                              ],
+                            );
+                          })),
+                  CustomEditableImageCell(
+                    title: StringSet.NB_PICTURE,
+                    attribute: 'image',
+                    urls: _urls,
+                    paths: _paths,
+                  )
+                ],
+              ),
+            ),
+          )),
     );
   }
 
-  void showCustomDialog(BuildContext context, String title) {
+  void showCustomDialog(String title) {
     showDialog(
-        context: context,
+        context: _context,
         builder: (BuildContext context) {
           return CupertinoAlertDialog(
             title: Padding(
