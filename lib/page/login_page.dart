@@ -289,7 +289,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
     _jPush.setup(
       appKey: StringSet.JPUSH_KEY,
       channel: 'defaultChannel',
-      production: true,
+      production: false,
       debug: false,
     );
 

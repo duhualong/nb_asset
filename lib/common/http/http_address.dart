@@ -11,7 +11,7 @@ class HttpAddress {
   }
 
   /// 网址验证
-  static String connect(String address) => 'https://$address/';
+  static String connect(String address) => 'https://$address/health';
 
   ///用户登录
   static Future<String> userLogin() async => '${await baseUrl()}login';
