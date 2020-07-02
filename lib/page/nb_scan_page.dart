@@ -12,6 +12,7 @@ import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:nbassetentry/common/dao/dao_result.dart';
 import 'package:nbassetentry/common/dao/nb_dao.dart';
 import 'package:nbassetentry/common/event/jpush_event.dart';
+import 'package:nbassetentry/common/model/dimming_data.dart';
 import 'package:nbassetentry/common/model/scan.dart';
 import 'package:nbassetentry/common/util/screen_utils.dart';
 import 'package:nbassetentry/widget/custom_editable_image_cell.dart';
@@ -77,6 +78,7 @@ class _NbScanPageState extends State<NbScanPage> {
   String jpushId = StringSet.EMPTY;
   ProgressDialog pr;
   String op = StringSet.EMPTY;
+  bool isOvertime=false;
 
   @override
   initState() {
@@ -89,18 +91,28 @@ class _NbScanPageState extends State<NbScanPage> {
   ///接收极光推送信息
   Future<void> _initStream() async {
     _stream = JpushEvent.eventBus.on<dynamic>().listen((object) {
-      if (!object.toString().contains('status')) {
+      if (!object.toString().contains('json')||!object.toString().contains('status')||isOvertime) {
         return;
       }
+
       Map<String, dynamic> map =
       json.decode(object as String ?? StringSet.EMPTY);
-      bool isSuccess = map['status'] as int == 1;
+      print('map:$map');
+      Map<String, dynamic> data=   json.decode(map['json'].toString()  ?? StringSet.EMPTY);
+      print('data:$data');
+      bool isSuccess = data['status'] as int == 1;
+      pr.hide();
       if (!isSuccess) {
+        showCustomDialog(op + "失败");
+        setState(() {});
         return;
       }
-      if (map.containsKey('longitude')) {
-        pr.hide();
-        _showMenu();
+      if (data.containsKey('longitude')) {
+       DimmingData dimmingData= DimmingData.fromJson(data);
+        _showMenu(autoAlarm: dimmingData.autoAlarm,
+            ctrlState: dimmingData.ctrlState,lat: dimmingData.latitude,
+            lng: dimmingData.longitude,reportReply: dimmingData.reportReply,
+            lampStatus: dimmingData.lampCount>0?dimmingData.lampStatus:[]);
       } else {
         showCustomDialog(op + "成功");
       }
@@ -127,13 +139,7 @@ class _NbScanPageState extends State<NbScanPage> {
     }
 
     pr.show();
-    Future.delayed(Duration(seconds: 10)).then((onValue) {
-      if (pr.isShowing())
-        pr.hide().then((isHidden) {
-          Fluttertoast.showToast(msg: '调光操作，设备响应超时！');
-          setState(() {});
-        });
-    });
+    toastMessage(message: StringSet.NB_DIMMING_OVERTIME);
   }
 
   Future<void> _initParseData() async {
@@ -213,10 +219,10 @@ class _NbScanPageState extends State<NbScanPage> {
         }
       }
 
-      _longitude = scanResult.deviceParam.longitude != StringSet.ZERO
+      _longitude = scanResult.deviceParam.longitude != StringSet.ZERO||scanResult.deviceParam.longitude!=StringSet.DOUBLE_ZERO
           ? scanResult.deviceParam.longitude.toString()
           : _location.latLng.longitude.toString();
-      _latitude = scanResult.deviceParam.latitude != StringSet.ZERO
+      _latitude = scanResult.deviceParam.latitude != StringSet.ZERO||scanResult.deviceParam.latitude!=StringSet.DOUBLE_ZERO
           ? scanResult.deviceParam.latitude.toString()
           : _location.latLng.latitude.toString();
       if (mounted) {
@@ -513,19 +519,29 @@ class _NbScanPageState extends State<NbScanPage> {
             ));
   }
 
-  void _showMenu() {
+  void _showMenu({int autoAlarm,int ctrlState,String lat,String lng,int reportReply,List<DimmingDataLampStatus>lampStatus}) {
+    if(lampStatus.length>0){
+      _nbLight.clear();
+      lampStatus.forEach((lamp)=>_nbLight.add(Option(id: lamp.lampVector-1,
+          title: lamp.powerRate==0?StringSet.NO_SETTING:(lamp.powerRate.toString()+'W'),isChecked: lamp.autoLight==1)));
+
+    }
+    _loopName = _nbLight.length.toString();
+    loopId = _nbLight.length-1;
+
+
     _summonValue.clear();
     _summonValue.add(_nameController.text.trim());
     _summonValue.add(_carrierName);
     _summonValue.add(_barCode);
     _summonValue.add(_imei);
     _summonValue.add(_imsi);
-    _summonValue.add(_longitude);
-    _summonValue.add(_latitude);
-    _summonValue.add(icccid);
-    _summonValue.add(_switchUsed ? StringSet.YES : StringSet.NO);
-    _summonValue.add(_switchAlarm ? StringSet.YES : StringSet.NO);
-    _summonValue.add(_switchReply ? StringSet.YES : StringSet.NO);
+    _summonValue.add(lng!=StringSet.EMPTY?lng:StringSet.SLASH);
+    _summonValue.add(lat!=StringSet.EMPTY?lat:StringSet.SLASH);
+    _summonValue.add(icccid!=StringSet.EMPTY?icccid:StringSet.SLASH);
+    _summonValue.add(ctrlState==Config.ONE??Config.ZERO ? StringSet.YES : StringSet.NO);
+    _summonValue.add(autoAlarm==Config.ONE??Config.ZERO ? StringSet.YES : StringSet.NO);
+    _summonValue.add(reportReply==Config.ONE??Config.ZERO ? StringSet.YES : StringSet.NO);
     _summonValue.add(_nbLight.length.toString());
     _summonTitle.clear();
     _summonTitle.addAll(StringSet.summonName);
@@ -726,10 +742,14 @@ class _NbScanPageState extends State<NbScanPage> {
       return;
     }
     pr.show();
-    Future.delayed(Duration(seconds: 10)).then((onValue) {
+  toastMessage(message: StringSet.NB_SEND_OVERTIME);
+  }
+  Future<void> toastMessage({String message,})async{
+    Future.delayed(Duration(seconds: Config.SECONDS_TIMEOUT)).then((onValue) {
       if (pr.isShowing())
         pr.hide().then((isHidden) {
-          Fluttertoast.showToast(msg: '下发参数操作，设备响应超时！');
+          Fluttertoast.showToast(msg: message);
+          isOvertime=true;
           setState(() {});
         });
     });
@@ -742,14 +762,7 @@ class _NbScanPageState extends State<NbScanPage> {
       return;
     }
     pr.show();
-    Future.delayed(Duration(seconds: 10)).then((onValue) {
-      if (pr.isShowing())
-        pr.hide().then((isHidden) {
-          Fluttertoast.showToast(msg: '复位操作，设备响应超时！');
-
-          setState(() {});
-        });
-    });
+ toastMessage(message: StringSet.NB_REST_OVERTIME);
   }
 
   Future<void> _readNb() async {
@@ -759,14 +772,7 @@ class _NbScanPageState extends State<NbScanPage> {
       return;
     }
     pr.show();
-    Future.delayed(Duration(seconds: 10)).then((onValue) {
-      if (pr.isShowing())
-        pr.hide().then((isHidden) {
-          Fluttertoast.showToast(msg: '召测参数操作，设备响应超时！');
-
-          setState(() {});
-        });
-    });
+   toastMessage(message: StringSet.NB_READ_OVERTIME);
   }
 
   @override
@@ -822,6 +828,7 @@ class _NbScanPageState extends State<NbScanPage> {
           if (!_isClick) {
             return;
           }
+          isOvertime=false;
           switch (index) {
             case 0:
               _readNb();
@@ -832,17 +839,11 @@ class _NbScanPageState extends State<NbScanPage> {
               break;
             case 2:
               op = '复位';
-
               _resetNb();
-
-              ///    showCustomDialog(StringSet.NB_RESET_SUCCESS);
               break;
             case 3:
               op = '下发参数';
-
               _sendNb();
-
-              ///   showCustomDialog(StringSet.NB_ISSUED_SUCCESS);
 
               break;
           }

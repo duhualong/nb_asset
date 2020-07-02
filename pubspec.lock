@@ -307,6 +307,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.5.4"
+  flutter_statusbarcolor:
+    dependency: "direct main"
+    description:
+      name: flutter_statusbarcolor
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter

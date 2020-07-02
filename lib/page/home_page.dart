@@ -45,55 +45,61 @@ Future<bool> requestPermission() async {
   }
 }
 
-Future<void> _loginOut(BuildContext context) async {
-  Navigator.of(context).pop();
-  await NbDao.loginOut();
-  Global.user.uuid = null;
-  Navigator.of(context).pushReplacementNamed(LoginPage.routeName);
-}
 
-showCustomDialog(BuildContext context, String title) {
-  showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: Padding(
-            child: Text(title),
-            padding: EdgeInsets.all(10),
-          ),
-          actions: <Widget>[
-            CupertinoDialogAction(
-              child: Text(
-                StringSet.CONFIRM,
-                style: TextStyle(
-                  color: Color.fromRGBO(26, 136, 255, 1.0),
-                  fontSize: 18,
-                ),
-              ),
-              onPressed: () {
-                _loginOut(context);
-              },
-            ),
-            CupertinoDialogAction(
-              child: Text(
-                StringSet.CANCEL,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      });
-}
 
 class _HomeWidgetState extends State<HomeWidget> {
+  BuildContext _buildContext;
+  Future<void> _loginOut(BuildContext context) async {
+    Navigator.of(context).pop();
+    await NbDao.loginOut();
+    Global.user.uuid = null;
+    Navigator.of(_buildContext).pushReplacementNamed(LoginPage.routeName);
+  }
+
+  showCustomDialog(  String title) {
+    showDialog(
+        context: _buildContext,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Padding(
+              child: Text(title),
+              padding: EdgeInsets.all(10),
+            ),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text(
+                  StringSet.CONFIRM,
+                  style: TextStyle(
+                    color: Color.fromRGBO(26, 136, 255, 1.0),
+                    fontSize: 18,
+                  ),
+                ),
+                onPressed: () {
+                  _loginOut(context);
+                },
+              ),
+              CupertinoDialogAction(
+                child: Text(
+                  StringSet.CANCEL,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+    _buildContext=context;
     return Stack(
       children: <Widget>[
         Container(
@@ -112,7 +118,7 @@ class _HomeWidgetState extends State<HomeWidget> {
             alignment: Alignment.centerRight,
             child: GestureDetector(
               onTap: () {
-                showCustomDialog(context, StringSet.LOGIN_OUT_CONFIRM);
+                showCustomDialog( StringSet.LOGIN_OUT_CONFIRM);
               },
               child: Padding(
                   padding: EdgeInsets.only(right: 10),

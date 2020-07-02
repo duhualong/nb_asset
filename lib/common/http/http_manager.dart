@@ -134,7 +134,7 @@ class HttpManager {
               json.decode(error.response.toString() ?? StringSet.EMPTY);
           String detail = map['detail'] as String ?? StringSet.UNKNOWN_ERROR;
           if(detail.contains('User-Token 无效')){
-            Navigator.of(context).pushReplacementNamed(LoginPage.routeName);
+            Navigator.of(Global.navigatorState.currentContext).pushReplacementNamed(LoginPage.routeName);
 
           }
           return HttpResult(

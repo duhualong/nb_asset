@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:nbassetentry/common/dao/nb_dao.dart';
 import 'package:nbassetentry/common/event/jpush_event.dart';
@@ -132,6 +135,10 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
   }
 
   void _initialize() async {
+    if (Platform.isIOS) {
+      await FlutterStatusbarcolor.setStatusBarColor(ThemeDataSet.tabColor);
+
+    }
     String userName =
         await LocalStorage.get(Config.USER_NAME_KEY) ?? StringSet.EMPTY;
     String password =
@@ -274,15 +281,31 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
     try {
       _jPush.addEventHandler(
         onReceiveNotification: (Map<String, dynamic> message) async {
-          print("flutter onOpenNotification: $message");
+          String _jsonString=StringSet.EMPTY;
+          print('jpush key${message.keys.toString()}');
+          if(message.containsKey('extras')){
+            if(Platform.isAndroid){
 
-          JpushEvent.eventBus.fire(message['alert']);
+                _jsonString= message['extras']['cn.jpush.android.EXTRA'];
+
+            }else if(Platform.isIOS){
+              _jsonString= message['extras'].toString();
+
+            }
+
+          }
+
+
+          print('_jsonString:$_jsonString');
+          JpushEvent.eventBus.fire(_jsonString);
 
         },
         onOpenNotification: (Map<String, dynamic> message) async {
-          print("flutter onOpenNotification: $message");
         },
-        onReceiveMessage: (Map<String, dynamic> message) async {},
+        onReceiveMessage: (Map<String, dynamic> message) async {
+          print("22228888: $message");
+
+        },
       );
     } on PlatformException {}
 

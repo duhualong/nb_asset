@@ -6,6 +6,7 @@ class Config {
 
   static const double CIRCLE_SIZE = 50;
   static const int ZERO = 0;
+  static const int ONE=1;
   static const double ZERO_DOUBLE = 0;
 
   /// 网络超时时间
@@ -23,4 +24,5 @@ class Config {
   static const int LOOP_COUNT = 1;
   static const double MAX_DIMMING=100;
   static const double MIN_DIMMING=0;
+  static const int SECONDS_TIMEOUT=30;
 }

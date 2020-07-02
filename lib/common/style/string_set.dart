@@ -3,6 +3,7 @@ import 'package:nbassetentry/common/model/option.dart';
 class StringSet {
   static const String EMPTY = '';
   static const String COLON = '：';
+  static const String SLASH='/';
   static const String SOMETHING_WRONG = '该功能存在错误';
   static const String PERIOD = '。';
   static const String NETWORK_DEFAULT_ERROR = '网络错误';
@@ -108,10 +109,17 @@ class StringSet {
   static const String PLEASE_INPUT = '请输入';
   static const String CONNECT = '连接';
   static const String NB_RESET_SUCCESS='复位成功';
+  static const String NB_SEND_OVERTIME='下发参数操作，设备响应超时！';
+  static const String NB_READ_OVERTIME='召测参数操作，设备响应超时！';
+  static const String NB_DIMMING_OVERTIME='调光操作，设备响应超时！';
+  static const String NB_REST_OVERTIME='复位操作，设备响应超时！';
+
   static const String NB_REPORT_SUCCESS='资产录入成功';
   static const String NB_UPDATE_SUCCESS='资产更新成功';
   static const String NB_ISSUED_SUCCESS='下发参数成功';
+
   static const String ZERO='0';
+  static const String DOUBLE_ZERO='0.0';
   static const String JPUSH_KEY = '46d90f1665a2adc1a31f6a62';
 
   /// theme_color
