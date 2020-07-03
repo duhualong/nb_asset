@@ -5,6 +5,7 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:nbassetentry/common/dao/nb_dao.dart';
 import 'package:nbassetentry/common/event/jpush_event.dart';
+import 'package:nbassetentry/common/model/nb_data.dart';
 
 import 'base_page.dart';
 import 'home_page.dart';
@@ -281,29 +282,14 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
     try {
       _jPush.addEventHandler(
         onReceiveNotification: (Map<String, dynamic> message) async {
-          String _jsonString=StringSet.EMPTY;
-          print('jpush key${message.keys.toString()}');
-          if(message.containsKey('extras')){
-            if(Platform.isAndroid){
-
-                _jsonString= message['extras']['cn.jpush.android.EXTRA'];
-
-            }else if(Platform.isIOS){
-              _jsonString= message['extras'].toString();
-
-            }
-
+          if(!message.containsKey('extras')){
+           return;
           }
-
-
-          print('_jsonString:$_jsonString');
-          JpushEvent.eventBus.fire(_jsonString);
-
+          JpushEvent.eventBus.fire(message);
         },
         onOpenNotification: (Map<String, dynamic> message) async {
         },
         onReceiveMessage: (Map<String, dynamic> message) async {
-          print("22228888: $message");
 
         },
       );

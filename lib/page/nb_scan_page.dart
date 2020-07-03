@@ -12,7 +12,7 @@ import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:nbassetentry/common/dao/dao_result.dart';
 import 'package:nbassetentry/common/dao/nb_dao.dart';
 import 'package:nbassetentry/common/event/jpush_event.dart';
-import 'package:nbassetentry/common/model/dimming_data.dart';
+import 'package:nbassetentry/common/model/nb_data.dart';
 import 'package:nbassetentry/common/model/scan.dart';
 import 'package:nbassetentry/common/util/screen_utils.dart';
 import 'package:nbassetentry/widget/custom_editable_image_cell.dart';
@@ -91,28 +91,51 @@ class _NbScanPageState extends State<NbScanPage> {
   ///接收极光推送信息
   Future<void> _initStream() async {
     _stream = JpushEvent.eventBus.on<dynamic>().listen((object) {
-      if (!object.toString().contains('json')||!object.toString().contains('status')||isOvertime) {
+      if (!object.toString().contains('status')||isOvertime) {
         return;
       }
 
-      Map<String, dynamic> map =
-      json.decode(object as String ?? StringSet.EMPTY);
-      print('map:$map');
-      Map<String, dynamic> data=   json.decode(map['json'].toString()  ?? StringSet.EMPTY);
-      print('data:$data');
-      bool isSuccess = data['status'] as int == 1;
+      Map<String, dynamic> data=object;
+      int status=0;
+      if(Platform.isAndroid){
+        String _jsonString=data['extras']['cn.jpush.android.EXTRA'];
+        Map<String, dynamic> map =
+        json.decode(_jsonString);
+        status=   map['json']['status'];
+      }else if(Platform.isIOS){
+        status=data['json']['status'];
+      }
+
+      bool isSuccess = status == 1;
       pr.hide();
       if (!isSuccess) {
         showCustomDialog(op + "失败");
         setState(() {});
         return;
       }
-      if (data.containsKey('longitude')) {
-       DimmingData dimmingData= DimmingData.fromJson(data);
-        _showMenu(autoAlarm: dimmingData.autoAlarm,
-            ctrlState: dimmingData.ctrlState,lat: dimmingData.latitude,
-            lng: dimmingData.longitude,reportReply: dimmingData.reportReply,
-            lampStatus: dimmingData.lampCount>0?dimmingData.lampStatus:[]);
+      if (data.toString().contains('longitude')) {
+        if(Platform.isIOS){
+          List originList = data['json']['lamp_status'] as List??[];
+          List<LampStatus> lampStatusList =
+          originList.map((value) => LampStatus(autoLight:value['auto_light'],lampVector:value['lamp_vector'],
+              powerRate:value['power_rate']   )).toList();
+          _showMenu(autoAlarm: data['json']['auto_alarm'] as int??0,
+              ctrlState:data['json']['ctrl_state'] as int??0,lat: data['json']['latitude'].toString(),
+              lng: data['json']['longitude'].toString(),reportReply:  data['json']['report_reply'] as int??0,
+              lampStatus:lampStatusList??[] );
+
+        }else{
+
+          String _jsonString=data['extras']['cn.jpush.android.EXTRA'];
+          Map<String, dynamic> map =
+          json.decode(_jsonString);
+          NbData dimmingData=NbData.fromJson(map['json']);
+          _showMenu(autoAlarm: dimmingData.autoAlarm,
+              ctrlState: dimmingData.ctrlState,lat: dimmingData.latitude,
+              lng: dimmingData.longitude,reportReply: dimmingData.reportReply,
+              lampStatus: dimmingData.lampCount>0?dimmingData.lampStatus:[]);
+        }
+
       } else {
         showCustomDialog(op + "成功");
       }
@@ -519,7 +542,7 @@ class _NbScanPageState extends State<NbScanPage> {
             ));
   }
 
-  void _showMenu({int autoAlarm,int ctrlState,String lat,String lng,int reportReply,List<DimmingDataLampStatus>lampStatus}) {
+  void _showMenu({int autoAlarm,int ctrlState,String lat,String lng,int reportReply,List<LampStatus>lampStatus}) {
     if(lampStatus.length>0){
       _nbLight.clear();
       lampStatus.forEach((lamp)=>_nbLight.add(Option(id: lamp.lampVector-1,
@@ -528,8 +551,6 @@ class _NbScanPageState extends State<NbScanPage> {
     }
     _loopName = _nbLight.length.toString();
     loopId = _nbLight.length-1;
-
-
     _summonValue.clear();
     _summonValue.add(_nameController.text.trim());
     _summonValue.add(_carrierName);
