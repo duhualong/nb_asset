@@ -42,12 +42,13 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
 
-
     return StoreProvider(
       store: store,
       child: StoreBuilder<ReduxState>(
         builder: (context, store) {
+
           return MaterialApp(
+
             navigatorKey: Global.navigatorState,
             debugShowCheckedModeBanner: false,
             theme:ThemeData(

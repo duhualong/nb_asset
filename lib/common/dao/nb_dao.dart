@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:common_utils/common_utils.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:nbassetentry/common/config/config.dart';
 import 'package:nbassetentry/common/event/error_event.dart';
 import 'package:nbassetentry/common/global/global.dart';
@@ -45,6 +46,7 @@ class NbDao {
     HttpResult result =
         await HttpManager.fetch(await HttpAddress.loginOut(), {});
 
+
     if (result == null || !result.isSuccess) {
       return DaoResult(result?.data ?? StringSet.EMPTY, false);
     }
@@ -57,6 +59,7 @@ class NbDao {
     });
     HttpResult result =
         await HttpManager.fetch(await HttpAddress.scan(), formData);
+
     if (result == null || !result.isSuccess) {
       return DaoResult(result?.data ?? StringSet.EMPTY, false);
     }

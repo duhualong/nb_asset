@@ -60,7 +60,7 @@ packages:
   barcode_scan:
     dependency: "direct main"
     description:
-      path: "plugins/barcode_scan"
+      path: "plugins\\barcode_scan"
       relative: true
     source: path
     version: "0.0.8"
@@ -485,6 +485,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.9.6+3"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.4"
   node_interop:
     dependency: transitive
     description:
@@ -625,6 +632,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.2.4"
+  provider:
+    dependency: "direct main"
+    description:
+      name: provider
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.0.5+1"
   pub_semver:
     dependency: transitive
     description:

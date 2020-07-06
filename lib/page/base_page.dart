@@ -54,12 +54,14 @@ class _BasePageState extends State<BasePage> {
     super.initState();
     HttpLoading.context = context;
     DaoResult.context = context;
+    HttpManager.context=context;
   }
 
   @override
   Widget build(BuildContext context) {
     HttpLoading.context = context;
     DaoResult.context = context;
+    HttpManager.context=context;
     if (widget.actions != null && (widget.actions.last is! SizedBox)) {
       widget.actions.add(SizedBox(width: 19));
     }

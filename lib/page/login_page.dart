@@ -172,6 +172,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
   Future<void> _login() async {
     HttpLoading.context = context;
     DaoResult.context = context;
+    HttpManager.context=context;
     _isLoading = true;
     if (mounted) {
       setState(() {});

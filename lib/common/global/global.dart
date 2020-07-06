@@ -6,7 +6,7 @@ import '../model/network.dart';
 class Global {
   static User _user;
   static GlobalKey<NavigatorState> navigatorState = new GlobalKey();
-
+  static BuildContext appContext;
   static Future<Network> get network async {
     return await NetworkStorage.getCheckedNetwork();
   }

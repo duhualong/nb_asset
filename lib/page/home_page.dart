@@ -51,7 +51,10 @@ class _HomeWidgetState extends State<HomeWidget> {
   BuildContext _buildContext;
   Future<void> _loginOut(BuildContext context) async {
     Navigator.of(context).pop();
-    await NbDao.loginOut();
+   DaoResult result= await NbDao.loginOut();
+   if(!result.isSuccess){
+     return;
+   }
     Global.user.uuid = null;
     Navigator.of(_buildContext).pushReplacementNamed(LoginPage.routeName);
   }

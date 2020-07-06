@@ -4,6 +4,7 @@ import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:nbassetentry/common/dao/dao_result.dart';
 import 'package:nbassetentry/page/login_page.dart';
 import 'dart:core';
 import 'http.dart';
@@ -80,7 +81,8 @@ class HttpManager {
     );
 
     if (!isUploadFile && (Global.user.uuid ?? StringSet.EMPTY).isNotEmpty) {
-      options.headers.addAll({'User-Token': Global.user.uuid});
+      // options.headers.addAll({'User-Token': Global.user.uuid});
+      options.headers.addAll({'User-Token': 'Global.user.uuid'});
     }
     Response response = Response();
     try {
@@ -133,12 +135,15 @@ class HttpManager {
           Map<String, dynamic> map =
               json.decode(error.response.toString() ?? StringSet.EMPTY);
           String detail = map['detail'] as String ?? StringSet.UNKNOWN_ERROR;
-          if(detail.contains('User-Token 无效')){
-            Navigator.of(context).pushReplacementNamed(LoginPage.routeName);
-
+          if (detail.contains('User-Token 无效')) {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                LoginPage.routeName, (Route<dynamic> route) => false);
           }
+
           return HttpResult(
-              ErrorEvent.errorMessageToast(detail + StringSet.PERIOD), false,
+              ErrorEvent.errorMessageToast(
+                  detail.contains('User-Token 无效') ? '身份认证失败，请重新登录！' : detail),
+              false,
               statusCode: error.response?.statusCode ?? 0);
         default:
           return HttpResult(
