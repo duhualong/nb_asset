@@ -1,19 +1,17 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
-import 'package:nbassetentry/common/dao/nb_dao.dart';
-import 'package:nbassetentry/common/event/jpush_event.dart';
-import 'package:nbassetentry/common/model/nb_data.dart';
-
 import 'base_page.dart';
 import 'home_page.dart';
+import 'network_setting_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../common/config/config.dart';
 import '../common/dao/dao_result.dart';
+import '../common/dao/nb_dao.dart';
+import '../common/event/jpush_event.dart';
 import '../common/event/network_event.dart';
 import '../common/http/http.dart';
 import '../common/local/local_storage.dart';
@@ -22,9 +20,7 @@ import '../common/model/network.dart';
 import '../common/style/string_set.dart';
 import '../common/style/style_set.dart';
 import '../common/util/screen_utils.dart';
-
 import '../widget/text_field_widget.dart';
-import 'network_setting_page.dart';
 
 class LoginPage extends StatelessWidget {
   static final String routeName = '/login';
@@ -54,10 +50,8 @@ class _LoginWidgetState extends State<LoginWidget> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
       child: Stack(
@@ -138,7 +132,6 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
   void _initialize() async {
     if (Platform.isIOS) {
       await FlutterStatusbarcolor.setStatusBarColor(ThemeDataSet.tabColor);
-
     }
     String userName =
         await LocalStorage.get(Config.USER_NAME_KEY) ?? StringSet.EMPTY;
@@ -172,7 +165,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
   Future<void> _login() async {
     HttpLoading.context = context;
     DaoResult.context = context;
-    HttpManager.context=context;
+    HttpManager.context = context;
     _isLoading = true;
     if (mounted) {
       setState(() {});
@@ -279,20 +272,17 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
     );
   }
 
-  Future<void>_initJpush()async {
+  Future<void> _initJpush() async {
     try {
       _jPush.addEventHandler(
         onReceiveNotification: (Map<String, dynamic> message) async {
-          if(!message.containsKey('extras')){
-           return;
+          if (!message.containsKey('extras')) {
+            return;
           }
           JpushEvent.eventBus.fire(message);
         },
-        onOpenNotification: (Map<String, dynamic> message) async {
-        },
-        onReceiveMessage: (Map<String, dynamic> message) async {
-
-        },
+        onOpenNotification: (Map<String, dynamic> message) async {},
+        onReceiveMessage: (Map<String, dynamic> message) async {},
       );
     } on PlatformException {}
 

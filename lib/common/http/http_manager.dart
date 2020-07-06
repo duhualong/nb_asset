@@ -4,8 +4,7 @@ import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:nbassetentry/common/dao/dao_result.dart';
-import 'package:nbassetentry/page/login_page.dart';
+import '../../page/login_page.dart';
 import 'dart:core';
 import 'http.dart';
 import '../config/config.dart';
@@ -81,8 +80,7 @@ class HttpManager {
     );
 
     if (!isUploadFile && (Global.user.uuid ?? StringSet.EMPTY).isNotEmpty) {
-      // options.headers.addAll({'User-Token': Global.user.uuid});
-      options.headers.addAll({'User-Token': 'Global.user.uuid'});
+      options.headers.addAll({'User-Token': Global.user.uuid});
     }
     Response response = Response();
     try {

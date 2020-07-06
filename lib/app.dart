@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
 import 'common/global/global.dart';
 import 'common/redux/redux.dart';
 import 'common/redux/redux_state.dart';
@@ -46,9 +44,7 @@ class _AppState extends State<App> {
       store: store,
       child: StoreBuilder<ReduxState>(
         builder: (context, store) {
-
           return MaterialApp(
-
             navigatorKey: Global.navigatorState,
             debugShowCheckedModeBanner: false,
             theme:ThemeData(

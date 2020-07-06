@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:nbassetentry/common/style/style_set.dart';
-import 'package:nbassetentry/common/util/screen_utils.dart';
-import 'package:nbassetentry/page/login_page.dart';
+import '../common/style/style_set.dart';
+import '../common/util/screen_utils.dart';
+import '../page/login_page.dart';
 
 class SplashPage extends StatefulWidget {
   static final String routeName = '/';

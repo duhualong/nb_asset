@@ -9,14 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
-import 'package:nbassetentry/common/dao/dao_result.dart';
-import 'package:nbassetentry/common/dao/nb_dao.dart';
-import 'package:nbassetentry/common/event/jpush_event.dart';
-import 'package:nbassetentry/common/model/nb_data.dart';
-import 'package:nbassetentry/common/model/scan.dart';
-import 'package:nbassetentry/common/util/screen_utils.dart';
-import 'package:nbassetentry/widget/custom_editable_image_cell.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import '../common/dao/dao_result.dart';
+import '../common/dao/nb_dao.dart';
+import '../common/event/jpush_event.dart';
+import '../common/model/nb_data.dart';
+import '../common/model/scan.dart';
+import '../common/util/screen_utils.dart';
+import '../widget/custom_editable_image_cell.dart';
 import '../common/model/option.dart';
 import '../common/style/string_set.dart';
 import '../common/style/style_set.dart';
@@ -29,9 +29,7 @@ import '../common/config/config.dart';
 
 class NbScanPage extends StatefulWidget {
   static final String routeName = '/nb_scan';
-
   final String result;
-
   NbScanPage({
     Key key,
     this.result,
@@ -83,7 +81,6 @@ class _NbScanPageState extends State<NbScanPage> {
   @override
   initState() {
     super.initState();
-
     _initParseData();
     _initStream();
   }
