@@ -28,6 +28,7 @@
         android:hardwareAccelerated="true"
         android:supportsRtl="true"
         android:label="小帮手"
+        android:theme="@style/LaunchTheme"
         tools:replace="label">
         <uses-library
             android:name="org.apache.http.legacy"
@@ -43,7 +44,6 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"
-
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -53,7 +53,7 @@
             <meta-data
                 android:name="io.flutter.embedding.android.SplashScreenDrawable"
                 android:resource="@drawable/launch_background" />
-            <!--闪屏页结束后的Theme-->
+<!--            &lt;!&ndash;闪屏页结束后的Theme&ndash;&gt;-->
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />

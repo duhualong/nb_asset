@@ -32,11 +32,8 @@ void main() async {
     await AmapCore.init(StringSet.IOS_AMAP_KEY);
   }
   runApp(App());
-
-
-
   SystemUiOverlayStyle systemUiOverlayStyle =
-  SystemUiOverlayStyle(statusBarColor: ThemeDataSet.tabColor);
+  SystemUiOverlayStyle(statusBarColor: Colors.transparent);
   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
 

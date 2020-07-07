@@ -10,6 +10,7 @@
 
 ## 外部包
 编辑根目录下的 pubspec.yaml 文件， 外部包可在 [pub.dartlang.org](https://pub.dartlang.org/flutter/) 查找。
+
 | 外部包 | 功能 | 
 | ------ | ------ |
 | [amap_location_fluttify](https://github.com/fluttify-project/amap_location_fluttify) | 高德地图定位 |

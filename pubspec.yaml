@@ -36,12 +36,12 @@ dependencies:
   photo_view: ^0.4.0
   rxdart: ^0.24.1
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^1.5.2
   json_serializable: ^3.3.0
+
 
 flutter:
   uses-material-design: true
