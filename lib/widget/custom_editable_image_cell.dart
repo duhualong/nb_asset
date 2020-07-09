@@ -32,7 +32,7 @@ class _CustomEditableImageCellState extends State<CustomEditableImageCell> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+//      color: Colors.white,
       child: Column(
         children: <Widget>[
           ConstrainedBox(

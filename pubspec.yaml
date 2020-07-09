@@ -12,6 +12,9 @@ dependencies:
   amap_location_fluttify: ^0.13.0
   barcode_scan:
     path: plugins/barcode_scan
+  clay_containers: ^0.2.2
+  flutter_neumorphic: ^3.0.1
+  flutter_colorpicker: ^0.3.4
   connectivity: ^0.4.3
   common_utils: ^1.2.1
   crypto: ^2.1.3
