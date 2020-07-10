@@ -85,4 +85,4 @@
 
 [![NB页面样式二](./medias/style_one.jpg)]()|NB页面样式2|
 
-[![NB页面样式二](./medias/style_two.jpg)]()|NB页面样式3|
+[![NB页面样式二](./medias/style_two.jpg)]()|NB页面样式2|
