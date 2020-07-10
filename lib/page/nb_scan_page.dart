@@ -832,6 +832,7 @@ class _NbScanWidgetState extends State<NbScanWidget> {
     _showProgress(_context);
     return Scaffold(
       resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset:true,
       appBar: NeumorphicAppBar(
         color: ThemeDataSet.tabColor,
         buttonStyle: NeumorphicStyle(boxShape: NeumorphicBoxShape.circle()),

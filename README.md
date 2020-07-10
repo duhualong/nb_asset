@@ -34,6 +34,8 @@
 | [path_provider](https://github.com/flutter/plugins/tree/master/packages/path_provider) | 本地路径 |
 | [photo_view](https://github.com/renancaraujo/photo_view) | 图片预览 |
 | [shared_preferences](https://github.com/flutter/plugins/tree/master/packages/shared_preferences) | 偏好配置 |
+| [clay_containers](https://github.com/mcaubrey/clay_containers) | 现代中性容器 |
+| [flutter_neumorphic](https://github.com/Idean/Flutter-Neumorphic) | Neumorphic ui 套件 |
 
 ## 常用命令
 
@@ -61,3 +63,16 @@
 * 外部包 json_serializable 会持续监听并生成模板文件。
 `$ flutter packages pub run build_runner watch`
 
+
+*实现的效果图
+
+[![引导页](./medias/splash.jpg)]()
+[![登录](./medias/login.jpg)]()
+[![网络设置](./medias/network.jpg)]()
+[![首页](./medias/home.jpg)]()
+[![dialog弹窗](./medias/dialog.jpg)]()
+[![bottom_sheeet弹窗](./medias/bottom_sheet.jpg)]()
+[![bottom_sheeet弹窗](./medias/bottom_sheet_one.jpg)]()
+[![NB页面样式一](./medias/style.jpg)]()
+[![NB页面样式二](./medias/style_one.jpg)]()
+[![NB页面样式二](./medias/style_two.jpg)]()
