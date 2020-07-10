@@ -65,14 +65,15 @@
 
 
 *实现的效果图
+| ------ | ------ |
 
-[![引导页](./medias/splash.jpg)]()
-[![登录](./medias/login.jpg)]()
-[![网络设置](./medias/network.jpg)]()
-[![首页](./medias/home.jpg)]()
-[![dialog弹窗](./medias/dialog.jpg)]()
-[![bottom_sheeet弹窗](./medias/bottom_sheet.jpg)]()
-[![bottom_sheeet弹窗](./medias/bottom_sheet_one.jpg)]()
-[![NB页面样式一](./medias/style.jpg)]()
-[![NB页面样式二](./medias/style_one.jpg)]()
-[![NB页面样式二](./medias/style_two.jpg)]()
+[![引导页](./medias/splash.jpg)]()| 引导页 |
+[![登录](./medias/login.jpg)]()| 登录 |
+[![网络设置](./medias/network.jpg)]()|网络设置|
+[![首页](./medias/home.jpg)]()|首页|
+[![dialog弹窗](./medias/dialog.jpg)]()|dialog弹窗|
+[![bottom_sheeet弹窗](./medias/bottom_sheet.jpg)]()|bottom sheet 弹窗|
+[![bottom_sheeet弹窗](./medias/bottom_sheet_one.jpg)]()|bottom sheet 弹窗|
+[![NB页面样式一](./medias/style.jpg)]()|NB页面样式1|
+[![NB页面样式二](./medias/style_one.jpg)]()|NB页面样式2|
+[![NB页面样式二](./medias/style_two.jpg)]()|NB页面样式3|
