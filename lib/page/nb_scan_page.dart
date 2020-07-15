@@ -912,7 +912,6 @@ class _NbScanWidgetState extends State<NbScanWidget> {
             onPressed: () {
               FocusScope.of(context).requestFocus(blankNode);
               if (_nameController.text.trim() != StringSet.EMPTY) {
-
                 _updateAsset(context);
               }
             },
