@@ -60,7 +60,7 @@ packages:
   barcode_scan:
     dependency: "direct main"
     description:
-      path: "plugins\\barcode_scan"
+      path: "plugins/barcode_scan"
       relative: true
     source: path
     version: "0.0.8"
