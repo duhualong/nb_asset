@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'text_field_widget.dart';
 import 'custom_cell_with_divider.dart';
 import '../common/model/option.dart';
@@ -61,9 +62,18 @@ class _CustomPickerPowerCellState extends State<CustomPickerPowerCell> {
             constraints: BoxConstraints(minHeight: 50.0),
             child: UnconstrainedBox(
               constrainedAxis: Axis.horizontal,
-              child: Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.fromLTRB(20, 0, 10, 0),
+              child:
+              Neumorphic(
+                margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  padding: EdgeInsets.fromLTRB(20,0,10,0),
+                  style: NeumorphicStyle(
+                    depth: NeumorphicTheme.embossDepth(context),
+                    border: NeumorphicBorder(width: 0.1, color: Colors.white60),
+                    boxShape: NeumorphicBoxShape.stadium(),
+                  ),
+//              Container(
+////                  color: Colors.white,
+//                  padding: EdgeInsets.fromLTRB(16, 0, 10, 0),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -106,6 +116,9 @@ class _CustomPickerPowerCellState extends State<CustomPickerPowerCell> {
                   )),
             ),
           ),
+          SizedBox(
+            height: 10,
+          )
         ],
       ),
     );

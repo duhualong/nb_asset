@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:nbassetentry/common/util/screen_utils.dart';
 import 'text_field_widget.dart';
 import 'custom_cell_with_divider.dart';
@@ -65,7 +66,7 @@ class _CustomPickerCellState extends State<CustomPickerCell> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Padding(
-                      padding: EdgeInsets.only(left: 10, top: 10),
+                      padding: EdgeInsets.only(left: 16, top: 10),
                       child: RichText(
                           text: TextSpan(
                               text: widget.title,
@@ -79,16 +80,26 @@ class _CustomPickerCellState extends State<CustomPickerCell> {
                                 style: TextStyle(color: Colors.red))
                           ])),
                     ),
-                    Container(
-                      padding: EdgeInsets.only(left: 10),
-                      margin: EdgeInsets.only(left: 10, top: 10),
-                      alignment: Alignment(0, 0),
-                      height: 42,
-                      width: ScreenUtils.screenW(context) - 40,
-                      decoration: new BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                        border: new Border.all(color: Colors.grey, width: 1),
+//                    Container(
+//                      padding: EdgeInsets.only(left: 10),
+//                      margin: EdgeInsets.only(left: 10, top: 10),
+//                      alignment: Alignment(0, 0),
+//                      height: 42,
+//                      width: ScreenUtils.screenW(context) - 40,
+//                      decoration: new BoxDecoration(
+//                        color: Colors.white,
+//                        borderRadius: BorderRadius.all(Radius.circular(25.0)),
+//                        border: new Border.all(color: Colors.grey, width: 1),
+//                      ),
+                    Neumorphic(
+                      padding: EdgeInsets.fromLTRB(20, 0, 10, 0),
+                      margin: EdgeInsets.only(
+                          left: 16, right: 16, top: 10, bottom: 2),
+                      style: NeumorphicStyle(
+                        depth: NeumorphicTheme.embossDepth(context),
+                        border:
+                            NeumorphicBorder(width: 0.1, color: Colors.white60),
+                        boxShape: NeumorphicBoxShape.stadium(),
                       ),
                       child: Align(
                         child: GestureDetector(

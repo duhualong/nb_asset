@@ -23,7 +23,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.38823529411764707" green="0.8117647058823529" blue="0.8509803921568627" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="YRO-k0-Ey4" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="ddp-yy-DZg"/>
                             <constraint firstAttribute="bottom" secondItem="YRO-k0-Ey4" secondAttribute="bottom" id="e44-Lg-d0m"/>
@@ -38,6 +38,10 @@
         </scene>
     </scenes>
     <resources>
+<<<<<<< HEAD
         <image name="launchBack" width="375" height="812"/>
+=======
+        <image name="LaunchImage" width="750" height="1624"/>
+>>>>>>> 0cf3dcb39c20f90de4bfb21c50060afbd22531a0
     </resources>
 </document>

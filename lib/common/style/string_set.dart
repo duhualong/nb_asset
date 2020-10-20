@@ -33,8 +33,8 @@ class StringSet {
   static const String PASSWORD_HINT = '请输入密码';
   static const String LOGIN = '登录';
   static const String NETWORK_DEMO_NAME = '盛同云演示';
-//  static const String NETWORK_DEMO_IP = '10.3.8.29';
-  static const String NETWORK_DEMO_IP = '10.3.8.52';
+  static const String NETWORK_DEMO_IP = '10.3.8.29';
+ // static const String NETWORK_DEMO_IP = '10.3.8.52';
   static const String NETWORK_DEMO_PORT = '28644';
   static const String HOME_TITLE = '小帮手';
   static const String HOME_HINT = '一站式服务解决所有问题';
@@ -54,8 +54,11 @@ class StringSet {
   static const String NB_LONGITUDE = '经度';
   static const String NB_LATITUDE = '纬度';
   static const String NB_ICCID='iccid';
+  static const String NB_CYCLE='主报周期（分钟）';
+  static const String NB_VERSION='版本协议';
+  static const String NB_PROVIDER='厂家区分标志位';
   static const String NB_USED = '投运';
-  static const String NB_ALARM = '主动告警';
+  static const String NB_ALARM = '是否主报';
   static const String NB_REPLY = '主报应答';
   static const String NB_LOOP_COUNT = '灯头数量';
   static const String NB_OPEN_STATUS = '上电开灯';
@@ -153,6 +156,11 @@ class StringSet {
     NB_ALARM,
     NB_REPLY,
     NB_LOOP_COUNT,
+  ];
+
+  static List<Option>versionOptions=[
+    Option(id: 0, title: 'v0.1', isChecked: false),
+    Option(id: 1, title: 'v0.2', isChecked: false),
   ];
 
   static List<Option> powerOptions = [

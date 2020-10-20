@@ -10,8 +10,10 @@ import 'package:nbassetentry/common/global/global.dart';
 import 'package:nbassetentry/common/http/http.dart';
 import 'package:nbassetentry/common/http/http_address.dart';
 import 'package:nbassetentry/common/local/local_storage.dart';
+import 'package:nbassetentry/common/model/nb_param_entity.dart';
 import 'package:nbassetentry/common/model/scan.dart';
 import 'package:nbassetentry/common/style/string_set.dart';
+import 'package:nbassetentry/generated/json/base/json_convert_content.dart';
 
 import 'dao_result.dart';
 
@@ -46,7 +48,6 @@ class NbDao {
     HttpResult result =
         await HttpManager.fetch(await HttpAddress.loginOut(), {});
 
-
     if (result == null || !result.isSuccess) {
       return DaoResult(result?.data ?? StringSet.EMPTY, false);
     }
@@ -68,11 +69,13 @@ class NbDao {
     ScanResult scanResult = ScanResult.fromJson(map);
     bool success = scanResult.status == 1;
     String detail = scanResult.detail ?? StringSet.UNKNOWN_ERROR;
+
+    NbParamEntity nbParamEntity = NbParamEntity().fromJson(map);
     if (!success) {
       return DaoResult(
           ErrorEvent.errorMessageToast(detail + StringSet.PERIOD), false);
     }
-    return DaoResult(scanResult, true);
+    return DaoResult(nbParamEntity, true);
   }
 
   static Future<DaoResult> updateAssetInfo({
@@ -99,14 +102,19 @@ class NbDao {
     int reportReply,
     List<String> paths,
     String iccid,
+    int protocolVersion,
+    int providerId,
+    int reportCycle,
+    String provider,
   }) async {
+    print('reporyCycle:$reportCycle');
     FormData formData = FormData.fromMap({
       "asset_id": assetId,
       "light_pole_code": lightPoleCode,
       "group_id": groupId,
       "carrier_id": carrierId,
       "barcode_id": barCode,
-      "provider": StringSet.EMPTY,
+      "provider": provider,
       "iccid": iccid,
       "imei": imei,
       "imsi": imsi,
@@ -130,7 +138,9 @@ class NbDao {
       "power_upper": 0,
       "power_lower": 0,
       "report_reply": reportReply,
-      "repory_cycle": 0,
+      "report_cycle": reportCycle,
+      "protocol_version":protocolVersion??0,
+      "provider_id":providerId??0,
       "image": paths.length == 0
           ? []
           : paths.map((path) {

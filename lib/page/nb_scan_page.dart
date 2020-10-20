@@ -6,9 +6,12 @@ import 'package:amap_location_fluttify/amap_location_fluttify.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
+import 'package:nbassetentry/common/model/nb_param_entity.dart';
+import 'package:nbassetentry/widget/text_field_nb_input_new.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import '../common/dao/dao_result.dart';
 import '../common/dao/nb_dao.dart';
@@ -27,30 +30,64 @@ import '../widget/text_field_nb_input.dart';
 import '../widget/text_nb.dart';
 import '../common/config/config.dart';
 
-class NbScanPage extends StatefulWidget {
+class NbScanPage extends StatelessWidget {
   static final String routeName = '/nb_scan';
   final String result;
+
   NbScanPage({
     Key key,
     this.result,
   }) : super(key: key);
 
   @override
-  _NbScanPageState createState() => _NbScanPageState();
+  Widget build(BuildContext context) {
+    return NeumorphicTheme(
+      theme: NeumorphicThemeData(
+        defaultTextColor: Color(0xFF3E3E3E),
+        accentColor: Colors.grey,
+        variantColor: Colors.white60,
+        depth: 8,
+        intensity: 0.65,
+      ),
+      themeMode: ThemeMode.light,
+      child: Material(
+        child: NeumorphicBackground(
+          child: NbScanWidget(
+            result: result,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _NbScanPageState extends State<NbScanPage> {
-  final _bottomSheetKey = GlobalKey<ScaffoldState>();
+class NbScanWidget extends StatefulWidget {
+  final String result;
+
+  NbScanWidget({
+    Key key,
+    this.result,
+  }) : super(key: key);
+
+  @override
+  _NbScanWidgetState createState() => _NbScanWidgetState();
+}
+
+class _NbScanWidgetState extends State<NbScanWidget> {
   Location _location;
   bool _isClick = false;
   List<Option> _groupOptions = [];
+  List<Option> _providerOptions = [];
+  List<Option> _versionOptions = [];
   String _groupName;
   String _carrierName;
   List<Option> _carrierOptions = [];
   List<Option> _loopOptions = [];
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _recycleController = TextEditingController();
   String _barCode = StringSet.EMPTY;
   String _imei = StringSet.EMPTY;
+  int _recycle = Config.ZERO;
   String _imsi = StringSet.EMPTY;
   String _longitude = StringSet.EMPTY;
   String _latitude = StringSet.EMPTY;
@@ -76,7 +113,10 @@ class _NbScanPageState extends State<NbScanPage> {
   String jpushId = StringSet.EMPTY;
   ProgressDialog pr;
   String op = StringSet.EMPTY;
-  bool isOvertime=false;
+  bool isOvertime = false;
+  int _providerId = Config.ZERO;
+  int _version;
+  String _provider= StringSet.EMPTY;
 
   @override
   initState() {
@@ -88,19 +128,18 @@ class _NbScanPageState extends State<NbScanPage> {
   ///接收极光推送信息
   Future<void> _initStream() async {
     _stream = JpushEvent.eventBus.on<dynamic>().listen((object) {
-      if (!object.toString().contains('status')||isOvertime) {
+      if (!object.toString().contains('status') || isOvertime) {
         return;
       }
 
-      Map<String, dynamic> data=object;
-      int status=0;
-      if(Platform.isAndroid){
-        String _jsonString=data['extras']['cn.jpush.android.EXTRA'];
-        Map<String, dynamic> map =
-        json.decode(_jsonString);
-        status=   map['json']['status'];
-      }else if(Platform.isIOS){
-        status=data['json']['status'];
+      Map<String, dynamic> data = object;
+      int status = 0;
+      if (Platform.isAndroid) {
+        String _jsonString = data['extras']['cn.jpush.android.EXTRA'];
+        Map<String, dynamic> map = json.decode(_jsonString);
+        status = map['json']['status'];
+      } else if (Platform.isIOS) {
+        status = data['json']['status'];
       }
 
       bool isSuccess = status == 1;
@@ -111,28 +150,35 @@ class _NbScanPageState extends State<NbScanPage> {
         return;
       }
       if (data.toString().contains('longitude')) {
-        if(Platform.isIOS){
-          List originList = data['json']['lamp_status'] as List??[];
-          List<LampStatus> lampStatusList =
-          originList.map((value) => LampStatus(autoLight:value['auto_light'],lampVector:value['lamp_vector'],
-              powerRate:value['power_rate']   )).toList();
-          _showMenu(autoAlarm: data['json']['auto_alarm'] as int??0,
-              ctrlState:data['json']['ctrl_state'] as int??0,lat: data['json']['latitude'].toString(),
-              lng: data['json']['longitude'].toString(),reportReply:  data['json']['report_reply'] as int??0,
-              lampStatus:lampStatusList??[] );
-
-        }else{
-
-          String _jsonString=data['extras']['cn.jpush.android.EXTRA'];
-          Map<String, dynamic> map =
-          json.decode(_jsonString);
-          NbData dimmingData=NbData.fromJson(map['json']);
-          _showMenu(autoAlarm: dimmingData.autoAlarm,
-              ctrlState: dimmingData.ctrlState,lat: dimmingData.latitude,
-              lng: dimmingData.longitude,reportReply: dimmingData.reportReply,
-              lampStatus: dimmingData.lampCount>0?dimmingData.lampStatus:[]);
+        if (Platform.isIOS) {
+          List originList = data['json']['lamp_status'] as List ?? [];
+          List<LampStatus> lampStatusList = originList
+              .map((value) =>
+              LampStatus(
+                  autoLight: value['auto_light'],
+                  lampVector: value['lamp_vector'],
+                  powerRate: value['power_rate']))
+              .toList();
+          _showMenu(
+              autoAlarm: data['json']['auto_alarm'] as int ?? 0,
+              ctrlState: data['json']['ctrl_state'] as int ?? 0,
+              lat: data['json']['latitude'].toString(),
+              lng: data['json']['longitude'].toString(),
+              reportReply: data['json']['report_reply'] as int ?? 0,
+              lampStatus: lampStatusList ?? []);
+        } else {
+          String _jsonString = data['extras']['cn.jpush.android.EXTRA'];
+          Map<String, dynamic> map = json.decode(_jsonString);
+          NbData dimmingData = NbData.fromJson(map['json']);
+          _showMenu(
+              autoAlarm: dimmingData.autoAlarm,
+              ctrlState: dimmingData.ctrlState,
+              lat: dimmingData.latitude,
+              lng: dimmingData.longitude,
+              reportReply: dimmingData.reportReply,
+              lampStatus:
+              dimmingData.lampCount > 0 ? dimmingData.lampStatus : []);
         }
-
       } else {
         showCustomDialog(op + "成功");
       }
@@ -165,41 +211,63 @@ class _NbScanPageState extends State<NbScanPage> {
   Future<void> _initParseData() async {
     jpushId = await _jPush.getRegistrationID();
     _location = await AmapLocation.fetchLocation();
-
     DaoResult result = await NbDao.scan(data: widget.result);
     if (!result.isSuccess) {
       return;
     }
-    ScanResult scanResult = result.data;
-    if (scanResult != null) {
+//    ScanResult scanResult = result.data;
+    NbParamEntity nbParamEntity = result.data;
+    if (NbParamEntity != null) {
       _nameController.value = TextEditingValue(
-          text: scanResult.deviceParam.lightPoleCode ?? StringSet.EMPTY);
-      assetId = scanResult.deviceParam.assetId;
+          text: nbParamEntity.deviceParam.lightPoleCode ?? StringSet.EMPTY);
+      _recycle = nbParamEntity.deviceParam.reportCycle ?? Config.ZERO;
+      _recycleController.value = TextEditingValue(text: _recycle.toString());
+      assetId = nbParamEntity.deviceParam.assetId;
       if (assetId != StringSet.ZERO) {
         _isClick = true;
       }
-      _imei = scanResult.deviceParam.imei;
-      _imsi = scanResult.deviceParam.imsi;
-      _carrierName = scanResult.deviceParam.carrierName;
-      carrierId = scanResult.deviceParam.carrierId;
-      _groupName = scanResult.deviceParam.groupName ?? StringSet.EMPTY;
-      groupId = scanResult.deviceParam.groupId;
-      _barCode = scanResult.deviceParam.barcodeId;
-      _switchReply = (scanResult.deviceParam.reportReply == 1);
-      _switchAlarm = (scanResult.deviceParam.autoAlarm == 1);
-      _switchUsed = (scanResult.deviceParam.ctrlState == 1);
-      icccid = scanResult.deviceParam.iccid ?? StringSet.EMPTY;
-      scanResult.candidateItems.carrierList.forEach((carrier) =>
+      _version = nbParamEntity.deviceParam.protocolVersion ?? Config.ZERO;
+      _imei = nbParamEntity.deviceParam.imei;
+      _imsi = nbParamEntity.deviceParam.imsi;
+      _carrierName = nbParamEntity.deviceParam.carrierName;
+      carrierId = nbParamEntity.deviceParam.carrierId;
+      _groupName = nbParamEntity.deviceParam.groupName ?? StringSet.EMPTY;
+      groupId = nbParamEntity.deviceParam.groupId;
+      _providerId = nbParamEntity.deviceParam.providerId ?? Config.ZERO;
+      _provider=nbParamEntity.deviceParam.provider??StringSet.EMPTY;
+      _barCode = nbParamEntity.deviceParam.barcodeId;
+      _switchReply = (nbParamEntity.deviceParam.reportReply == 1);
+      _switchAlarm = (nbParamEntity.deviceParam.autoAlarm == 1);
+      _switchUsed = (nbParamEntity.deviceParam.ctrlState == 1);
+      icccid = nbParamEntity.deviceParam.iccid ?? StringSet.EMPTY;
+      StringSet.versionOptions.forEach((version) =>
+          _versionOptions.add(Option(
+              id: version.id,
+              title: version.title,
+              isChecked: _version == version.id
+          )));
+
+      nbParamEntity.candidateItems.carrierList.forEach((carrier) =>
           _carrierOptions.add(Option(
               id: carrier.carrierId,
               title: carrier.carrierName,
               isChecked: carrierId == carrier.carrierId)));
-      scanResult.candidateItems.groupList.forEach((group) =>
-          _groupOptions.add(
-              Option(
-                  id: group.groupId,
-                  title: group.groupName,
-                  isChecked: groupId == group.groupId)));
+      nbParamEntity.candidateItems.groupList.forEach((group) =>
+          _groupOptions.add(Option(
+              id: group.groupId,
+              title: group.groupName,
+              isChecked: groupId == group.groupId)));
+      nbParamEntity.candidateItems.providerList.forEach((provider) =>
+          _providerOptions.add(Option(
+              id: provider.providerId,
+              title: provider.provider,
+              isChecked: _providerId == provider.providerId
+          )));
+      if (_provider == StringSet.EMPTY) {
+        _providerOptions[0].isChecked = true;
+        _providerId = _providerOptions[0].id;
+        _provider = _providerOptions[0].title;
+      }
       if (_groupName == StringSet.EMPTY) {
         _groupOptions[0].isChecked = true;
         groupId = _groupOptions[0].id;
@@ -209,10 +277,10 @@ class _NbScanPageState extends State<NbScanPage> {
         _loopOptions.add(Option(
             id: i,
             title: i.toString(),
-            isChecked: (i == scanResult.deviceParam.lampCount)));
+            isChecked: (i == nbParamEntity.deviceParam.lampCount)));
       }
-      if (scanResult.deviceParam.lampCount == 0 ||
-          scanResult.deviceParam.lampCount > 4) {
+      if (nbParamEntity.deviceParam.lampCount == 0 ||
+          nbParamEntity.deviceParam.lampCount > 4) {
         _loopOptions[1].isChecked = true;
         _loopName = '2';
         loopId = 1;
@@ -221,29 +289,29 @@ class _NbScanPageState extends State<NbScanPage> {
               Option(id: 0, title: StringSet.NO_SETTING, isChecked: false));
         }
       } else {
-        loopId = scanResult.deviceParam.lampCount - 1;
-        _loopName = scanResult.deviceParam.lampCount.toString();
+        loopId = nbParamEntity.deviceParam.lampCount - 1;
+        _loopName = nbParamEntity.deviceParam.lampCount.toString();
 
-        if (scanResult.deviceParam.lampStatus.length > 0) {
+        if (nbParamEntity.deviceParam.lampStatus.length > 0) {
           for (int i = 0; i <= loopId; i++) {
             _nbLight.add(Option(
                 id: i,
-                title: scanResult.deviceParam.lampStatus[i].powerRate == 0
+                title: nbParamEntity.deviceParam.lampStatus[i].powerRate == 0
                     ? StringSet.NO_SETTING
-                    : (scanResult.deviceParam.lampStatus[i].powerRate
+                    : (nbParamEntity.deviceParam.lampStatus[i].powerRate
                     .toString() +
                     'W'),
                 isChecked:
-                scanResult.deviceParam.lampStatus[i].autoLight == 1));
+                nbParamEntity.deviceParam.lampStatus[i].autoLight == 1));
           }
         }
       }
 
-      _longitude = scanResult.deviceParam.longitude != StringSet.ZERO||scanResult.deviceParam.longitude!=StringSet.DOUBLE_ZERO
-          ? scanResult.deviceParam.longitude.toString()
+      _longitude = (nbParamEntity.deviceParam.longitude > Config.ZERO)
+          ? nbParamEntity.deviceParam.longitude.toString()
           : _location.latLng.longitude.toString();
-      _latitude = scanResult.deviceParam.latitude != StringSet.ZERO||scanResult.deviceParam.latitude!=StringSet.DOUBLE_ZERO
-          ? scanResult.deviceParam.latitude.toString()
+      _latitude = (nbParamEntity.deviceParam.latitude > Config.ZERO)
+          ? nbParamEntity.deviceParam.latitude.toString()
           : _location.latLng.latitude.toString();
       if (mounted) {
         setState(() {});
@@ -255,6 +323,8 @@ class _NbScanPageState extends State<NbScanPage> {
   void dispose() {
     super.dispose();
     _nameController?.dispose();
+    _recycleController?.dispose();
+
     _stream?.cancel();
     _stream = null;
   }
@@ -539,27 +609,40 @@ class _NbScanPageState extends State<NbScanPage> {
             ));
   }
 
-  void _showMenu({int autoAlarm,int ctrlState,String lat,String lng,int reportReply,List<LampStatus>lampStatus}) {
-    if(lampStatus.length>0){
+  void _showMenu({int autoAlarm,
+    int ctrlState,
+    String lat,
+    String lng,
+    int reportReply,
+    List<LampStatus> lampStatus}) {
+    if (lampStatus.length > 0) {
       _nbLight.clear();
-      lampStatus.forEach((lamp)=>_nbLight.add(Option(id: lamp.lampVector-1,
-          title: lamp.powerRate==0?StringSet.NO_SETTING:(lamp.powerRate.toString()+'W'),isChecked: lamp.autoLight==1)));
-
+      lampStatus.forEach((lamp) =>
+          _nbLight.add(Option(
+              id: lamp.lampVector - 1,
+              title: lamp.powerRate == 0
+                  ? StringSet.NO_SETTING
+                  : (lamp.powerRate.toString() + 'W'),
+              isChecked: lamp.autoLight == 1)));
     }
     _loopName = _nbLight.length.toString();
-    loopId = _nbLight.length-1;
+    loopId = _nbLight.length - 1;
     _summonValue.clear();
     _summonValue.add(_nameController.text.trim());
     _summonValue.add(_carrierName);
     _summonValue.add(_barCode);
     _summonValue.add(_imei);
     _summonValue.add(_imsi);
-    _summonValue.add(lng!=StringSet.EMPTY?lng:StringSet.SLASH);
-    _summonValue.add(lat!=StringSet.EMPTY?lat:StringSet.SLASH);
-    _summonValue.add(icccid!=StringSet.EMPTY?icccid:StringSet.SLASH);
-    _summonValue.add(ctrlState==Config.ONE??Config.ZERO ? StringSet.YES : StringSet.NO);
-    _summonValue.add(autoAlarm==Config.ONE??Config.ZERO ? StringSet.YES : StringSet.NO);
-    _summonValue.add(reportReply==Config.ONE??Config.ZERO ? StringSet.YES : StringSet.NO);
+    _summonValue.add(lng != StringSet.EMPTY ? lng : StringSet.SLASH);
+    _summonValue.add(lat != StringSet.EMPTY ? lat : StringSet.SLASH);
+    _summonValue.add(icccid != StringSet.EMPTY ? icccid : StringSet.SLASH);
+    _summonValue.add(
+        ctrlState == Config.ONE ?? Config.ZERO ? StringSet.YES : StringSet.NO);
+    _summonValue.add(
+        autoAlarm == Config.ONE ?? Config.ZERO ? StringSet.YES : StringSet.NO);
+    _summonValue.add(reportReply == Config.ONE ?? Config.ZERO
+        ? StringSet.YES
+        : StringSet.NO);
     _summonValue.add(_nbLight.length.toString());
     _summonTitle.clear();
     _summonTitle.addAll(StringSet.summonName);
@@ -662,6 +745,10 @@ class _NbScanPageState extends State<NbScanPage> {
   }
 
   Future<void> _updateAsset(BuildContext buildContext) async {
+    if(_switchAlarm){
+      String value=_recycleController.text.trim()??StringSet.ZERO;
+      _recycle=int.parse(value);
+    }
     DaoResult result = await NbDao.updateAssetInfo(
       assetId: assetId,
       lightPoleCode: _nameController.text.trim(),
@@ -730,6 +817,10 @@ class _NbScanPageState extends State<NbScanPage> {
       reportReply: _switchReply ? 1 : 0,
       paths: _paths,
       iccid: icccid,
+      reportCycle: _recycle,
+      protocolVersion: _version,
+      providerId: _providerId,
+      provider: _provider,
     );
 
     if (!result.isSuccess) {
@@ -760,14 +851,17 @@ class _NbScanPageState extends State<NbScanPage> {
       return;
     }
     pr.show();
-  toastMessage(message: StringSet.NB_SEND_OVERTIME);
+    toastMessage(message: StringSet.NB_SEND_OVERTIME);
   }
-  Future<void> toastMessage({String message,})async{
+
+  Future<void> toastMessage({
+    String message,
+  }) async {
     Future.delayed(Duration(seconds: Config.SECONDS_TIMEOUT)).then((onValue) {
       if (pr.isShowing())
         pr.hide().then((isHidden) {
           Fluttertoast.showToast(msg: message);
-          isOvertime=true;
+          isOvertime = true;
           setState(() {});
         });
     });
@@ -780,7 +874,7 @@ class _NbScanPageState extends State<NbScanPage> {
       return;
     }
     pr.show();
- toastMessage(message: StringSet.NB_REST_OVERTIME);
+    toastMessage(message: StringSet.NB_REST_OVERTIME);
   }
 
   Future<void> _readNb() async {
@@ -790,21 +884,48 @@ class _NbScanPageState extends State<NbScanPage> {
       return;
     }
     pr.show();
-   toastMessage(message: StringSet.NB_READ_OVERTIME);
+    toastMessage(message: StringSet.NB_READ_OVERTIME);
   }
 
   @override
   Widget build(BuildContext context) {
     _context = context;
     _showProgress(_context);
-    return BasePage(
-      key: _bottomSheetKey,
-      hasAppBar: true,
-      color: ThemeDataSet.tabColor,
-      title: StringSet.NB_LAMP,
-      leadingIconData: Icons.arrow_back_ios,
-      leadingOnTap: () => Navigator.pop(context),
+    return Scaffold(
+      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: true,
+      appBar: NeumorphicAppBar(
+        color: ThemeDataSet.tabColor,
+        buttonStyle: NeumorphicStyle(boxShape: NeumorphicBoxShape.circle()),
+        title: Text(
+          StringSet.NB_LAMP,
+          style: TextStyle(
+              color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        actions: <Widget>[
+          NeumorphicButton(
+            style: NeumorphicStyle(
+              shape: NeumorphicShape.concave,
+              boxShape: NeumorphicBoxShape.stadium(),
+            ),
+            child: Align(alignment: Alignment.center, child: Icon(Icons.save)),
+            onPressed: () {
+              FocusScope.of(context).requestFocus(blankNode);
+              if (_nameController.text.trim() != StringSet.EMPTY) {
+                _updateAsset(context);
+              }
+            },
+          ),
+        ],
+      ),
+//      BasePage(
+//      hasAppBar: true,
+//      color: ThemeDataSet.tabColor,
+//      title: StringSet.NB_LAMP,
+//      leadingIconData: Icons.arrow_back_ios,
+//      leadingOnTap: () => Navigator.pop(context),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white70,
         type: BottomNavigationBarType.fixed,
         items: [
           BottomNavigationBarItem(
@@ -846,7 +967,7 @@ class _NbScanPageState extends State<NbScanPage> {
           if (!_isClick) {
             return;
           }
-          isOvertime=false;
+          isOvertime = false;
           switch (index) {
             case 0:
               _readNb();
@@ -869,30 +990,35 @@ class _NbScanPageState extends State<NbScanPage> {
           setState(() {});
         },
       ),
-      actions: <Widget>[
-        GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus(blankNode);
-            if (_nameController.text.trim() != StringSet.EMPTY) {
-              _updateAsset(context);
-            }
-          },
-          child: Align(
-            alignment: Alignment.center,
-            child: Text(
-              StringSet.SAVE,
-              style: TextStyle(color: Colors.white, fontSize: 18),
-            ),
-          ),
-        )
-      ],
+//      actions: <Widget>[
+//        GestureDetector(
+//          onTap: () {
+//            FocusScope.of(context).requestFocus(blankNode);
+//            if (_nameController.text.trim() != StringSet.EMPTY) {
+//              _updateAsset(context);
+//            }
+//          },
+//          child: Align(
+//            alignment: Alignment.center,
+//            child: Text(
+//              StringSet.SAVE,
+//              style: TextStyle(color: Colors.white, fontSize: 18),
+//            ),
+//          ),
+//        )
+//      ],
       body: SingleChildScrollView(
           child: GestureDetector(
             onTap: () {
               FocusScope.of(context).requestFocus(blankNode);
             },
-            child: Container(
-              color: Color.fromRGBO(239, 239, 244, 1),
+            child: Neumorphic(
+              style: NeumorphicStyle(
+                boxShape: NeumorphicBoxShape.roundRect(
+                    BorderRadius.circular(12)),
+              ),
+//            Container(
+//              color: Color.fromRGBO(239, 239, 244, 1),
               child: Column(
                 children: <Widget>[
                   NbTextFieldWidget(
@@ -900,6 +1026,11 @@ class _NbScanPageState extends State<NbScanPage> {
                     required: true,
                     controller: _nameController,
                   ),
+//                  NbTextFieldNewWidget(
+//                    labelText: StringSet.NB_NAME,
+//                    required: true,
+//                    controller: _nameController,
+//                  ),
                   CustomPickerCell(
                     title: StringSet.NB_GROUP,
                     isNecessary: true,
@@ -951,9 +1082,6 @@ class _NbScanPageState extends State<NbScanPage> {
                   ),
                   Row(
                     children: <Widget>[
-                      SizedBox(
-                        width: 12,
-                      ),
                       Expanded(
                         child: NbTextWidget(
                           labelText: StringSet.NB_IMEI,
@@ -969,9 +1097,6 @@ class _NbScanPageState extends State<NbScanPage> {
                           value: _imsi,
                         ),
                         flex: 1,
-                      ),
-                      SizedBox(
-                        width: 12,
                       ),
                     ],
                   ),
@@ -994,9 +1119,15 @@ class _NbScanPageState extends State<NbScanPage> {
                     backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
                     value: icccid,
                   ),
+                  SizedBox(
+                    height: 20,
+                    child: Divider(
+                      height: 1,
+                      color: Colors.grey,
+                    ),
+                  ),
+
                   Container(
-                    color: Colors.white,
-                    margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
                     padding: EdgeInsets.fromLTRB(20, 6, 10, 6),
                     child: Row(
                       children: <Widget>[
@@ -1007,20 +1138,36 @@ class _NbScanPageState extends State<NbScanPage> {
                         Expanded(
                           child: Container(),
                         ),
-                        CupertinoSwitch(
+
+                        NeumorphicSwitch(
                           value: _switchUsed,
-                          onChanged: (bool value) {
+                          style: NeumorphicSwitchStyle(
+                            activeTrackColor: ThemeDataSet.tabColor,
+                          ),
+                          onChanged: (value) {
                             _switchUsed = value;
                             setState(() {});
                           },
                         ),
+//                    CupertinoSwitch(
+//                      value: _switchUsed,
+//                      onChanged: (bool value) {
+//                        _switchUsed = value;
+//                        setState(() {});
+//                      },
+//                    ),
                       ],
                     ),
                   ),
+                  Divider(
+                    height: 1,
+                    color: Colors.grey,
+                  ),
+
                   Container(
-                    color: Colors.white,
+//                    color: Colors.white,
                     margin: EdgeInsets.symmetric(vertical: 1.0),
-                    padding: EdgeInsets.fromLTRB(20, 6, 10, 6),
+                    padding: EdgeInsets.fromLTRB(16, 6, 10, 6),
                     child: Row(
                       children: <Widget>[
                         Text(
@@ -1030,19 +1177,39 @@ class _NbScanPageState extends State<NbScanPage> {
                         Expanded(
                           child: Container(),
                         ),
-                        CupertinoSwitch(
+                        NeumorphicSwitch(
                           value: _switchAlarm,
-                          onChanged: (bool value) {
+                          style: NeumorphicSwitchStyle(
+                            activeTrackColor: ThemeDataSet.tabColor,
+                          ),
+                          onChanged: (value) {
                             _switchAlarm = value;
+                            if (!_switchAlarm) {
+                              _recycle = Config.ZERO;
+                              _recycleController.value =
+                                  TextEditingValue(text: StringSet.ZERO);
+                            }
                             setState(() {});
                           },
                         ),
+//                    CupertinoSwitch(
+//                      value: _switchAlarm,
+//                      onChanged: (bool value) {
+//                        _switchAlarm = value;
+//                        setState(() {});
+//                      },
+//                    ),
                       ],
                     ),
                   ),
+                  Divider(
+                    height: 1,
+                    color: Colors.grey,
+                  ),
+
                   Container(
-                    color: Colors.white,
-                    padding: EdgeInsets.fromLTRB(20, 6, 10, 6),
+//                    color: Colors.white,
+                    padding: EdgeInsets.fromLTRB(16, 6, 10, 6),
                     child: Row(
                       children: <Widget>[
                         Text(
@@ -1052,15 +1219,97 @@ class _NbScanPageState extends State<NbScanPage> {
                         Expanded(
                           child: Container(),
                         ),
-                        CupertinoSwitch(
+                        NeumorphicSwitch(
                           value: _switchReply,
-                          onChanged: (bool value) {
+                          style: NeumorphicSwitchStyle(
+                            activeTrackColor: ThemeDataSet.tabColor,
+                          ),
+                          onChanged: (value) {
                             _switchReply = value;
                             setState(() {});
                           },
                         ),
+//                    CupertinoSwitch(
+//                      value: _switchReply,
+//                      onChanged: (bool value) {
+//                        _switchReply = value;
+//                        setState(() {});
+//                      },
+//                    ),
                       ],
                     ),
+                  ),
+                  Divider(
+                    height: 1,
+                    color: Colors.grey,
+                  ),
+                  _switchAlarm
+                      ? NbTextFieldWidget(
+                    labelText: StringSet.NB_CYCLE,
+                    required: false,
+                    keyboardType: TextInputType.number,
+                    controller: _recycleController,
+                  )
+                      : NbTextWidget(
+                    labelText: StringSet.NB_CYCLE,
+                    backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
+                    value: _recycle.toString(),
+                  ),
+
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Divider(
+                    height: 1,
+                    color: Colors.grey,
+                  ),
+                  CustomPickerCell(
+                    title: StringSet.NB_VERSION,
+                    isNecessary: true,
+                    content: _versionOptions.length>0?_versionOptions[_version].title:StringSet.EMPTY,
+                    options: _versionOptions,
+                    isMultiple: false,
+                    okButtonCanDisabled: true,
+                    onConfirm: (options) {
+                      _version =
+                      options.indexWhere((option) => option.isChecked);
+                      for (int index = 0; index <
+                          _versionOptions.length; index++) {
+                        _versionOptions[index].isChecked = (_version == index);
+                      }
+
+                      setState(() {});
+                    },
+                  ),
+                  Divider(
+                    height: 1,
+                    color: Colors.grey,
+                  ),
+                  CustomPickerCell(
+                    title: StringSet.NB_PROVIDER,
+                    isNecessary: true,
+                    content: _provider,
+                    options: _providerOptions,
+                    isMultiple: false,
+                    okButtonCanDisabled: true,
+                    onConfirm: (options) {
+                      int position =
+                      options.indexWhere((option) => option.isChecked);
+                      for (int index = 0; index <
+                          _providerOptions.length; index++) {
+                        _providerOptions[index].isChecked = (position == index);
+                        if (_providerOptions[index].isChecked) {
+                          _provider = _providerOptions[index].title;
+                          _providerId = _providerOptions[index].id;
+                        }
+                      }
+
+                      setState(() {});
+                    },
+                  ),
+                  Divider(
+                    height: 1,
+                    color: Colors.grey,
                   ),
                   CustomPickerCell(
                     title: StringSet.NB_LOOP_COUNT,
@@ -1096,10 +1345,13 @@ class _NbScanPageState extends State<NbScanPage> {
                           itemBuilder: (context, index) {
                             return Column(
                               children: <Widget>[
+                                Divider(
+                                  height: 1,
+                                  color: Colors.grey,
+                                ),
                                 Container(
-                                  color: Colors.white,
                                   margin: EdgeInsets.only(top: 10, bottom: 1),
-                                  padding: EdgeInsets.fromLTRB(20, 2, 10, 2),
+                                  padding: EdgeInsets.fromLTRB(16, 2, 10, 2),
                                   child: Row(
                                     children: <Widget>[
                                       Text(
@@ -1111,13 +1363,26 @@ class _NbScanPageState extends State<NbScanPage> {
                                       Expanded(
                                         child: Container(),
                                       ),
-                                      CupertinoSwitch(
+
+                                      NeumorphicSwitch(
                                         value: _nbLight[index].isChecked,
-                                        onChanged: (bool value) {
+                                        style: NeumorphicSwitchStyle(
+                                          activeTrackColor: ThemeDataSet
+                                              .tabColor,
+                                        ),
+                                        onChanged: (value) {
                                           _nbLight[index].isChecked = value;
                                           setState(() {});
                                         },
                                       ),
+
+//                                  CupertinoSwitch(
+//                                    value: _nbLight[index].isChecked,
+//                                    onChanged: (bool value) {
+//                                      _nbLight[index].isChecked = value;
+//                                      setState(() {});
+//                                    },
+//                                  ),
                                     ],
                                   ),
                                 ),
@@ -1147,6 +1412,11 @@ class _NbScanPageState extends State<NbScanPage> {
                               ],
                             );
                           })),
+                  Divider(
+                    height: 1,
+                    color: Colors.grey,
+                  ),
+
                   CustomEditableImageCell(
                     title: StringSet.NB_PICTURE,
                     attribute: 'image',

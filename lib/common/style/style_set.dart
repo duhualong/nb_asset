@@ -21,9 +21,11 @@ class AssetSet {
   static const String NB_BOTTOM_SHEET_DIMMING='assets/bottom_sheet_dimming.png';
   static const String NB_SMALL_DIMMING='assets/nb_small_dimming.png';
   static const String NB_LARGE_DIMMING='assets/nb_large_dimming.png';
+  static const String SPLASH='assets/splash.png';
 }
 class ThemeDataSet {
   static const Color tabColor = Color.fromRGBO(54, 120, 255, 1.0);
+  static const Color tabColorOther = Color.fromRGBO(99, 198, 214, 1.0);
   static final themeData=ThemeData(
       primaryColor:tabColor,
       primaryColorDark: tabColor,
