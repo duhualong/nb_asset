@@ -108,6 +108,9 @@ class NbDao {
     String provider,
   }) async {
     print('reporyCycle:$reportCycle');
+    print('providerId:$providerId');
+    print('power:$powerRateOne');
+    print('autoLightOne:$autoLightOne');
     FormData formData = FormData.fromMap({
       "asset_id": assetId,
       "light_pole_code": lightPoleCode,
@@ -140,7 +143,8 @@ class NbDao {
       "report_reply": reportReply,
       "report_cycle": reportCycle,
       "protocol_version":protocolVersion??0,
-      "provider_id":providerId??0,
+     // "provider_id":providerId??0,
+      "provider_id":providerId.toString(),
       "image": paths.length == 0
           ? []
           : paths.map((path) {
@@ -151,6 +155,7 @@ class NbDao {
             }).toList(),
     });
 
+    print('formData:${formData.fields.toString()}');
     HttpResult result =
         await HttpManager.fetch(await HttpAddress.updateNbAsset(), formData);
     if (result == null || !result.isSuccess) {

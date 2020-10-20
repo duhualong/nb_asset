@@ -38,10 +38,6 @@
         </scene>
     </scenes>
     <resources>
-<<<<<<< HEAD
         <image name="launchBack" width="375" height="812"/>
-=======
-        <image name="LaunchImage" width="750" height="1624"/>
->>>>>>> 0cf3dcb39c20f90de4bfb21c50060afbd22531a0
     </resources>
 </document>

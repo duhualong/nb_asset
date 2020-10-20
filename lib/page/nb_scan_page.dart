@@ -762,52 +762,62 @@ class _NbScanWidgetState extends State<NbScanWidget> {
       ctrlState: _switchUsed ? 1 : 0,
       autoAlarm: _switchAlarm ? 1 : 0,
       lampCount: loopId + 1,
-      autoLightOne: StringSet.powerOptions
-          .where((option) => option.title == _nbLight[0].title)
-          .toList()[0]
-          .isChecked
-          ? 1
-          : 0,
+autoLightOne: _nbLight[0].isChecked?1:0,
+//      autoLightOne: StringSet.powerOptions
+//          .where((option) => option.title == _nbLight[0].title)
+//          .toList()[0]
+//          .isChecked
+//          ? 1
+//          : 0,
       powerRateOne: StringSet.powerOptions
           .where((option) => option.title == _nbLight[0].title)
           .toList()[0]
           .id,
-      autoLightTwo: (loopId >= 1)
-          ? (StringSet.powerOptions
-          .where((option) => option.title == _nbLight[1].title)
-          .toList()[0]
-          .isChecked
-          ? 1
-          : 0)
+        autoLightTwo: (loopId >= 1)
+          ? (_nbLight[1].isChecked?1:0)
           : 0,
+//      autoLightTwo: (loopId >= 1)
+//          ? (StringSet.powerOptions
+//          .where((option) => option.title == _nbLight[1].title)
+//          .toList()[0]
+//          .isChecked
+//          ? 1
+//          : 0)
+//          : 0,
       powerRateTwo: (loopId >= 1)
           ? (StringSet.powerOptions
           .where((option) => option.title == _nbLight[1].title)
           .toList()[0]
           .id)
           : 0,
-      autoLightThree: (loopId >= 2)
-          ? (StringSet.powerOptions
-          .where((option) => option.title == _nbLight[2].title)
-          .toList()[0]
-          .isChecked
-          ? 1
-          : 0)
-          : 0,
+autoLightThree: (loopId >= 2)
+    ? (_nbLight[2].isChecked?1:0)
+    : 0,
+//      autoLightThree: (loopId >= 2)
+//          ? (StringSet.powerOptions
+//          .where((option) => option.title == _nbLight[2].title)
+//          .toList()[0]
+//          .isChecked
+//          ? 1
+//          : 0)
+//          : 0,
       powerRateThree: (loopId >= 2)
           ? (StringSet.powerOptions
           .where((option) => option.title == _nbLight[2].title)
           .toList()[0]
           .id)
           : 0,
-      autoLightFour: (loopId >= 3)
-          ? (StringSet.powerOptions
-          .where((option) => option.title == _nbLight[3].title)
-          .toList()[0]
-          .isChecked
-          ? 1
-          : 0)
-          : 0,
+autoLightFour: (loopId >= 3)
+    ? (_nbLight[3].isChecked?1:0)
+    : 0,
+//      autoLightFour: (loopId >= 3)
+//          ? (StringSet.powerOptions
+//          .where((option) => option.title == _nbLight[3].title)
+//          .toList()[0]
+//          .isChecked
+//          ? 1
+//          : 0)
+//          : 0,
       powerRateFour: (loopId >= 3)
           ? (StringSet.powerOptions
           .where((option) => option.title == _nbLight[3].title)
