@@ -52,6 +52,8 @@ class _LoginWidgetState extends State<LoginWidget> {
     SystemUiOverlayStyle(statusBarColor: ThemeDataSet.tabColor);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+
+
   }
 
   @override
@@ -191,6 +193,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget>
 //    Navigator.of(context).pushReplacementNamed(FormSample.routeName);
   }
 
+  
   @override
   Widget build(BuildContext mainContext) {
     return Container(

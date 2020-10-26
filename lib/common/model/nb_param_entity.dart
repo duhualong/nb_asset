@@ -68,6 +68,8 @@ class NbParamDeviceParamLampStatu with JsonConvert<NbParamDeviceParamLampStatu> 
 	int lampVector;
 	@JSONField(name: "power_rate")
 	int powerRate;
+	@JSONField(name:"reverse_dimming")
+	int reverseDimming;
 }
 
 class NbParamCandidateItems with JsonConvert<NbParamCandidateItems> {

@@ -16,12 +16,6 @@
 @import amap_location_fluttify;
 #endif
 
-#if __has_include(<barcode_scan/BarcodeScanPlugin.h>)
-#import <barcode_scan/BarcodeScanPlugin.h>
-#else
-@import barcode_scan;
-#endif
-
 #if __has_include(<connectivity/FLTConnectivityPlugin.h>)
 #import <connectivity/FLTConnectivityPlugin.h>
 #else
@@ -88,12 +82,17 @@
 @import shared_preferences;
 #endif
 
+#if __has_include(<barcode_scan/BarcodeScanPlugin.h>)
+#import <barcode_scan/BarcodeScanPlugin.h>
+#else
+@import barcode_scan;
+#endif
+
 @implementation GeneratedPluginRegistrant
 
 + (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry {
   [AmapCoreFluttifyPlugin registerWithRegistrar:[registry registrarForPlugin:@"AmapCoreFluttifyPlugin"]];
   [AmapLocationFluttifyPlugin registerWithRegistrar:[registry registrarForPlugin:@"AmapLocationFluttifyPlugin"]];
-  [BarcodeScanPlugin registerWithRegistrar:[registry registrarForPlugin:@"BarcodeScanPlugin"]];
   [FLTConnectivityPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTConnectivityPlugin"]];
   [CoreLocationFluttifyPlugin registerWithRegistrar:[registry registrarForPlugin:@"CoreLocationFluttifyPlugin"]];
   [FlutterNativeImagePlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterNativeImagePlugin"]];
@@ -105,6 +104,7 @@
   [FLTPathProviderPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTPathProviderPlugin"]];
   [PermissionHandlerPlugin registerWithRegistrar:[registry registrarForPlugin:@"PermissionHandlerPlugin"]];
   [FLTSharedPreferencesPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTSharedPreferencesPlugin"]];
+  [BarcodeScanPlugin registerWithRegistrar:[registry registrarForPlugin:@"BarcodeScanPlugin"]];
 }
 
 @end

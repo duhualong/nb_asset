@@ -116,7 +116,7 @@ class _NbScanWidgetState extends State<NbScanWidget> {
   bool isOvertime = false;
   int _providerId = Config.ZERO;
   int _version;
-  String _provider= StringSet.EMPTY;
+  String _provider = StringSet.EMPTY;
 
   @override
   initState() {
@@ -153,8 +153,7 @@ class _NbScanWidgetState extends State<NbScanWidget> {
         if (Platform.isIOS) {
           List originList = data['json']['lamp_status'] as List ?? [];
           List<LampStatus> lampStatusList = originList
-              .map((value) =>
-              LampStatus(
+              .map((value) => LampStatus(
                   autoLight: value['auto_light'],
                   lampVector: value['lamp_vector'],
                   powerRate: value['power_rate']))
@@ -177,7 +176,7 @@ class _NbScanWidgetState extends State<NbScanWidget> {
               lng: dimmingData.longitude,
               reportReply: dimmingData.reportReply,
               lampStatus:
-              dimmingData.lampCount > 0 ? dimmingData.lampStatus : []);
+                  dimmingData.lampCount > 0 ? dimmingData.lampStatus : []);
         }
       } else {
         showCustomDialog(op + "成功");
@@ -234,18 +233,16 @@ class _NbScanWidgetState extends State<NbScanWidget> {
       _groupName = nbParamEntity.deviceParam.groupName ?? StringSet.EMPTY;
       groupId = nbParamEntity.deviceParam.groupId;
       _providerId = nbParamEntity.deviceParam.providerId ?? Config.ZERO;
-      _provider=nbParamEntity.deviceParam.provider??StringSet.EMPTY;
+      _provider = nbParamEntity.deviceParam.provider ?? StringSet.EMPTY;
       _barCode = nbParamEntity.deviceParam.barcodeId;
       _switchReply = (nbParamEntity.deviceParam.reportReply == 1);
       _switchAlarm = (nbParamEntity.deviceParam.autoAlarm == 1);
       _switchUsed = (nbParamEntity.deviceParam.ctrlState == 1);
       icccid = nbParamEntity.deviceParam.iccid ?? StringSet.EMPTY;
-      StringSet.versionOptions.forEach((version) =>
-          _versionOptions.add(Option(
-              id: version.id,
-              title: version.title,
-              isChecked: _version == version.id
-          )));
+      StringSet.versionOptions.forEach((version) => _versionOptions.add(Option(
+          id: version.id,
+          title: version.title,
+          isChecked: _version == version.id)));
 
       nbParamEntity.candidateItems.carrierList.forEach((carrier) =>
           _carrierOptions.add(Option(
@@ -261,8 +258,7 @@ class _NbScanWidgetState extends State<NbScanWidget> {
           _providerOptions.add(Option(
               id: provider.providerId,
               title: provider.provider,
-              isChecked: _providerId == provider.providerId
-          )));
+              isChecked: _providerId == provider.providerId)));
       if (_provider == StringSet.EMPTY) {
         _providerOptions[0].isChecked = true;
         _providerId = _providerOptions[0].id;
@@ -285,8 +281,11 @@ class _NbScanWidgetState extends State<NbScanWidget> {
         _loopName = '2';
         loopId = 1;
         for (int i = 0; i <= loopId; i++) {
-          _nbLight.add(
-              Option(id: 0, title: StringSet.NO_SETTING, isChecked: false));
+          _nbLight.add(Option(
+              id: 0,
+              title: StringSet.NO_SETTING,
+              isChecked: false,
+              isReverse: false));
         }
       } else {
         loopId = nbParamEntity.deviceParam.lampCount - 1;
@@ -299,10 +298,11 @@ class _NbScanWidgetState extends State<NbScanWidget> {
                 title: nbParamEntity.deviceParam.lampStatus[i].powerRate == 0
                     ? StringSet.NO_SETTING
                     : (nbParamEntity.deviceParam.lampStatus[i].powerRate
-                    .toString() +
-                    'W'),
+                            .toString() +
+                        'W'),
                 isChecked:
-                nbParamEntity.deviceParam.lampStatus[i].autoLight == 1));
+                    nbParamEntity.deviceParam.lampStatus[i].autoLight == 1,
+            isReverse: nbParamEntity.deviceParam.lampStatus[i].reverseDimming==1));
           }
         }
       }
@@ -340,16 +340,12 @@ class _NbScanWidgetState extends State<NbScanWidget> {
     showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: _context,
-        builder: (context) =>
-            StatefulBuilder(
+        builder: (context) => StatefulBuilder(
               builder: (context, state) {
                 return Stack(
                   children: <Widget>[
                     Container(
-                        width: MediaQuery
-                            .of(context)
-                            .size
-                            .width,
+                        width: MediaQuery.of(context).size.width,
                         margin: EdgeInsets.only(top: 30),
                         decoration: new BoxDecoration(
                             color: Colors.white,
@@ -402,58 +398,58 @@ class _NbScanWidgetState extends State<NbScanWidget> {
                                     },
                                     child: _buttonLightStatus[index] == 1
                                         ? DottedBorder(
-                                      borderType: BorderType.RRect,
-                                      radius: Radius.circular(
-                                          Config.CLIP_RANGE),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(
-                                                Config.CLIP_RANGE)),
-                                        child: Container(
-                                          height: 40,
-                                          width: ScreenUtils.screenW(
-                                              context) /
-                                              4 -
-                                              20,
-                                          color: Color.fromRGBO(
-                                              239, 239, 244, 1),
-                                          child: Center(
-                                            child: Text('灯头${index + 1}',
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 14)),
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                        : ClipRRect(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(
-                                                Config.CLIP_RANGE)),
-                                        child: Container(
-                                          height: 40,
-                                          width:
-                                          ScreenUtils.screenW(context) /
-                                              4 -
-                                              20,
-                                          color:
-                                          _buttonLightStatus[index] == 2
-                                              ? ThemeDataSet.tabColor
-                                              : Color.fromRGBO(
-                                              239, 239, 244, 1),
-                                          child: Center(
-                                            child: Text(
-                                              '灯头${index + 1}',
-                                              style: TextStyle(
-                                                  color: _buttonLightStatus[
-                                                  index] ==
-                                                      2
-                                                      ? Colors.white
-                                                      : Colors.grey,
-                                                  fontSize: 14),
+                                            borderType: BorderType.RRect,
+                                            radius: Radius.circular(
+                                                Config.CLIP_RANGE),
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(
+                                                      Config.CLIP_RANGE)),
+                                              child: Container(
+                                                height: 40,
+                                                width: ScreenUtils.screenW(
+                                                            context) /
+                                                        4 -
+                                                    20,
+                                                color: Color.fromRGBO(
+                                                    239, 239, 244, 1),
+                                                child: Center(
+                                                  child: Text('灯头${index + 1}',
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14)),
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                        )),
+                                          )
+                                        : ClipRRect(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(
+                                                    Config.CLIP_RANGE)),
+                                            child: Container(
+                                              height: 40,
+                                              width:
+                                                  ScreenUtils.screenW(context) /
+                                                          4 -
+                                                      20,
+                                              color:
+                                                  _buttonLightStatus[index] == 2
+                                                      ? ThemeDataSet.tabColor
+                                                      : Color.fromRGBO(
+                                                          239, 239, 244, 1),
+                                              child: Center(
+                                                child: Text(
+                                                  '灯头${index + 1}',
+                                                  style: TextStyle(
+                                                      color: _buttonLightStatus[
+                                                                  index] ==
+                                                              2
+                                                          ? Colors.white
+                                                          : Colors.grey,
+                                                      fontSize: 14),
+                                                ),
+                                              ),
+                                            )),
                                   );
                                 }),
                           ),
@@ -462,13 +458,9 @@ class _NbScanWidgetState extends State<NbScanWidget> {
                             padding: EdgeInsets.all(16),
                             child: Text(
                               '光照：${_dimmingValue.toInt()}% ' +
-                                  '${_dimmingValue == 0
-                                      ? StringSet.CLOSE
-                                      : (_dimmingValue == 100
-                                      ? StringSet.OPEN
-                                      : StringSet.EMPTY)}',
+                                  '${_dimmingValue == 0 ? StringSet.CLOSE : (_dimmingValue == 100 ? StringSet.OPEN : StringSet.EMPTY)}',
                               style:
-                              TextStyle(color: Colors.black, fontSize: 16),
+                                  TextStyle(color: Colors.black, fontSize: 16),
                             ),
                           ),
                           Container(
@@ -504,12 +496,10 @@ class _NbScanWidgetState extends State<NbScanWidget> {
                                       ),
                                       activeTrackBar: BoxDecoration(
                                           borderRadius:
-                                          BorderRadius.circular(20),
+                                              BorderRadius.circular(20),
                                           color: ThemeDataSet.tabColor),
                                       activeDisabledTrackBarColor:
-                                      Theme
-                                          .of(context)
-                                          .disabledColor,
+                                          Theme.of(context).disabledColor,
                                     ),
                                     handler: FlutterSliderHandler(
                                       decoration: BoxDecoration(),
@@ -559,15 +549,11 @@ class _NbScanWidgetState extends State<NbScanWidget> {
                             height: 40,
                             child: FlatButton(
                               color: ThemeDataSet.tabColor,
-                              highlightColor: Theme
-                                  .of(context)
-                                  .highlightColor,
-                              disabledColor: Theme
-                                  .of(context)
-                                  .disabledColor,
+                              highlightColor: Theme.of(context).highlightColor,
+                              disabledColor: Theme.of(context).disabledColor,
                               shape: RoundedRectangleBorder(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(20)),
+                                    BorderRadius.all(Radius.circular(20)),
                               ),
                               child: Text(
                                 StringSet.CONFIRM,
@@ -578,10 +564,10 @@ class _NbScanWidgetState extends State<NbScanWidget> {
                               ),
                               onPressed: _isEnable
                                   ? () {
-                                Navigator.pop(context);
+                                      Navigator.pop(context);
 
-                                _dimmingNb(_buttonLightStatus);
-                              }
+                                      _dimmingNb(_buttonLightStatus);
+                                    }
                                   : null,
                             ),
                           ),
@@ -609,21 +595,21 @@ class _NbScanWidgetState extends State<NbScanWidget> {
             ));
   }
 
-  void _showMenu({int autoAlarm,
-    int ctrlState,
-    String lat,
-    String lng,
-    int reportReply,
-    List<LampStatus> lampStatus}) {
+  void _showMenu(
+      {int autoAlarm,
+      int ctrlState,
+      String lat,
+      String lng,
+      int reportReply,
+      List<LampStatus> lampStatus}) {
     if (lampStatus.length > 0) {
       _nbLight.clear();
-      lampStatus.forEach((lamp) =>
-          _nbLight.add(Option(
-              id: lamp.lampVector - 1,
-              title: lamp.powerRate == 0
-                  ? StringSet.NO_SETTING
-                  : (lamp.powerRate.toString() + 'W'),
-              isChecked: lamp.autoLight == 1)));
+      lampStatus.forEach((lamp) => _nbLight.add(Option(
+          id: lamp.lampVector - 1,
+          title: lamp.powerRate == 0
+              ? StringSet.NO_SETTING
+              : (lamp.powerRate.toString() + 'W'),
+          isChecked: lamp.autoLight == 1)));
     }
     _loopName = _nbLight.length.toString();
     loopId = _nbLight.length - 1;
@@ -657,97 +643,90 @@ class _NbScanWidgetState extends State<NbScanWidget> {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: _context,
-      builder: (context) =>
-          Stack(
-            children: <Widget>[
-              Container(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
-                margin: EdgeInsets.only(top: 30),
-                decoration: new BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: new BorderRadius.only(
-                        topLeft: const Radius.circular(20.0),
-                        topRight: const Radius.circular(20.0))),
-                child: Column(
-                  children: <Widget>[
-                    GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Align(
-                          alignment: Alignment(1.0, 0.0),
-                          child: Container(
-                              margin: const EdgeInsets.only(
-                                  right: 16.0, top: 6.0),
-                              child: Icon(
-                                Icons.clear,
-                                size: 28,
-                                color: Colors.black26,
-                              )),
-                        )),
-                    Expanded(
+      builder: (context) => Stack(
+        children: <Widget>[
+          Container(
+            width: MediaQuery.of(context).size.width,
+            margin: EdgeInsets.only(top: 30),
+            decoration: new BoxDecoration(
+                color: Colors.white,
+                borderRadius: new BorderRadius.only(
+                    topLeft: const Radius.circular(20.0),
+                    topRight: const Radius.circular(20.0))),
+            child: Column(
+              children: <Widget>[
+                GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Align(
+                      alignment: Alignment(1.0, 0.0),
                       child: Container(
-                        padding: EdgeInsets.only(
-                            left: 16, right: 16, bottom: 10, top: 10),
-                        child: ListView.builder(
-                            shrinkWrap: false,
-                            itemCount: _summonTitle.length,
-                            itemBuilder: (context, index) {
-                              return Row(
-                                children: <Widget>[
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 5, bottom: 5),
-                                    child: Text(
-                                      _summonTitle[index],
-                                      style: TextStyle(
-                                          color: Colors.black, fontSize: 16),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Container(),
-                                  ),
-                                  Padding(
-                                      padding: EdgeInsets.only(
-                                          top: 5, bottom: 5),
-                                      child: Text(
-                                        _summonValue[index],
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 16),
-                                      )),
-                                ],
-                              );
-                            }),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Align(
-                alignment: Alignment.topCenter,
-                child: Hero(
-                    tag: AssetSet.NB_BOTTOM_SHEET_SUMMON,
-                    child: Container(
-                      height: 60.0,
-                      width: 60.0,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: AssetImage(
-                                  AssetSet.NB_BOTTOM_SHEET_SUMMON))),
+                          margin: const EdgeInsets.only(right: 16.0, top: 6.0),
+                          child: Icon(
+                            Icons.clear,
+                            size: 28,
+                            color: Colors.black26,
+                          )),
                     )),
-              ),
-            ],
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(
+                        left: 16, right: 16, bottom: 10, top: 10),
+                    child: ListView.builder(
+                        shrinkWrap: false,
+                        itemCount: _summonTitle.length,
+                        itemBuilder: (context, index) {
+                          return Row(
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(top: 5, bottom: 5),
+                                child: Text(
+                                  _summonTitle[index],
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(),
+                              ),
+                              Padding(
+                                  padding: EdgeInsets.only(top: 5, bottom: 5),
+                                  child: Text(
+                                    _summonValue[index],
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 16),
+                                  )),
+                            ],
+                          );
+                        }),
+                  ),
+                )
+              ],
+            ),
           ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Hero(
+                tag: AssetSet.NB_BOTTOM_SHEET_SUMMON,
+                child: Container(
+                  height: 60.0,
+                  width: 60.0,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: AssetImage(AssetSet.NB_BOTTOM_SHEET_SUMMON))),
+                )),
+          ),
+        ],
+      ),
     );
   }
 
   Future<void> _updateAsset(BuildContext buildContext) async {
-    if(_switchAlarm){
-      String value=_recycleController.text.trim()??StringSet.ZERO;
-      _recycle=int.parse(value);
+    if (_switchAlarm) {
+      String value = _recycleController.text.trim() ?? StringSet.ZERO;
+      _recycle = int.parse(value);
     }
     DaoResult result = await NbDao.updateAssetInfo(
       assetId: assetId,
@@ -762,7 +741,8 @@ class _NbScanWidgetState extends State<NbScanWidget> {
       ctrlState: _switchUsed ? 1 : 0,
       autoAlarm: _switchAlarm ? 1 : 0,
       lampCount: loopId + 1,
-autoLightOne: _nbLight[0].isChecked?1:0,
+      autoLightOne: _nbLight[0].isChecked ? 1 : 0,
+      reverseDimmingOne: _nbLight[0].isReverse ? 1 : 0,
 //      autoLightOne: StringSet.powerOptions
 //          .where((option) => option.title == _nbLight[0].title)
 //          .toList()[0]
@@ -773,9 +753,8 @@ autoLightOne: _nbLight[0].isChecked?1:0,
           .where((option) => option.title == _nbLight[0].title)
           .toList()[0]
           .id,
-        autoLightTwo: (loopId >= 1)
-          ? (_nbLight[1].isChecked?1:0)
-          : 0,
+      autoLightTwo: (loopId >= 1) ? (_nbLight[1].isChecked ? 1 : 0) : 0,
+      reverseDimmingTwo: (loopId >= 1) ? (_nbLight[1].isReverse ? 1 : 0) : 0,
 //      autoLightTwo: (loopId >= 1)
 //          ? (StringSet.powerOptions
 //          .where((option) => option.title == _nbLight[1].title)
@@ -786,13 +765,13 @@ autoLightOne: _nbLight[0].isChecked?1:0,
 //          : 0,
       powerRateTwo: (loopId >= 1)
           ? (StringSet.powerOptions
-          .where((option) => option.title == _nbLight[1].title)
-          .toList()[0]
-          .id)
+              .where((option) => option.title == _nbLight[1].title)
+              .toList()[0]
+              .id)
           : 0,
-autoLightThree: (loopId >= 2)
-    ? (_nbLight[2].isChecked?1:0)
-    : 0,
+      autoLightThree: (loopId >= 2) ? (_nbLight[2].isChecked ? 1 : 0) : 0,
+      reverseDimmingThree: (loopId >= 2) ? (_nbLight[2].isReverse ? 1 : 0) : 0,
+
 //      autoLightThree: (loopId >= 2)
 //          ? (StringSet.powerOptions
 //          .where((option) => option.title == _nbLight[2].title)
@@ -803,13 +782,12 @@ autoLightThree: (loopId >= 2)
 //          : 0,
       powerRateThree: (loopId >= 2)
           ? (StringSet.powerOptions
-          .where((option) => option.title == _nbLight[2].title)
-          .toList()[0]
-          .id)
+              .where((option) => option.title == _nbLight[2].title)
+              .toList()[0]
+              .id)
           : 0,
-autoLightFour: (loopId >= 3)
-    ? (_nbLight[3].isChecked?1:0)
-    : 0,
+      autoLightFour: (loopId >= 3) ? (_nbLight[3].isChecked ? 1 : 0) : 0,
+      reverseDimmingFour: (loopId >= 3) ? (_nbLight[3].isReverse ? 1 : 0) : 0,
 //      autoLightFour: (loopId >= 3)
 //          ? (StringSet.powerOptions
 //          .where((option) => option.title == _nbLight[3].title)
@@ -820,9 +798,9 @@ autoLightFour: (loopId >= 3)
 //          : 0,
       powerRateFour: (loopId >= 3)
           ? (StringSet.powerOptions
-          .where((option) => option.title == _nbLight[3].title)
-          .toList()[0]
-          .id)
+              .where((option) => option.title == _nbLight[3].title)
+              .toList()[0]
+              .id)
           : 0,
       reportReply: _switchReply ? 1 : 0,
       paths: _paths,
@@ -856,7 +834,7 @@ autoLightFour: (loopId >= 3)
 
   Future<void> _sendNb() async {
     DaoResult daoResult =
-    await NbDao.sendNb(assetId: assetId, jpushId: jpushId);
+        await NbDao.sendNb(assetId: assetId, jpushId: jpushId);
     if (!daoResult.isSuccess) {
       return;
     }
@@ -879,7 +857,7 @@ autoLightFour: (loopId >= 3)
 
   Future<void> _resetNb() async {
     DaoResult daoResult =
-    await NbDao.resetNb(assetId: assetId, jpushId: jpushId);
+        await NbDao.resetNb(assetId: assetId, jpushId: jpushId);
     if (!daoResult.isSuccess) {
       return;
     }
@@ -889,7 +867,7 @@ autoLightFour: (loopId >= 3)
 
   Future<void> _readNb() async {
     DaoResult daoResult =
-    await NbDao.readNb(assetId: assetId, jpushId: jpushId);
+        await NbDao.readNb(assetId: assetId, jpushId: jpushId);
     if (!daoResult.isSuccess) {
       return;
     }
@@ -1019,146 +997,143 @@ autoLightFour: (loopId >= 3)
 //      ],
       body: SingleChildScrollView(
           child: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).requestFocus(blankNode);
-            },
-            child: Neumorphic(
-              style: NeumorphicStyle(
-                boxShape: NeumorphicBoxShape.roundRect(
-                    BorderRadius.circular(12)),
-              ),
+        onTap: () {
+          FocusScope.of(context).requestFocus(blankNode);
+        },
+        child: Neumorphic(
+          style: NeumorphicStyle(
+            boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(12)),
+          ),
 //            Container(
 //              color: Color.fromRGBO(239, 239, 244, 1),
-              child: Column(
-                children: <Widget>[
-                  NbTextFieldWidget(
-                    labelText: StringSet.NB_NAME,
-                    required: true,
-                    controller: _nameController,
-                  ),
+          child: Column(
+            children: <Widget>[
+              NbTextFieldWidget(
+                labelText: StringSet.NB_NAME,
+                required: true,
+                controller: _nameController,
+              ),
 //                  NbTextFieldNewWidget(
 //                    labelText: StringSet.NB_NAME,
 //                    required: true,
 //                    controller: _nameController,
 //                  ),
-                  CustomPickerCell(
-                    title: StringSet.NB_GROUP,
-                    isNecessary: true,
-                    content: _groupName,
-                    options: _groupOptions,
-                    isMultiple: false,
-                    okButtonCanDisabled: true,
-                    onConfirm: (options) {
-                      int position =
+              CustomPickerCell(
+                title: StringSet.NB_GROUP,
+                isNecessary: true,
+                content: _groupName,
+                options: _groupOptions,
+                isMultiple: false,
+                okButtonCanDisabled: true,
+                onConfirm: (options) {
+                  int position =
                       options.indexWhere((option) => option.isChecked);
-                      for (int index = 0; index <
-                          _groupOptions.length; index++) {
-                        _groupOptions[index].isChecked = (position == index);
-                        if (_groupOptions[index].isChecked) {
-                          _groupName = _groupOptions[index].title;
-                          groupId = _groupOptions[index].id;
-                        }
-                      }
+                  for (int index = 0; index < _groupOptions.length; index++) {
+                    _groupOptions[index].isChecked = (position == index);
+                    if (_groupOptions[index].isChecked) {
+                      _groupName = _groupOptions[index].title;
+                      groupId = _groupOptions[index].id;
+                    }
+                  }
 
-                      setState(() {});
-                    },
-                  ),
-                  CustomPickerCell(
-                    title: StringSet.NB_OPERATOR,
-                    isNecessary: true,
-                    content: _carrierName,
-                    options: _carrierOptions,
-                    isMultiple: false,
-                    okButtonCanDisabled: true,
-                    onConfirm: (options) {
-                      int position =
+                  setState(() {});
+                },
+              ),
+              CustomPickerCell(
+                title: StringSet.NB_OPERATOR,
+                isNecessary: true,
+                content: _carrierName,
+                options: _carrierOptions,
+                isMultiple: false,
+                okButtonCanDisabled: true,
+                onConfirm: (options) {
+                  int position =
                       options.indexWhere((option) => option.isChecked);
-                      for (int index = 0; index <
-                          _carrierOptions.length; index++) {
-                        _carrierOptions[index].isChecked = (position == index);
-                        if (_carrierOptions[index].isChecked) {
-                          _carrierName = _carrierOptions[index].title;
-                          carrierId = _carrierOptions[index].id;
-                        }
-                      }
+                  for (int index = 0; index < _carrierOptions.length; index++) {
+                    _carrierOptions[index].isChecked = (position == index);
+                    if (_carrierOptions[index].isChecked) {
+                      _carrierName = _carrierOptions[index].title;
+                      carrierId = _carrierOptions[index].id;
+                    }
+                  }
 
-                      setState(() {});
-                    },
-                  ),
-                  NbTextWidget(
-                    labelText: StringSet.NB_BARCODE,
-                    backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
-                    value: _barCode,
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: NbTextWidget(
-                          labelText: StringSet.NB_IMEI,
-                          backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
-                          value: _imei,
-                        ),
-                        flex: 1,
-                      ),
-                      Expanded(
-                        child: NbTextWidget(
-                          labelText: StringSet.NB_IMSI,
-                          backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
-                          value: _imsi,
-                        ),
-                        flex: 1,
-                      ),
-                    ],
-                  ),
-                  NbTextWidget(
-                    labelText: StringSet.NB_LONGITUDE,
-                    backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
-                    value: _longitude.length > 10
-                        ? _longitude.substring(0, 9)
-                        : _longitude,
-                  ),
-                  NbTextWidget(
-                    labelText: StringSet.NB_LATITUDE,
-                    backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
-                    value: _latitude.length > 9
-                        ? _latitude.substring(0, 8)
-                        : _latitude,
-                  ),
-                  NbTextWidget(
-                    labelText: StringSet.NB_ICCID,
-                    backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
-                    value: icccid,
-                  ),
-                  SizedBox(
-                    height: 20,
-                    child: Divider(
-                      height: 1,
-                      color: Colors.grey,
+                  setState(() {});
+                },
+              ),
+              NbTextWidget(
+                labelText: StringSet.NB_BARCODE,
+                backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
+                value: _barCode,
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: NbTextWidget(
+                      labelText: StringSet.NB_IMEI,
+                      backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
+                      value: _imei,
                     ),
+                    flex: 1,
                   ),
+                  Expanded(
+                    child: NbTextWidget(
+                      labelText: StringSet.NB_IMSI,
+                      backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
+                      value: _imsi,
+                    ),
+                    flex: 1,
+                  ),
+                ],
+              ),
+              NbTextWidget(
+                labelText: StringSet.NB_LONGITUDE,
+                backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
+                value: _longitude.length > 10
+                    ? _longitude.substring(0, 9)
+                    : _longitude,
+              ),
+              NbTextWidget(
+                labelText: StringSet.NB_LATITUDE,
+                backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
+                value: _latitude.length > 9
+                    ? _latitude.substring(0, 8)
+                    : _latitude,
+              ),
+              NbTextWidget(
+                labelText: StringSet.NB_ICCID,
+                backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
+                value: icccid,
+              ),
+              SizedBox(
+                height: 20,
+                child: Divider(
+                  height: 1,
+                  color: Colors.grey,
+                ),
+              ),
 
-                  Container(
-                    padding: EdgeInsets.fromLTRB(20, 6, 10, 6),
-                    child: Row(
-                      children: <Widget>[
-                        Text(
-                          StringSet.NB_USED,
-                          style: TextStyle(color: Colors.black, fontSize: 16),
-                        ),
-                        Expanded(
-                          child: Container(),
-                        ),
+              Container(
+                padding: EdgeInsets.fromLTRB(20, 6, 10, 6),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      StringSet.NB_USED,
+                      style: TextStyle(color: Colors.black, fontSize: 16),
+                    ),
+                    Expanded(
+                      child: Container(),
+                    ),
 
-                        NeumorphicSwitch(
-                          value: _switchUsed,
-                          style: NeumorphicSwitchStyle(
-                            activeTrackColor: ThemeDataSet.tabColor,
-                          ),
-                          onChanged: (value) {
-                            _switchUsed = value;
-                            setState(() {});
-                          },
-                        ),
+                    NeumorphicSwitch(
+                      value: _switchUsed,
+                      style: NeumorphicSwitchStyle(
+                        activeTrackColor: ThemeDataSet.tabColor,
+                      ),
+                      onChanged: (value) {
+                        _switchUsed = value;
+                        setState(() {});
+                      },
+                    ),
 //                    CupertinoSwitch(
 //                      value: _switchUsed,
 //                      onChanged: (bool value) {
@@ -1166,42 +1141,42 @@ autoLightFour: (loopId >= 3)
 //                        setState(() {});
 //                      },
 //                    ),
-                      ],
-                    ),
-                  ),
-                  Divider(
-                    height: 1,
-                    color: Colors.grey,
-                  ),
+                  ],
+                ),
+              ),
+              Divider(
+                height: 1,
+                color: Colors.grey,
+              ),
 
-                  Container(
+              Container(
 //                    color: Colors.white,
-                    margin: EdgeInsets.symmetric(vertical: 1.0),
-                    padding: EdgeInsets.fromLTRB(16, 6, 10, 6),
-                    child: Row(
-                      children: <Widget>[
-                        Text(
-                          StringSet.NB_ALARM,
-                          style: TextStyle(color: Colors.black, fontSize: 16),
-                        ),
-                        Expanded(
-                          child: Container(),
-                        ),
-                        NeumorphicSwitch(
-                          value: _switchAlarm,
-                          style: NeumorphicSwitchStyle(
-                            activeTrackColor: ThemeDataSet.tabColor,
-                          ),
-                          onChanged: (value) {
-                            _switchAlarm = value;
-                            if (!_switchAlarm) {
-                              _recycle = Config.ZERO;
-                              _recycleController.value =
-                                  TextEditingValue(text: StringSet.ZERO);
-                            }
-                            setState(() {});
-                          },
-                        ),
+                margin: EdgeInsets.symmetric(vertical: 1.0),
+                padding: EdgeInsets.fromLTRB(16, 6, 10, 6),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      StringSet.NB_ALARM,
+                      style: TextStyle(color: Colors.black, fontSize: 16),
+                    ),
+                    Expanded(
+                      child: Container(),
+                    ),
+                    NeumorphicSwitch(
+                      value: _switchAlarm,
+                      style: NeumorphicSwitchStyle(
+                        activeTrackColor: ThemeDataSet.tabColor,
+                      ),
+                      onChanged: (value) {
+                        _switchAlarm = value;
+                        if (!_switchAlarm) {
+                          _recycle = Config.ZERO;
+                          _recycleController.value =
+                              TextEditingValue(text: StringSet.ZERO);
+                        }
+                        setState(() {});
+                      },
+                    ),
 //                    CupertinoSwitch(
 //                      value: _switchAlarm,
 //                      onChanged: (bool value) {
@@ -1209,36 +1184,36 @@ autoLightFour: (loopId >= 3)
 //                        setState(() {});
 //                      },
 //                    ),
-                      ],
-                    ),
-                  ),
-                  Divider(
-                    height: 1,
-                    color: Colors.grey,
-                  ),
+                  ],
+                ),
+              ),
+              Divider(
+                height: 1,
+                color: Colors.grey,
+              ),
 
-                  Container(
+              Container(
 //                    color: Colors.white,
-                    padding: EdgeInsets.fromLTRB(16, 6, 10, 6),
-                    child: Row(
-                      children: <Widget>[
-                        Text(
-                          StringSet.NB_REPLY,
-                          style: TextStyle(color: Colors.black, fontSize: 16),
-                        ),
-                        Expanded(
-                          child: Container(),
-                        ),
-                        NeumorphicSwitch(
-                          value: _switchReply,
-                          style: NeumorphicSwitchStyle(
-                            activeTrackColor: ThemeDataSet.tabColor,
-                          ),
-                          onChanged: (value) {
-                            _switchReply = value;
-                            setState(() {});
-                          },
-                        ),
+                padding: EdgeInsets.fromLTRB(16, 6, 10, 6),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      StringSet.NB_REPLY,
+                      style: TextStyle(color: Colors.black, fontSize: 16),
+                    ),
+                    Expanded(
+                      child: Container(),
+                    ),
+                    NeumorphicSwitch(
+                      value: _switchReply,
+                      style: NeumorphicSwitchStyle(
+                        activeTrackColor: ThemeDataSet.tabColor,
+                      ),
+                      onChanged: (value) {
+                        _switchReply = value;
+                        setState(() {});
+                      },
+                    ),
 //                    CupertinoSwitch(
 //                      value: _switchReply,
 //                      onChanged: (bool value) {
@@ -1246,145 +1221,145 @@ autoLightFour: (loopId >= 3)
 //                        setState(() {});
 //                      },
 //                    ),
-                      ],
+                  ],
+                ),
+              ),
+              Divider(
+                height: 1,
+                color: Colors.grey,
+              ),
+              _switchAlarm
+                  ? NbTextFieldWidget(
+                      labelText: StringSet.NB_CYCLE,
+                      required: false,
+                      keyboardType: TextInputType.number,
+                      controller: _recycleController,
+                    )
+                  : NbTextWidget(
+                      labelText: StringSet.NB_CYCLE,
+                      backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
+                      value: _recycle.toString(),
                     ),
-                  ),
-                  Divider(
-                    height: 1,
-                    color: Colors.grey,
-                  ),
-                  _switchAlarm
-                      ? NbTextFieldWidget(
-                    labelText: StringSet.NB_CYCLE,
-                    required: false,
-                    keyboardType: TextInputType.number,
-                    controller: _recycleController,
-                  )
-                      : NbTextWidget(
-                    labelText: StringSet.NB_CYCLE,
-                    backgroundColor: Color.fromRGBO(229, 229, 234, 1.0),
-                    value: _recycle.toString(),
-                  ),
 
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Divider(
-                    height: 1,
-                    color: Colors.grey,
-                  ),
-                  CustomPickerCell(
-                    title: StringSet.NB_VERSION,
-                    isNecessary: true,
-                    content: _versionOptions.length>0?_versionOptions[_version].title:StringSet.EMPTY,
-                    options: _versionOptions,
-                    isMultiple: false,
-                    okButtonCanDisabled: true,
-                    onConfirm: (options) {
-                      _version =
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                height: 1,
+                color: Colors.grey,
+              ),
+              CustomPickerCell(
+                title: StringSet.NB_VERSION,
+                isNecessary: true,
+                content: _versionOptions.length > 0
+                    ? _versionOptions[_version].title
+                    : StringSet.EMPTY,
+                options: _versionOptions,
+                isMultiple: false,
+                okButtonCanDisabled: true,
+                onConfirm: (options) {
+                  _version = options.indexWhere((option) => option.isChecked);
+                  for (int index = 0; index < _versionOptions.length; index++) {
+                    _versionOptions[index].isChecked = (_version == index);
+                  }
+
+                  setState(() {});
+                },
+              ),
+              Divider(
+                height: 1,
+                color: Colors.grey,
+              ),
+              CustomPickerCell(
+                title: StringSet.NB_PROVIDER,
+                isNecessary: true,
+                content: _provider,
+                options: _providerOptions,
+                isMultiple: false,
+                okButtonCanDisabled: true,
+                onConfirm: (options) {
+                  int position =
                       options.indexWhere((option) => option.isChecked);
-                      for (int index = 0; index <
-                          _versionOptions.length; index++) {
-                        _versionOptions[index].isChecked = (_version == index);
-                      }
+                  for (int index = 0;
+                      index < _providerOptions.length;
+                      index++) {
+                    _providerOptions[index].isChecked = (position == index);
+                    if (_providerOptions[index].isChecked) {
+                      _provider = _providerOptions[index].title;
+                      _providerId = _providerOptions[index].id;
+                    }
+                  }
 
-                      setState(() {});
-                    },
-                  ),
-                  Divider(
-                    height: 1,
-                    color: Colors.grey,
-                  ),
-                  CustomPickerCell(
-                    title: StringSet.NB_PROVIDER,
-                    isNecessary: true,
-                    content: _provider,
-                    options: _providerOptions,
-                    isMultiple: false,
-                    okButtonCanDisabled: true,
-                    onConfirm: (options) {
-                      int position =
-                      options.indexWhere((option) => option.isChecked);
-                      for (int index = 0; index <
-                          _providerOptions.length; index++) {
-                        _providerOptions[index].isChecked = (position == index);
-                        if (_providerOptions[index].isChecked) {
-                          _provider = _providerOptions[index].title;
-                          _providerId = _providerOptions[index].id;
-                        }
-                      }
+                  setState(() {});
+                },
+              ),
+              Divider(
+                height: 1,
+                color: Colors.grey,
+              ),
+              CustomPickerCell(
+                title: StringSet.NB_LOOP_COUNT,
+                isNecessary: true,
+                content: _loopName,
+                options: _loopOptions,
+                isMultiple: false,
+                okButtonCanDisabled: true,
+                onConfirm: (options) {
+                  loopId = options.indexWhere((option) => option.isChecked);
+                  _loopOptions.forEach((loop) {
+                    loop.isChecked = (loop.id == (loopId + 1));
+                  });
 
-                      setState(() {});
-                    },
-                  ),
-                  Divider(
-                    height: 1,
-                    color: Colors.grey,
-                  ),
-                  CustomPickerCell(
-                    title: StringSet.NB_LOOP_COUNT,
-                    isNecessary: true,
-                    content: _loopName,
-                    options: _loopOptions,
-                    isMultiple: false,
-                    okButtonCanDisabled: true,
-                    onConfirm: (options) {
-                      loopId = options.indexWhere((option) => option.isChecked);
-                      _loopOptions.forEach((loop) {
-                        loop.isChecked = (loop.id == (loopId + 1));
-                      });
+                  _loopName = _loopOptions[loopId].title;
+                  _nbLight.clear();
+                  setState(() {
+                    for (int i = 0; i <= loopId; i++) {
+                      _nbLight.add(Option(
+                        id: i,
+                        title: StringSet.NO_SETTING,
+                        isChecked: false,
+                        isReverse: false,
+                      ));
+                    }
+                  });
+                },
+              ),
+              Container(
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: new NeverScrollableScrollPhysics(),
+                      itemCount: _nbLight.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: <Widget>[
+                            Divider(
+                              height: 1,
+                              color: Colors.grey,
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 10, bottom: 1),
+                              padding: EdgeInsets.fromLTRB(16, 2, 10, 2),
+                              child: Row(
+                                children: <Widget>[
+                                  Text(
+                                    StringSet.NB_OPEN_STATUS + '${index + 1}',
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 16),
+                                  ),
+                                  Expanded(
+                                    child: Container(),
+                                  ),
 
-                      _loopName = _loopOptions[loopId].title;
-                      _nbLight.clear();
-                      setState(() {
-                        for (int i = 0; i <= loopId; i++) {
-                          _nbLight.add(Option(
-                            id: i,
-                            title: StringSet.NO_SETTING,
-                            isChecked: false,
-                          ));
-                        }
-                      });
-                    },
-                  ),
-                  Container(
-                      child: ListView.builder(
-                          shrinkWrap: true,
-                          physics: new NeverScrollableScrollPhysics(),
-                          itemCount: _nbLight.length,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              children: <Widget>[
-                                Divider(
-                                  height: 1,
-                                  color: Colors.grey,
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(top: 10, bottom: 1),
-                                  padding: EdgeInsets.fromLTRB(16, 2, 10, 2),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Text(
-                                        StringSet.NB_OPEN_STATUS +
-                                            '${index + 1}',
-                                        style: TextStyle(
-                                            color: Colors.black, fontSize: 16),
-                                      ),
-                                      Expanded(
-                                        child: Container(),
-                                      ),
-
-                                      NeumorphicSwitch(
-                                        value: _nbLight[index].isChecked,
-                                        style: NeumorphicSwitchStyle(
-                                          activeTrackColor: ThemeDataSet
-                                              .tabColor,
-                                        ),
-                                        onChanged: (value) {
-                                          _nbLight[index].isChecked = value;
-                                          setState(() {});
-                                        },
-                                      ),
+                                  NeumorphicSwitch(
+                                    value: _nbLight[index].isChecked,
+                                    style: NeumorphicSwitchStyle(
+                                      activeTrackColor: ThemeDataSet.tabColor,
+                                    ),
+                                    onChanged: (value) {
+                                      _nbLight[index].isChecked = value;
+                                      setState(() {});
+                                    },
+                                  ),
 
 //                                  CupertinoSwitch(
 //                                    value: _nbLight[index].isChecked,
@@ -1393,50 +1368,75 @@ autoLightFour: (loopId >= 3)
 //                                      setState(() {});
 //                                    },
 //                                  ),
-                                    ],
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 1, bottom: 1),
+                              padding: EdgeInsets.fromLTRB(16, 2, 10, 2),
+                              child: Row(
+                                children: <Widget>[
+                                  Text(
+                                    StringSet.NB_REVERSE + '${index + 1}',
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 16),
                                   ),
-                                ),
-                                CustomPickerPowerCell(
-                                  title: '回路${index + 1}额定功率',
-                                  isNecessary: true,
-                                  content: _nbLight[index].title,
-                                  options: StringSet.powerOptions
-                                      .map((power) =>
-                                      Option(
+                                  Expanded(
+                                    child: Container(),
+                                  ),
+                                  NeumorphicSwitch(
+                                    value: _nbLight[index].isReverse,
+                                    style: NeumorphicSwitchStyle(
+                                      activeTrackColor: ThemeDataSet.tabColor,
+                                    ),
+                                    onChanged: (value) {
+                                      _nbLight[index].isReverse = value;
+                                      setState(() {});
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            CustomPickerPowerCell(
+                              title: '回路${index + 1}额定功率',
+                              isNecessary: true,
+                              content: _nbLight[index].title,
+                              options: StringSet.powerOptions
+                                  .map((power) => Option(
                                         id: power.id,
                                         title: power.title,
                                         isChecked: _nbLight[index].title ==
                                             power.title,
                                       ))
-                                      .toList(),
-                                  isMultiple: false,
-                                  okButtonCanDisabled: true,
-                                  onConfirm: (options) {
-                                    _nbLight[index].title = StringSet
-                                        .powerOptions[options.indexWhere(
-                                            (option) => option.isChecked)]
-                                        .title;
-                                    setState(() {});
-                                  },
-                                ),
-                              ],
-                            );
-                          })),
-                  Divider(
-                    height: 1,
-                    color: Colors.grey,
-                  ),
-
-                  CustomEditableImageCell(
-                    title: StringSet.NB_PICTURE,
-                    attribute: 'image',
-                    urls: _urls,
-                    paths: _paths,
-                  )
-                ],
+                                  .toList(),
+                              isMultiple: false,
+                              okButtonCanDisabled: true,
+                              onConfirm: (options) {
+                                _nbLight[index].title = StringSet
+                                    .powerOptions[options.indexWhere(
+                                        (option) => option.isChecked)]
+                                    .title;
+                                setState(() {});
+                              },
+                            ),
+                          ],
+                        );
+                      })),
+              Divider(
+                height: 1,
+                color: Colors.grey,
               ),
-            ),
-          )),
+
+              CustomEditableImageCell(
+                title: StringSet.NB_PICTURE,
+                attribute: 'image',
+                urls: _urls,
+                paths: _paths,
+              )
+            ],
+          ),
+        ),
+      )),
     );
   }
 

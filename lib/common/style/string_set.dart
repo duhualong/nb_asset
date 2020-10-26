@@ -33,9 +33,9 @@ class StringSet {
   static const String PASSWORD_HINT = '请输入密码';
   static const String LOGIN = '登录';
   static const String NETWORK_DEMO_NAME = '盛同云演示';
-  static const String NETWORK_DEMO_IP = '10.3.8.29';
+  static const String NETWORK_DEMO_IP = '112.13.203.162';
  // static const String NETWORK_DEMO_IP = '10.3.8.52';
-  static const String NETWORK_DEMO_PORT = '28644';
+  static const String NETWORK_DEMO_PORT = '15508';
   static const String HOME_TITLE = '小帮手';
   static const String HOME_HINT = '一站式服务解决所有问题';
   static const String LOGIN_OUT = '登出';
@@ -62,6 +62,7 @@ class StringSet {
   static const String NB_REPLY = '主报应答';
   static const String NB_LOOP_COUNT = '灯头数量';
   static const String NB_OPEN_STATUS = '上电开灯';
+  static const String NB_REVERSE='反向调光';
   static const String NB_PICTURE = '图片';
   static const String NB_HINT = '请输入';
   static const String PLEASE_SELECT = '请选择';
