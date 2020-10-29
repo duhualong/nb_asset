@@ -3,6 +3,7 @@ class Config {
   static const String USER_NAME_KEY = 'user_name';
   static const String USER_PWD = 'user_pwd';
   static const String NETWORKS_KEY = 'networks';
+  static const String DEVICE_PLACE='device_place';
 
   static const double CIRCLE_SIZE = 50;
   static const int ZERO = 0;

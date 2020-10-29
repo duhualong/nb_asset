@@ -44,6 +44,8 @@ class StringSet {
   static const String LOGIN_OUT_CONFIRM = '确定要退出登录吗?';
   static const String NB_LAMP = 'NB 单灯';
   static const String SAVE = '保存';
+  static const String ROAD_NAME='道路名称';
+  static const String LAMP_CODE='灯杆编号';
   static const String NB_NAME = '名称/编号';
   static const String NECESSARY = '*';
   static const String NB_GROUP = '所属组';

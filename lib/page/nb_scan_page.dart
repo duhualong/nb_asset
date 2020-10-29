@@ -10,6 +10,7 @@ import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
+import 'package:nbassetentry/common/local/local_storage.dart';
 import 'package:nbassetentry/common/model/nb_param_entity.dart';
 import 'package:nbassetentry/widget/text_field_nb_input_new.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -84,6 +85,8 @@ class _NbScanWidgetState extends State<NbScanWidget> {
   List<Option> _carrierOptions = [];
   List<Option> _loopOptions = [];
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _lightingCodeController = TextEditingController();
   final TextEditingController _recycleController = TextEditingController();
   String _barCode = StringSet.EMPTY;
   String _imei = StringSet.EMPTY;
@@ -149,9 +152,11 @@ class _NbScanWidgetState extends State<NbScanWidget> {
         setState(() {});
         return;
       }
-      if (data.toString().contains('longitude')) {
+      if (data.toString().contains('longitude') &&
+          data.toString().contains('run_param')) {
         if (Platform.isIOS) {
-          List originList = data['json']['lamp_status'] as List ?? [];
+          List originList =
+              data['json']['run_param']['lamp_status'] as List ?? [];
           List<LampStatus> lampStatusList = originList
               .map((value) => LampStatus(
                   autoLight: value['auto_light'],
@@ -159,11 +164,12 @@ class _NbScanWidgetState extends State<NbScanWidget> {
                   powerRate: value['power_rate']))
               .toList();
           _showMenu(
-              autoAlarm: data['json']['auto_alarm'] as int ?? 0,
-              ctrlState: data['json']['ctrl_state'] as int ?? 0,
-              lat: data['json']['latitude'].toString(),
-              lng: data['json']['longitude'].toString(),
-              reportReply: data['json']['report_reply'] as int ?? 0,
+              autoAlarm: data['json']['run_param']['auto_alarm'] as int ?? 0,
+              ctrlState: data['json']['run_param']['ctrl_state'] as int ?? 0,
+              lat: data['json']['run_param']['latitude'].toString(),
+              lng: data['json']['run_param']['longitude'].toString(),
+              reportReply:
+                  data['json']['run_param']['report_reply'] as int ?? 0,
               lampStatus: lampStatusList ?? []);
         } else {
           String _jsonString = data['extras']['cn.jpush.android.EXTRA'];
@@ -302,7 +308,9 @@ class _NbScanWidgetState extends State<NbScanWidget> {
                         'W'),
                 isChecked:
                     nbParamEntity.deviceParam.lampStatus[i].autoLight == 1,
-            isReverse: nbParamEntity.deviceParam.lampStatus[i].reverseDimming==1));
+                isReverse:
+                    nbParamEntity.deviceParam.lampStatus[i].reverseDimming ==
+                        1));
           }
         }
       }
@@ -815,6 +823,7 @@ class _NbScanWidgetState extends State<NbScanWidget> {
       return;
     }
     assetId = result.data;
+    await LocalStorage.set(Config.DEVICE_PLACE, _addressController.text.trim());
 
     _isClick = true;
     setState(() {});
@@ -899,9 +908,19 @@ class _NbScanWidgetState extends State<NbScanWidget> {
             child: Align(alignment: Alignment.center, child: Icon(Icons.save)),
             onPressed: () {
               FocusScope.of(context).requestFocus(blankNode);
-              if (_nameController.text.trim() != StringSet.EMPTY) {
-                _updateAsset(context);
+              if (_nameController.text.trim() == StringSet.EMPTY) {
+                Fluttertoast.showToast(msg: '请填写资产名称');
+                return;
               }
+              if (_lightingCodeController.text.trim() == StringSet.EMPTY) {
+                Fluttertoast.showToast(msg: '请填写灯杆编号');
+                return;
+              }
+              if (_addressController.text.trim() == StringSet.EMPTY) {
+                Fluttertoast.showToast(msg: '请填写道路名称');
+                return;
+              }
+              _updateAsset(context);
             },
           ),
         ],
@@ -1008,6 +1027,16 @@ class _NbScanWidgetState extends State<NbScanWidget> {
 //              color: Color.fromRGBO(239, 239, 244, 1),
           child: Column(
             children: <Widget>[
+              NbTextFieldWidget(
+                labelText: StringSet.ROAD_NAME,
+                required: true,
+                controller: _addressController,
+              ),
+              NbTextFieldWidget(
+                labelText: StringSet.LAMP_CODE,
+                required: true,
+                controller: _lightingCodeController,
+              ),
               NbTextFieldWidget(
                 labelText: StringSet.NB_NAME,
                 required: true,

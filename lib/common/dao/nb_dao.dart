@@ -80,6 +80,8 @@ class NbDao {
 
   static Future<DaoResult> updateAssetInfo({
     String assetId,
+    String assetName,
+    String devicePlace,
     String lightPoleCode,
     int groupId,
     int carrierId,
@@ -111,12 +113,10 @@ class NbDao {
     int reportCycle,
     String provider,
   }) async {
-    print('reporyCycle:$reportCycle');
-    print('providerId:$providerId');
-    print('power:$powerRateOne');
-    print('autoLightOne:$autoLightOne');
     FormData formData = FormData.fromMap({
       "asset_id": assetId,
+      "asset_name":assetName,
+      "device_place":devicePlace,
       "light_pole_code": lightPoleCode,
       "group_id": groupId,
       "carrier_id": carrierId,

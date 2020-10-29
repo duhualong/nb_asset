@@ -6,7 +6,7 @@ class HttpAddress {
   static Future<String> baseUrl() async {
     Network network = await Global.network;
     return network is Network
-        ? 'https://${network.address}/nbctrlinstallation/v1/'
+        ? 'https://${network.address}/plan/nbctrlinstallation/v1/'
         : StringSet.EMPTY;
   }
 

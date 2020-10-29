@@ -15,6 +15,10 @@ class NbParamDeviceParam with JsonConvert<NbParamDeviceParam> {
 	String assetId;
 	@JSONField(name: "phy_id")
 	int phyId;
+	@JSONField(name: "asset_name")
+	String assetName;
+	@JSONField(name: "device_place")
+	String devicePlace;
 	@JSONField(name: "light_pole_code")
 	String lightPoleCode;
 	@JSONField(name: "group_id")
